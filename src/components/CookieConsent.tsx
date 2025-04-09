@@ -219,147 +219,189 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
   return (
     <div className="fixed bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-auto z-[9999] max-w-md">
       {showDetails ? (
-        <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-zinc-100 overflow-hidden transition-all duration-300">
-          <div className="p-4 md:p-5">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-display font-medium">Cookie-Einstellungen</h2>
+        <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 overflow-hidden transition-all duration-300 animate-fadeIn">
+          <div className="absolute inset-0 bg-gradient-to-br from-cyberblue/5 to-mintgreen/5 rounded-2xl pointer-events-none"></div>
+          <div className="p-5 md:p-6 relative">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-display font-semibold bg-gradient-to-r from-cyberblue to-mintgreen bg-clip-text text-transparent">Cookie-Einstellungen</h2>
               <button 
                 onClick={() => setShowDetails(false)}
-                className="text-zinc-400 hover:text-zinc-600 transition-colors"
+                className="text-zinc-400 hover:text-zinc-600 transition-colors p-2 rounded-full hover:bg-zinc-100/50"
+                aria-label="Close cookie settings"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 6L6 18"></path>
                   <path d="M6 6l12 12"></path>
                 </svg>
               </button>
             </div>
             
-            <p className="text-sm text-zinc-600 mb-4">
+            <p className="text-sm text-zinc-600 mb-5">
               Wir verwenden Cookies für eine optimale Website-Erfahrung. Wählen Sie aus, welche Cookies Sie zulassen möchten.
             </p>
             
-            <div className="space-y-3 mb-4">
-              <div className="border border-zinc-100 rounded-lg p-3 bg-white/80">
+            <div className="space-y-3 mb-5">
+              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white/90 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-zinc-900">Notwendige Cookies</h3>
-                    <p className="text-xs text-zinc-500">Erforderlich für die Grundfunktionen</p>
+                    <h3 className="text-sm font-medium text-zinc-900 flex items-center">
+                      <span className="w-5 h-5 mr-2 text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                      </span>
+                      Notwendige Cookies
+                    </h3>
+                    <p className="text-xs text-zinc-500 ml-7">Erforderlich für die Grundfunktionen</p>
                   </div>
-                  <div className="bg-primary/10 text-primary text-xs font-medium py-0.5 px-2 rounded text-[10px]">
+                  <div className="bg-primary/10 text-primary text-xs font-medium py-1 px-2.5 rounded-full text-[10px]">
                     Erforderlich
                   </div>
                 </div>
               </div>
               
-              <div className="border border-zinc-100 rounded-lg p-3 bg-white/80">
+              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white/90 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-zinc-900">Analyse</h3>
-                    <p className="text-xs text-zinc-500">Hilft uns, die Nutzung zu verstehen</p>
+                    <h3 className="text-sm font-medium text-zinc-900 flex items-center">
+                      <span className="w-5 h-5 mr-2 text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M2 12h2a10 10 0 0 1 20 0h-2"/>
+                          <path d="M12 2v2"/>
+                          <path d="M12 22v-2"/>
+                          <path d="M20 12a8 8 0 0 0-8-8"/>
+                          <path d="M12 9v3l2 2"/>
+                        </svg>
+                      </span>
+                      Analyse
+                    </h3>
+                    <p className="text-xs text-zinc-500 ml-7">Hilft uns, die Nutzung zu verstehen</p>
                   </div>
                   <label className="inline-flex items-center cursor-pointer">
                     <input 
                       type="checkbox" 
-                      className="sr-only peer"
+                      className="sr-only peer" 
                       checked={settings.analytics}
                       onChange={() => handleToggleSetting('analytics')}
                     />
-                    <div className="relative w-8 h-4 bg-zinc-200 rounded-full peer peer-checked:bg-primary peer-focus:ring-1 peer-focus:ring-primary/30">
-                      <div className="absolute top-[2px] left-[2px] bg-white w-3 h-3 rounded-full transition-all peer-checked:translate-x-4"></div>
-                    </div>
+                    <div className="relative w-9 h-5 bg-zinc-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
                   </label>
                 </div>
               </div>
               
-              <div className="border border-zinc-100 rounded-lg p-3 bg-white/80">
+              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white/90 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-zinc-900">Marketing</h3>
-                    <p className="text-xs text-zinc-500">Für personalisierte Werbung</p>
+                    <h3 className="text-sm font-medium text-zinc-900 flex items-center">
+                      <span className="w-5 h-5 mr-2 text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 20V10"/>
+                          <path d="M18 20V4"/>
+                          <path d="M6 20v-4"/>
+                        </svg>
+                      </span>
+                      Marketing
+                    </h3>
+                    <p className="text-xs text-zinc-500 ml-7">Für personalisierte Werbung</p>
                   </div>
                   <label className="inline-flex items-center cursor-pointer">
                     <input 
                       type="checkbox" 
-                      className="sr-only peer"
+                      className="sr-only peer" 
                       checked={settings.marketing}
                       onChange={() => handleToggleSetting('marketing')}
                     />
-                    <div className="relative w-8 h-4 bg-zinc-200 rounded-full peer peer-checked:bg-primary peer-focus:ring-1 peer-focus:ring-primary/30">
-                      <div className="absolute top-[2px] left-[2px] bg-white w-3 h-3 rounded-full transition-all peer-checked:translate-x-4"></div>
-                    </div>
+                    <div className="relative w-9 h-5 bg-zinc-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
                   </label>
                 </div>
               </div>
               
-              <div className="border border-zinc-100 rounded-lg p-3 bg-white/80">
+              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white/90 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-zinc-900">Präferenzen</h3>
-                    <p className="text-xs text-zinc-500">Speichert Ihre Einstellungen</p>
+                    <h3 className="text-sm font-medium text-zinc-900 flex items-center">
+                      <span className="w-5 h-5 mr-2 text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                        </svg>
+                      </span>
+                      Präferenzen
+                    </h3>
+                    <p className="text-xs text-zinc-500 ml-7">Für eine personalisierte Erfahrung</p>
                   </div>
                   <label className="inline-flex items-center cursor-pointer">
                     <input 
                       type="checkbox" 
-                      className="sr-only peer"
+                      className="sr-only peer" 
                       checked={settings.preferences}
                       onChange={() => handleToggleSetting('preferences')}
                     />
-                    <div className="relative w-8 h-4 bg-zinc-200 rounded-full peer peer-checked:bg-primary peer-focus:ring-1 peer-focus:ring-primary/30">
-                      <div className="absolute top-[2px] left-[2px] bg-white w-3 h-3 rounded-full transition-all peer-checked:translate-x-4"></div>
-                    </div>
+                    <div className="relative w-9 h-5 bg-zinc-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
                   </label>
                 </div>
               </div>
             </div>
             
-            <div className="flex flex-wrap gap-2 justify-end">
-              <button
-                onClick={handleDecline}
-                className="px-3 py-1.5 text-xs border border-zinc-200 rounded-md text-zinc-600 hover:bg-zinc-50 transition-colors"
-              >
-                Ablehnen
-              </button>
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={handleSaveSettings}
-                className="px-3 py-1.5 text-xs bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                className="flex-1 px-4 py-2.5 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
               >
-                Speichern
+                Auswahl speichern
               </button>
-            </div>
-            
-            <div className="mt-3 text-[10px] text-zinc-400 text-center">
-              <a href="/legal" className="underline hover:text-zinc-600 transition-colors">Datenschutz & Impressum</a>
+              <button
+                onClick={handleAcceptAll}
+                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-cyberblue to-mintgreen text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md hover:opacity-90"
+              >
+                Alle akzeptieren
+              </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-zinc-100 overflow-hidden transition-all duration-300">
-          <div className="p-4">
-            <div className="flex items-start gap-4">
-              <div className="flex-1">
-                <p className="text-sm text-zinc-700 mb-1">
-                  Diese Website verwendet Cookies, um Ihr Erlebnis zu verbessern.
-                </p>
-                <button 
-                  onClick={() => setShowDetails(true)}
-                  className="text-xs text-primary hover:text-primary/80 font-medium underline"
-                >
-                  Einstellungen anpassen
-                </button>
+        <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 overflow-hidden transition-all duration-300 animate-fadeIn">
+          <div className="absolute inset-0 bg-gradient-to-br from-cyberblue/5 to-mintgreen/5 rounded-2xl pointer-events-none"></div>
+          <div className="p-5 md:p-6 relative">
+            <div className="flex items-start">
+              <div className="mr-4 mt-1 hidden sm:block">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyberblue to-mintgreen p-[2px]">
+                  <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+                      <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
+                      <path d="M8.5 8.5v.01"/>
+                      <path d="M16 15.5v.01"/>
+                      <path d="M12 12v.01"/>
+                      <path d="M11 17v.01"/>
+                      <path d="M7 14v.01"/>
+                    </svg>
+                  </div>
+                </div>
               </div>
-              <div className="flex gap-2 flex-shrink-0">
-                <button
-                  onClick={handleDecline}
-                  className="px-3 py-1.5 text-xs border border-zinc-200 rounded-md text-zinc-600 hover:bg-zinc-50 transition-colors"
-                >
-                  Ablehnen
-                </button>
-                <button
-                  onClick={handleAcceptAll}
-                  className="px-3 py-1.5 text-xs bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-                >
-                  Akzeptieren
-                </button>
+              <div className="flex-1">
+                <h2 className="text-base font-display font-semibold text-zinc-900 mb-1.5">Wir respektieren Ihre Privatsphäre</h2>
+                <p className="text-sm text-zinc-600 mb-4">
+                  Diese Website verwendet Cookies, um Ihr Erlebnis zu verbessern. Sie können wählen, welche Cookies Sie zulassen möchten.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => setShowDetails(true)}
+                    className="px-4 py-2.5 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
+                  >
+                    Einstellungen
+                  </button>
+                  <button
+                    onClick={handleDecline}
+                    className="px-4 py-2.5 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
+                  >
+                    Nur notwendige
+                  </button>
+                  <button
+                    onClick={handleAcceptAll}
+                    className="px-4 py-2.5 bg-gradient-to-r from-cyberblue to-mintgreen text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md hover:opacity-90"
+                  >
+                    Alle akzeptieren
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -13,17 +13,17 @@ const AboutSection: React.FC = () => {
   return (
     <section id="about" className="py-20 md:py-32 relative bg-white overflow-hidden">
       {/* Background elements */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-zinc-50 to-white w-full h-full" />
-      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-cyberblue/10 rounded-full blur-[100px]" />
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-mintgreen/10 rounded-full blur-[100px]" />
-      <div className="absolute top-3/4 left-1/3 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-zinc-50 to-white w-screen h-full min-h-full" />
+      <div className="absolute -top-20 -left-20 w-[120vw] h-[120vw] max-w-[800px] max-h-[800px] bg-cyberblue/10 rounded-full blur-[120px]" />
+      <div className="absolute -bottom-20 -right-20 w-[120vw] h-[120vw] max-w-[800px] max-h-[800px] bg-mintgreen/10 rounded-full blur-[120px]" />
+      <div className="absolute top-3/4 left-1/3 w-[80vw] h-[80vw] max-w-[500px] max-h-[500px] bg-primary/5 rounded-full blur-[100px]" />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <ScrollReveal animation="fade-right" threshold={0.2}>
             <div className="relative">
               <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl">
-                <div className="aspect-[4/3] bg-gradient-to-br from-cyberblue to-mintgreen opacity-80 absolute inset-0 z-0" />
+                <div className="aspect-[4/3] bg-gradient-to-br from-cyberblue to-mintgreen opacity-80 absolute inset-0 z-0 w-full h-full" />
                 <div className="p-10 md:p-16 relative z-10">
                   <h3 className="text-2xl md:text-4xl font-display font-bold text-zinc-900 mb-4 animated-gradient-text">
                     Who We Are
