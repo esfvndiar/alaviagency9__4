@@ -195,7 +195,7 @@ const FAQSection: React.FC = () => {
         </div>
         
         {/* CTA Section */}
-        <div className="mt-32 mb-24 overflow-hidden">
+        <div className="mt-48 md:mt-64 mb-24 overflow-hidden">
           <ScrollReveal animation="fade-up">
             <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-6">
               <div className="lg:col-span-7 text-left">
