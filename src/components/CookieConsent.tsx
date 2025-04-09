@@ -217,10 +217,9 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-auto z-[9999] max-w-md">
+    <div className="fixed bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 lg:left-8 lg:right-auto lg:max-w-lg z-[9999]">
       {showDetails ? (
-        <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 overflow-hidden transition-all duration-300 animate-fadeIn">
-          <div className="absolute inset-0 bg-gradient-to-br from-cyberblue/5 to-mintgreen/5 rounded-2xl pointer-events-none"></div>
+        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-zinc-100 overflow-hidden transition-all duration-300">
           <div className="p-5 md:p-6 relative">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-display font-semibold bg-gradient-to-r from-cyberblue to-mintgreen bg-clip-text text-transparent">Cookie-Einstellungen</h2>
@@ -241,7 +240,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
             </p>
             
             <div className="space-y-3 mb-5">
-              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white/90 hover:shadow-sm transition-all duration-200">
+              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-medium text-zinc-900 flex items-center">
@@ -254,13 +253,13 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                     </h3>
                     <p className="text-xs text-zinc-500 ml-7">Erforderlich für die Grundfunktionen</p>
                   </div>
-                  <div className="bg-primary/10 text-primary text-xs font-medium py-1 px-2.5 rounded-full text-[10px]">
+                  <div className="bg-primary/10 text-primary text-xs font-medium py-1 px-2.5 rounded-full">
                     Erforderlich
                   </div>
                 </div>
               </div>
               
-              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white/90 hover:shadow-sm transition-all duration-200">
+              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-medium text-zinc-900 flex items-center">
@@ -289,7 +288,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                 </div>
               </div>
               
-              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white/90 hover:shadow-sm transition-all duration-200">
+              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-medium text-zinc-900 flex items-center">
@@ -316,7 +315,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                 </div>
               </div>
               
-              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white/90 hover:shadow-sm transition-all duration-200">
+              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-medium text-zinc-900 flex items-center">
@@ -342,16 +341,16 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
               <button
                 onClick={handleSaveSettings}
-                className="flex-1 px-4 py-2.5 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
+                className="w-full sm:flex-1 px-3 py-2 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
               >
                 Auswahl speichern
               </button>
               <button
                 onClick={handleAcceptAll}
-                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-cyberblue to-mintgreen text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md hover:opacity-90"
+                className="w-full sm:flex-1 px-3 py-2 bg-gradient-to-r from-cyberblue to-mintgreen text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md hover:opacity-90"
               >
                 Alle akzeptieren
               </button>
@@ -359,8 +358,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
           </div>
         </div>
       ) : (
-        <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 overflow-hidden transition-all duration-300 animate-fadeIn">
-          <div className="absolute inset-0 bg-gradient-to-br from-cyberblue/5 to-mintgreen/5 rounded-2xl pointer-events-none"></div>
+        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-zinc-100 overflow-hidden transition-all duration-300">
           <div className="p-5 md:p-6 relative">
             <div className="flex items-start">
               <div className="mr-4 mt-1 hidden sm:block">
@@ -382,22 +380,22 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                 <p className="text-sm text-zinc-600 mb-4">
                   Diese Website verwendet Cookies, um Ihr Erlebnis zu verbessern. Sie können wählen, welche Cookies Sie zulassen möchten.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
                   <button
                     onClick={() => setShowDetails(true)}
-                    className="px-4 py-2.5 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
+                    className="w-full sm:flex-1 px-3 py-2 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
                   >
                     Einstellungen
                   </button>
                   <button
                     onClick={handleDecline}
-                    className="px-4 py-2.5 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
+                    className="w-full sm:flex-1 px-3 py-2 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
                   >
                     Nur notwendige
                   </button>
                   <button
                     onClick={handleAcceptAll}
-                    className="px-4 py-2.5 bg-gradient-to-r from-cyberblue to-mintgreen text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md hover:opacity-90"
+                    className="w-full sm:flex-1 px-3 py-2 bg-gradient-to-r from-cyberblue to-mintgreen text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md hover:opacity-90"
                   >
                     Alle akzeptieren
                   </button>
