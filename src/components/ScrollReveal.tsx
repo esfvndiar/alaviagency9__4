@@ -24,6 +24,8 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [hasAnimated, setHasAnimated] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const animationFrameIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     // Skip if already animated and once is true
@@ -32,19 +34,17 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
     const currentRef = ref.current;
     if (!currentRef) return;
 
-    // Use requestAnimationFrame for smoother visual updates
-    let animationFrameId: number;
-
-    const observer = new IntersectionObserver(
+    // Create the observer
+    observerRef.current = new IntersectionObserver(
       ([entry]) => {
         // Use requestAnimationFrame to batch visual updates
         if (entry.isIntersecting) {
-          animationFrameId = requestAnimationFrame(() => {
+          animationFrameIdRef.current = requestAnimationFrame(() => {
             setIsVisible(true);
             setHasAnimated(true);
           });
         } else if (!once) {
-          animationFrameId = requestAnimationFrame(() => {
+          animationFrameIdRef.current = requestAnimationFrame(() => {
             setIsVisible(false);
           });
         }
@@ -56,11 +56,19 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
       }
     );
 
-    observer.observe(currentRef);
+    // Start observing
+    observerRef.current.observe(currentRef);
 
+    // Cleanup function
     return () => {
-      if (currentRef) observer.unobserve(currentRef);
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (observerRef.current && currentRef) {
+        observerRef.current.unobserve(currentRef);
+        observerRef.current.disconnect();
+      }
+      
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
     };
   }, [threshold, rootMargin, once, hasAnimated]);
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ArrowDown } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
@@ -8,6 +8,11 @@ const HeroSection: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
   const [typingSpeed, setTypingSpeed] = useState(80);
+  
+  // Refs for timeouts to properly clean them up
+  const staticTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const dynamicTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const delayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const fullStaticText = "Together we create";
   const rotatingTexts = [
@@ -28,17 +33,21 @@ const HeroSection: React.FC = () => {
     
     if (staticText === fullStaticText) {
       // Finished typing static text, wait before starting dynamic text
-      setTimeout(() => {
+      delayTimeoutRef.current = setTimeout(() => {
         setIsTypingStatic(false);
       }, 500);
       return;
     }
     
-    const timer = setTimeout(() => {
+    staticTimeoutRef.current = setTimeout(() => {
       setStaticText(fullStaticText.substring(0, staticText.length + 1));
     }, 100);
     
-    return () => clearTimeout(timer);
+    // Cleanup function
+    return () => {
+      if (staticTimeoutRef.current) clearTimeout(staticTimeoutRef.current);
+      if (delayTimeoutRef.current) clearTimeout(delayTimeoutRef.current);
+    };
   }, [staticText, isTypingStatic]);
 
   // Handle the dynamic text typing animation
@@ -60,7 +69,8 @@ const HeroSection: React.FC = () => {
       // Handle deletion and rotation logic
       if (!isDeleting && dynamicText === fullText) {
         // Finished typing, wait before deleting
-        setTimeout(() => setIsDeleting(true), 2000);
+        delayTimeoutRef.current = setTimeout(() => setIsDeleting(true), 2000);
+        return;
       } else if (isDeleting && dynamicText === '') {
         // Finished deleting, move to next word
         setIsDeleting(false);
@@ -68,8 +78,13 @@ const HeroSection: React.FC = () => {
       }
     };
 
-    const timer = setTimeout(handleTyping, typingSpeed);
-    return () => clearTimeout(timer);
+    dynamicTimeoutRef.current = setTimeout(handleTyping, typingSpeed);
+    
+    // Cleanup function
+    return () => {
+      if (dynamicTimeoutRef.current) clearTimeout(dynamicTimeoutRef.current);
+      if (delayTimeoutRef.current) clearTimeout(delayTimeoutRef.current);
+    };
   }, [dynamicText, isDeleting, loopNum, rotatingTexts, typingSpeed, isTypingStatic]);
 
   return (

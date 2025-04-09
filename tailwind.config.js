@@ -3,13 +3,15 @@ module.exports = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./index.html",
   ],
   theme: {
     extend: {
       colors: {
-        primary: "#3B82F6", // Blue-500
-        cyberblue: "#0070F3",
-        mintgreen: "#10B981",
+        primary: "#3B82F6", 
+        cyberblue: "#0ea5e9", 
+        mintgreen: "#10B981", 
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

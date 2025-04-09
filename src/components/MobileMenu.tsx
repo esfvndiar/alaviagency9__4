@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { X } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
@@ -13,11 +13,19 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links }) => {
   const [mounted, setMounted] = useState(false);
   // State to track if menu should be rendered at all (separate from animation)
   const [shouldRender, setShouldRender] = useState(false);
+  // Ref to store timeout IDs for proper cleanup
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Effect to set mounted state when component mounts
   useEffect(() => {
     setMounted(true);
-    return () => setMounted(false);
+    return () => {
+      setMounted(false);
+      // Clear any pending timeouts when unmounting
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   // Effect to handle menu visibility and animations
@@ -29,12 +37,22 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links }) => {
       setShouldRender(true);
     } else if (!isOpen && shouldRender) {
       // When closing, wait for animation to complete before unmounting
-      const timer = setTimeout(() => {
+      // Clear any existing timeout first to prevent race conditions
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      timeoutRef.current = setTimeout(() => {
         setShouldRender(false);
       }, 300); // Match this with the CSS transition duration
-      
-      return () => clearTimeout(timer);
     }
+    
+    // Cleanup function
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [isOpen, mounted, shouldRender]);
 
   // Effect to prevent body scroll when mobile menu is open
@@ -44,12 +62,12 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links }) => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     }
     
     // Cleanup function to reset overflow when component unmounts
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     };
   }, [isOpen, mounted]);
 
@@ -62,9 +80,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links }) => {
       className={`fixed inset-0 bg-white z-[9999] transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}
-      style={{ backgroundColor: 'white' }}
     >
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 h-full flex flex-col bg-white">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 h-full flex flex-col">
         <div className="flex justify-end">
           <button
             onClick={onClose}
@@ -81,8 +98,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links }) => {
               key={link.title}
               className={`text-center menu-item ${isOpen ? 'menu-item-visible' : ''}`}
               style={{ 
-                animationDelay: `${index * 100 + 150}ms`,
-                transitionDelay: !isOpen ? '0ms' : `${index * 50}ms`
+                transitionDelay: isOpen ? `${index * 50}ms` : '0ms'
               }}
             >
               <a

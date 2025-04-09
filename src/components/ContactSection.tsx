@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ScrollReveal from './ScrollReveal';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 
@@ -12,6 +12,7 @@ const FAQSection: React.FC = () => {
   const answerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [answerHeights, setAnswerHeights] = useState<number[]>([]);
   const [isHovered, setIsHovered] = useState(false);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
   const faqs: FAQItem[] = [
     {
@@ -94,26 +95,41 @@ const FAQSection: React.FC = () => {
   ];
 
   // Measure the height of each answer when component mounts and when window resizes
+  const updateHeights = useCallback(() => {
+    const heights = answerRefs.current.map(ref => ref?.scrollHeight || 0);
+    setAnswerHeights(heights);
+  }, []);
+
   useEffect(() => {
     // Initialize the refs array with the correct length
     answerRefs.current = answerRefs.current.slice(0, faqs.length);
     
-    const updateHeights = () => {
-      const heights = answerRefs.current.map(ref => ref?.scrollHeight || 0);
-      setAnswerHeights(heights);
-    };
-    
     // Measure heights after a short delay to ensure DOM is fully rendered
     const timer = setTimeout(updateHeights, 100);
     
-    // Also update heights on window resize
+    // Set up resize observer for more responsive height calculations
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserverRef.current = new ResizeObserver(updateHeights);
+      
+      // Observe each answer element
+      answerRefs.current.forEach(ref => {
+        if (ref) resizeObserverRef.current?.observe(ref);
+      });
+    }
+    
+    // Also update heights on window resize as a fallback
     window.addEventListener('resize', updateHeights);
     
     return () => {
       clearTimeout(timer);
       window.removeEventListener('resize', updateHeights);
+      
+      // Disconnect the resize observer
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+      }
     };
-  }, [faqs.length]);
+  }, [faqs.length, updateHeights]);
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -127,7 +143,8 @@ const FAQSection: React.FC = () => {
           <ScrollReveal className="lg:col-span-1">
             <div className="lg:mb-16">
               <h2 className="text-3xl md:text-5xl font-display font-medium tracking-tight">
-                <span className="inline-block">Frequently Asked </span>
+                <span className="inline-block md:inline">Frequently</span>
+                <span className="inline-block md:inline"> Asked </span>
                 <span className="text-gradient inline-block">Questions</span>
               </h2>
             </div>
