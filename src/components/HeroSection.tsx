@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { ArrowDown } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
@@ -15,7 +15,9 @@ const HeroSection: React.FC = () => {
   const delayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const fullStaticText = "Together we create";
-  const rotatingTexts = [
+  
+  // Use useMemo to prevent rotatingTexts from changing on every render
+  const rotatingTexts = useMemo(() => [
     "Innovation",
     "Revolution",
     "Digital Worlds",
@@ -25,7 +27,7 @@ const HeroSection: React.FC = () => {
     "Excellence",
     "Solutions",
     "Transformations"
-  ];
+  ], []);
 
   // Handle the static text typing animation
   useEffect(() => {

@@ -11,11 +11,12 @@ const AboutSection: React.FC = () => {
   ];
   
   return (
-    <section id="about" className="py-20 md:py-32 relative bg-white">
+    <section id="about" className="py-20 md:py-32 relative bg-white overflow-hidden">
       {/* Background elements */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-zinc-50 to-white" />
-      <div className="absolute top-1/3 left-10 w-64 h-64 bg-cyberblue/10 rounded-full blur-[80px]" />
-      <div className="absolute bottom-1/3 right-10 w-64 h-64 bg-mintgreen/10 rounded-full blur-[80px]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-zinc-50 to-white w-full h-full" />
+      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-cyberblue/10 rounded-full blur-[100px]" />
+      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-mintgreen/10 rounded-full blur-[100px]" />
+      <div className="absolute top-3/4 left-1/3 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

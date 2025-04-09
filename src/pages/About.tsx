@@ -432,7 +432,7 @@ const About: React.FC = () => {
         </section>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }

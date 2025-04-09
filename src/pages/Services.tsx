@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, Check, ChevronDown, ChevronUp, ArrowUpRight, Plus } from 'lucide-react';
 import Layout from '../components/Layout';
-import { ArrowRight, Check, ChevronDown, ChevronUp, ArrowUpRight, MousePointer, Plus } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
 
 interface Feature {
@@ -129,8 +129,6 @@ const SERVICES: Service[] = [
     image: "https://images.unsplash.com/photo-1432888622747-4eb9a8f5a70d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
   }
 ];
-
-const categories = Array.from(new Set(SERVICES.map(service => service.color)));
 
 const Services: React.FC = () => {
   const [expandedService, setExpandedService] = useState<number | null>(null);
@@ -373,7 +371,7 @@ const Services: React.FC = () => {
                       {/* Service illustration */}
                       <div className="aspect-square rounded-2xl bg-white shadow-sm flex items-center justify-center overflow-hidden">
                         <img 
-                          src={service.image || `https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80`} 
+                          src={service.image || `https://images.unsplash.com/photo-1581291518633-3f44a563fa4c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80`} 
                           alt={service.title}
                           className="w-full h-full object-cover rounded-2xl"
                         />

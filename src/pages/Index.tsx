@@ -3,7 +3,8 @@ import Layout from '../components/Layout';
 import HeroSection from '../components/HeroSection';
 import ServicesSection from '../components/ServicesSection';
 import AboutSection from '../components/AboutSection';
-import FAQSection from '../components/ContactSection';
+import FAQSection from '../components/FAQSection';
+import CTASection from '../components/CTASection';
 
 const Index: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ const Index: React.FC = () => {
       <ServicesSection />
       <AboutSection />
       <FAQSection />
+      <CTASection />
     </Layout>
   );
 };

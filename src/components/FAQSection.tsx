@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ScrollReveal from './ScrollReveal';
-import { ChevronDown, ArrowRight } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 interface FAQItem {
   question: string;
@@ -11,7 +11,6 @@ const FAQSection: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const answerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [answerHeights, setAnswerHeights] = useState<number[]>([]);
-  const [isHovered, setIsHovered] = useState(false);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
   const faqs: FAQItem[] = [
@@ -51,80 +50,88 @@ const FAQSection: React.FC = () => {
       question: "What is your typical project timeline?",
       answer: (
         <p>
-          Project timelines vary based on scope and complexity. A typical website redesign takes 6-8 weeks, 
-          while more complex applications can take 3-6 months. During our initial consultation, 
-          we'll provide a detailed timeline tailored to your specific project needs.
+          Project timelines vary based on scope and complexity. A simple website might take 2-4 weeks, 
+          while a complex web application could take 2-3 months. During our initial consultation, 
+          we'll provide a detailed timeline specific to your project needs.
         </p>
       )
     },
     {
-      question: "Do you work with clients remotely?",
+      question: "Do you offer ongoing maintenance and support?",
       answer: (
         <p>
-          Yes! We work with clients globally and have established efficient remote collaboration processes. 
-          We use tools like Figma, Slack, and Zoom to maintain clear communication throughout your project, 
-          regardless of location.
+          Yes, we offer various maintenance packages to keep your digital products secure, 
+          up-to-date, and performing optimally. Our support team is available to address any 
+          issues and implement updates as needed.
         </p>
       )
     },
     {
       question: "How do you handle project pricing?",
       answer: (
-        <p>
-          We offer both fixed-price and hourly rate options depending on your project needs. 
-          For most client projects, we provide a detailed proposal with a fixed price based on your requirements. 
-          For ongoing work or projects with evolving scopes, we offer competitive hourly rates. 
-          Contact us for a customized quote.
-        </p>
+        <div className="space-y-2">
+          <p>
+            We offer flexible pricing models tailored to your project needs:
+          </p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Fixed Price:</strong> Predetermined cost for well-defined projects.</li>
+            <li><strong>Time & Materials:</strong> Hourly or daily rates for projects with evolving requirements.</li>
+            <li><strong>Retainer:</strong> Monthly fee for ongoing services and support.</li>
+          </ul>
+          <p>
+            We provide detailed quotes after understanding your specific requirements during the initial consultation.
+          </p>
+        </div>
       )
     },
     {
-      question: "What happens after my project launches?",
+      question: "What makes ALAVI different from other agencies?",
       answer: (
         <div className="space-y-2">
-          <p>We don't disappear after launch! We offer several post-launch options:</p>
+          <p>
+            ALAVI stands out through our:
+          </p>
           <ul className="list-disc pl-5 space-y-1">
-            <li><strong>Maintenance Plans:</strong> Regular updates, security patches, and technical support.</li>
-            <li><strong>Growth Partnerships:</strong> Ongoing design and development as your business evolves.</li>
-            <li><strong>Analytics & Optimization:</strong> Data-driven improvements to enhance performance.</li>
-            <li><strong>Training:</strong> We can train your team to manage content and basic site functions.</li>
+            <li><strong>Strategic Approach:</strong> We focus on business outcomes, not just aesthetics.</li>
+            <li><strong>Technical Excellence:</strong> Our team stays at the forefront of technology trends.</li>
+            <li><strong>Collaborative Process:</strong> We involve clients throughout the entire journey.</li>
+            <li><strong>Ongoing Partnership:</strong> We build lasting relationships beyond project completion.</li>
+            <li><strong>Results-Driven Solutions:</strong> We measure success by the impact on your business.</li>
           </ul>
         </div>
       )
     }
   ];
 
-  // Measure the height of each answer when component mounts and when window resizes
+  // Update heights when window resizes or content changes
   const updateHeights = useCallback(() => {
-    const heights = answerRefs.current.map(ref => ref?.scrollHeight || 0);
-    setAnswerHeights(heights);
+    const newHeights = answerRefs.current.map(ref => ref?.scrollHeight || 0);
+    setAnswerHeights(newHeights);
   }, []);
 
+  // Initialize heights and set up resize observer
   useEffect(() => {
-    // Initialize the refs array with the correct length
-    answerRefs.current = answerRefs.current.slice(0, faqs.length);
-    
-    // Measure heights after a short delay to ensure DOM is fully rendered
-    const timer = setTimeout(updateHeights, 100);
-    
-    // Set up resize observer for more responsive height calculations
+    // Initialize heights
+    updateHeights();
+
+    // Set up resize observer to update heights when content changes
     if (typeof ResizeObserver !== 'undefined') {
       resizeObserverRef.current = new ResizeObserver(updateHeights);
       
-      // Observe each answer element
       answerRefs.current.forEach(ref => {
-        if (ref) resizeObserverRef.current?.observe(ref);
+        if (ref) {
+          resizeObserverRef.current?.observe(ref);
+        }
       });
     }
-    
-    // Also update heights on window resize as a fallback
+
+    // Update heights on window resize
     window.addEventListener('resize', updateHeights);
-    
+
     return () => {
-      clearTimeout(timer);
+      // Clean up
       window.removeEventListener('resize', updateHeights);
       
-      // Disconnect the resize observer
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect();
       }
@@ -136,7 +143,7 @@ const FAQSection: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-20 md:py-32 relative bg-gradient-to-b from-white to-zinc-50">
+    <section id="faq" className="py-20 md:py-32 relative bg-gradient-to-b from-white to-zinc-50">
       <div className="container mx-auto px-5 md:px-10 max-w-6xl">
         {/* Header section with horizontal layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-16 gap-y-8 mb-16">
@@ -192,39 +199,6 @@ const FAQSection: React.FC = () => {
               </div>
             </ScrollReveal>
           </div>
-        </div>
-        
-        {/* CTA Section */}
-        <div className="mt-48 md:mt-64 mb-24 overflow-hidden">
-          <ScrollReveal animation="fade-up">
-            <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-6">
-              <div className="lg:col-span-7 text-left">
-                <h2 className="text-9xl md:text-[12rem] xl:text-[16rem] font-display font-bold tracking-tight leading-[0.8] -ml-2 md:-ml-4">
-                  <span className="text-lava">HEY!</span>
-                </h2>
-              </div>
-              <div className="lg:col-span-5 text-left lg:pl-0">
-                <p className="text-xl md:text-2xl font-medium text-zinc-800 mb-8 max-w-md">
-                  <span className="wave-text">
-                    {"What are you waiting for? Let's create something big together.".split(' ').map((word, index) => (
-                      <span key={index} style={{ animationDelay: `${index * 0.1}s` }}>
-                        {word}
-                      </span>
-                    ))}
-                  </span>
-                </p>
-                <a 
-                  href="/contact"
-                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium rounded-full text-white bg-gradient-to-r from-primary to-[#0ea5e9] hover:from-[#0ea5e9] hover:to-primary transition-all duration-500 shadow-md hover:shadow-lg hover:-translate-y-1 btn-animated btn-pulse"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                >
-                  <span className="mr-2">Reach Out</span>
-                  <ArrowRight className={`transition-transform duration-300 ease-in-out ${isHovered ? 'translate-x-2' : ''}`} />
-                </a>
-              </div>
-            </div>
-          </ScrollReveal>
         </div>
       </div>
     </section>
