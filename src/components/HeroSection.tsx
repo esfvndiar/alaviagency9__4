@@ -142,8 +142,33 @@ const HeroSection: React.FC = () => {
   }, [staticText.length, dynamicText.length, isTypingStatic, isDeleting, loopNum, rotatingTexts]);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-900 overflow-hidden">
-      <div className="container mx-auto px-6 py-12 max-w-7xl">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Minimalist background with stronger color treatment */}
+      <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
+        {/* Base gradient background with stronger colors */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-zinc-50/90 to-blue-50/30 dark:from-zinc-900 dark:via-zinc-900/95 dark:to-blue-950/20 transition-all duration-1000"></div>
+        
+        {/* Enhanced top gradient accent */}
+        <div 
+          className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyberblue/[0.08] via-transparent to-mintgreen/[0.08] opacity-100 dark:opacity-40"
+          style={{ transform: 'translate3d(0,0,0)' }}
+        ></div>
+        
+        {/* Centered gradient sphere with stronger presence */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] rounded-[100%] bg-gradient-to-tr from-cyberblue/[0.07] via-blue-400/[0.02] to-mintgreen/[0.07] blur-3xl transform-gpu animate-[pulse-slow_60s_linear_infinite]"
+          style={{ transform: 'translate3d(-50%, -50%, 0)' }}
+        ></div>
+        
+        {/* Enhanced corner accents */}
+        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-bl from-mintgreen/[0.05] to-transparent blur-2xl"></div>
+        <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-gradient-to-tr from-cyberblue/[0.05] to-transparent blur-2xl"></div>
+        
+        {/* Soft color vignette for depth */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(14,165,233,0.03)_70%,rgba(16,185,129,0.03)_100%)] mix-blend-soft-light"></div>
+      </div>
+      
+      <div className="container mx-auto px-6 py-12 max-w-7xl relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="relative font-space-grotesk text-5xl md:text-7xl font-bold mb-0 inline-block">
             <div className="text-zinc-900 dark:text-white block mb-2 md:mb-4 h-[1.2em] relative flex items-center justify-center">
@@ -201,22 +226,6 @@ const HeroSection: React.FC = () => {
             </a>
           </div>
         </div>
-      </div>
-      
-      {/* Background elements with hardware acceleration */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div 
-          className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-gradient-to-br from-cyberblue/10 to-transparent rounded-full blur-3xl transform-gpu"
-          style={{ transform: 'translate3d(0,0,0)' }}
-        />
-        <div 
-          className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] bg-gradient-to-bl from-mintgreen/10 to-transparent rounded-full blur-3xl transform-gpu"
-          style={{ transform: 'translate3d(0,0,0)' }}
-        />
-        <div 
-          className="absolute -bottom-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-tr from-cyberblue/10 to-transparent rounded-full blur-3xl transform-gpu"
-          style={{ transform: 'translate3d(0,0,0)' }}
-        />
       </div>
       
       {/* Scroll indicator with hardware acceleration */}
