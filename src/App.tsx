@@ -13,7 +13,10 @@ import ServiceWorkerErrorNotifier from "./components/ServiceWorkerErrorNotifier"
 import { CookieSettings } from "./types/global";
 
 // Configure lazy loading with preload capability for better performance
-const createLazyComponent = (factory: () => Promise<any>, preload = false) => {
+const createLazyComponent = (
+  factory: () => Promise<{ default: React.ComponentType<unknown> }>, 
+  preload = false
+) => {
   const Component = lazy(factory);
   // Preload critical components
   if (preload) {

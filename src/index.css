@@ -169,9 +169,14 @@
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
-    background-image: linear-gradient(to right, #3b82f6, #8b5cf6);
+    background-image: linear-gradient(to right, #0ea5e9, #10b981);
     will-change: background-position;
     background-size: 100%;
+  }
+  
+  .dark .text-gradient {
+    background-image: linear-gradient(to right, #0ea5e9, #10b981);
+    opacity: 0.9;
   }
   
   .glassmorphism {
@@ -201,6 +206,7 @@
     background-clip: text;
     animation: gradientShift 8s linear infinite;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    will-change: background-position;
   }
 
   .animated-gradient-text:hover {
@@ -421,12 +427,12 @@
   .text-lava {
     background: linear-gradient(
       45deg,
-      var(--color-cyberblue) 0%,
-      #4f46e5 20%,
-      #7c3aed 40%,
-      #db2777 60%,
-      #f59e0b 80%,
-      var(--color-mintgreen) 100%
+      #0ea5e9 0%,    /* cyberblue */
+      #4f46e5 20%,   /* indigo-600 */
+      #7c3aed 40%,   /* violet-600 */
+      #db2777 60%,   /* pink-600 */
+      #f59e0b 80%,   /* amber-500 */
+      #10b981 100%   /* mintgreen */
     );
     background-size: 300% 300%;
     animation: lavaFlow 4s ease-in-out infinite;

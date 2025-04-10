@@ -256,4 +256,37 @@ describe('CookieConsent', () => {
     // Clean up the global function after test if necessary (though unmounting might handle it)
     // delete customWindow.openCookieSettings;
   });
+
+  it('should not render if cookie consent has already been provided', () => {
+    // Mock js-cookie get to return a consent value
+    vi.spyOn(Cookies, 'get').mockReturnValue({ 'cookie-consent': 'all' });
+    render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
+    // Component should not render
+    expect(screen.queryByText('Cookie Consent')).not.toBeInTheDocument();
+  });
+
+  it('should render when no cookie consent is stored', () => {
+    // Mock js-cookie get to return undefined
+    vi.spyOn(Cookies, 'get').mockReturnValue({});
+    render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
+    // Check banner renders
+    expect(screen.getByRole('heading', { name: /Cookie Consent/i })).toBeInTheDocument();
+  });
+
+  it('should call onAccept with all cookies when "Accept All" is clicked', () => {
+    // Mock js-cookie get to return no consent value
+    vi.spyOn(Cookies, 'get').mockImplementation((name): {[key: string]: string} => 
+      name === 'cookie-consent' ? {} : {}
+    );
+    
+    render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
+    fireEvent.click(screen.getByRole('button', { name: /Accept All/i }));
+    
+    expect(onAccept).toHaveBeenCalledWith({
+      analytics: true,
+      marketing: true,
+      necessary: true,
+      preferences: true
+    });
+  });
 }); 

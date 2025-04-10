@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import MobileMenu from './MobileMenu';
+import { BrowserRouter } from 'react-router-dom';
 
 // Mock links data
 const mockLinks = [
@@ -30,6 +31,15 @@ vi.mock('react-dom', async () => {
  * affect the test results since we're only testing that handlers are called.
  */
 
+// Create a wrapper component that provides router context
+const renderWithRouter = (ui: React.ReactNode) => {
+  return render(
+    <BrowserRouter>
+      {ui}
+    </BrowserRouter>
+  );
+};
+
 describe('MobileMenu Component', () => {
   let portalContainer: HTMLDivElement;
 
@@ -49,7 +59,7 @@ describe('MobileMenu Component', () => {
   });
 
   it('should not render when isOpen is false initially', () => {
-    render(
+    renderWithRouter(
         <MobileMenu isOpen={false} onClose={vi.fn()} links={mockLinks} />
     );
     // The menu content is technically rendered by React but shouldn't be visible/mounted due to shouldRender state
@@ -59,7 +69,7 @@ describe('MobileMenu Component', () => {
   });
 
   it('should render correctly when isOpen is true', () => {
-    render(
+    renderWithRouter(
         <MobileMenu isOpen={true} onClose={vi.fn()} links={mockLinks} />
     );
     // Check for elements within the portal
@@ -74,7 +84,7 @@ describe('MobileMenu Component', () => {
 
   it('should call onClose when the close button is clicked', () => {
     const handleClose = vi.fn();
-    render(
+    renderWithRouter(
         <MobileMenu isOpen={true} onClose={handleClose} links={mockLinks} />
     );
 
@@ -88,7 +98,7 @@ describe('MobileMenu Component', () => {
   // In a real browser or with specialized end-to-end tests, this would work correctly
   it.skip('should call onClose when a navigation link is clicked', () => {
     const handleClose = vi.fn();
-    render(
+    renderWithRouter(
         <MobileMenu isOpen={true} onClose={handleClose} links={mockLinks} />
     );
 

@@ -58,9 +58,16 @@ describe('HeroSection Component', () => {
   });
 
   it('should render the subheading', () => {
-    renderHero();
-    // Check for the subheading text
-    expect(screen.getByText(/We transform your vision into exceptional digital experiences/i)).toBeInTheDocument();
+    const { container } = renderHero();
+    
+    // Check for the subheading paragraph
+    const subheadingParagraph = container.querySelector('p.mt-10');
+    expect(subheadingParagraph).toBeInTheDocument();
+    
+    // Test for partial text fragments instead of the whole phrase
+    expect(screen.getByText(/We transform your vision into/i)).toBeInTheDocument();
+    expect(screen.getByText(/exceptional digital experiences/i)).toBeInTheDocument();
+    expect(screen.getByText(/that inspire, engage, and deliver results/i)).toBeInTheDocument();
   });
 
   it('should render the call-to-action buttons', () => {
@@ -105,9 +112,9 @@ describe('HeroSection Component', () => {
     
     // Check for specific gradient classes
     const gradientClasses = Array.from(gradientElements).map(el => el.className);
-    expect(gradientClasses.some(className => className.includes('from-blue-500'))).toBeTruthy();
-    expect(gradientClasses.some(className => className.includes('from-purple-500'))).toBeTruthy();
-    expect(gradientClasses.some(className => className.includes('from-cyan-500'))).toBeTruthy();
+    expect(gradientClasses.some(className => className.includes('from-cyberblue'))).toBeTruthy();
+    expect(gradientClasses.some(className => className.includes('from-mintgreen'))).toBeTruthy();
+    expect(gradientClasses.some(className => className.includes('to-transparent'))).toBeTruthy();
   });
 
   it('should have animation elements for typing effect', () => {

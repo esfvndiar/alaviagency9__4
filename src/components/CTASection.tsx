@@ -34,7 +34,7 @@ const CTASection: React.FC = () => {
                 </p>
                 <a 
                   href="/contact"
-                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium rounded-full text-white bg-gradient-to-r from-primary to-[#0ea5e9] hover:from-[#0ea5e9] hover:to-primary transition-all duration-500 shadow-md hover:shadow-lg hover:-translate-y-1 btn-animated btn-pulse"
+                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium rounded-full text-white bg-gradient-to-r from-cyberblue to-mintgreen hover:from-mintgreen hover:to-cyberblue transition-all duration-500 shadow-md hover:shadow-lg hover:-translate-y-1 btn-animated btn-pulse"
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
                   aria-label="Contact us"

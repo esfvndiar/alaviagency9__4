@@ -157,14 +157,14 @@ const HeroSection: React.FC = () => {
             </div>
             <div className="h-[1.2em] relative flex items-center justify-center mt-1">
               <span
-                className="text-gradient bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 will-change-transform"
+                className="text-gradient will-change-transform"
                 style={{ transform: 'translate3d(0,0,0)' }}
               >
                 {dynamicText}
               </span>
               {!isTypingStatic && (
                 <span
-                  className="inline-block w-[2px] h-[1em] bg-gradient-to-r from-blue-500 to-purple-500 animate-blink ml-[2px] align-middle will-change-opacity"
+                  className="inline-block w-[2px] h-[1em] bg-gradient-to-r from-cyberblue to-mintgreen animate-blink ml-[2px] align-middle will-change-opacity"
                   style={{ transform: 'translate3d(0,0,0)' }}
                 />
               )}
@@ -176,7 +176,7 @@ const HeroSection: React.FC = () => {
             <span className="font-medium text-blue-600 dark:text-blue-400 mx-1 relative transform-gpu">
               exceptional digital experiences
               <span 
-                className="absolute -bottom-0.5 left-0 w-full h-px bg-gradient-to-r from-blue-500/50 to-purple-500/50 will-change-transform"
+                className="absolute -bottom-0.5 left-0 w-full h-px bg-gradient-to-r from-cyberblue/50 to-mintgreen/50 will-change-transform"
                 style={{ transform: 'translate3d(0,0,0)' }}
               />
             </span>
@@ -206,15 +206,15 @@ const HeroSection: React.FC = () => {
       {/* Background elements with hardware acceleration */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div 
-          className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-3xl transform-gpu"
+          className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-gradient-to-br from-cyberblue/10 to-transparent rounded-full blur-3xl transform-gpu"
           style={{ transform: 'translate3d(0,0,0)' }}
         />
         <div 
-          className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] bg-gradient-to-bl from-purple-500/10 to-transparent rounded-full blur-3xl transform-gpu"
+          className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] bg-gradient-to-bl from-mintgreen/10 to-transparent rounded-full blur-3xl transform-gpu"
           style={{ transform: 'translate3d(0,0,0)' }}
         />
         <div 
-          className="absolute -bottom-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-tr from-cyan-500/10 to-transparent rounded-full blur-3xl transform-gpu"
+          className="absolute -bottom-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-tr from-cyberblue/10 to-transparent rounded-full blur-3xl transform-gpu"
           style={{ transform: 'translate3d(0,0,0)' }}
         />
       </div>

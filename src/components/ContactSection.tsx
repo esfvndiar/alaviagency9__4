@@ -9,7 +9,8 @@ const ContactSection: React.FC = () => {
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
-    subject: '',
+    phone: '',
+    company: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,34 +93,53 @@ const ContactSection: React.FC = () => {
         setFormData({
           name: '',
           email: '',
-          subject: '',
+          phone: '',
+          company: '',
           message: ''
         });
         
         setSubmitStatus('success');
+        setFieldErrors({});
+        setErrorMessage('');
         
         if (formRef.current) {
-          formRef.current.scrollIntoView({ behavior: 'smooth' });
+          formRef.current.reset();
         }
-
-        // Reset success message after 5 seconds
-        submitTimeoutRef.current = setTimeout(() => {
+        
+        // Reset form after success message display
+        setTimeout(() => {
           setSubmitStatus('idle');
         }, 5000);
       } else {
         throw new Error(response.message || siteConfig.forms.contact.messages.error);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       setSubmitStatus('error');
-      if (error instanceof ValidationError) {
-        setFieldErrors(error.fields);
+      
+      // Type guard for ValidationError
+      if (
+        typeof error === 'object' && 
+        error !== null && 
+        'name' in error && 
+        error.name === 'ValidationError' &&
+        'fieldErrors' in error
+      ) {
+        // Now TypeScript knows error has fields and message properties
+        setFieldErrors(error.fieldErrors as Record<string, string>);
+        setErrorMessage((error as { message: string }).message);
+      } else if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage(error instanceof Error ? error.message : siteConfig.forms.contact.messages.error);
+        setErrorMessage(siteConfig.forms.contact.messages.error);
       }
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const resetErrors = () => {
+    setFieldErrors({});
+    setErrorMessage('');
   };
 
   return (
@@ -250,7 +270,7 @@ const ContactSection: React.FC = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="w-full px-6 py-3 bg-gradient-to-r from-cyberblue to-mintgreen text-white font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? (
                         <>
@@ -281,11 +301,11 @@ const ContactSection: React.FC = () => {
                 <div className="space-y-6">
                   <div className="flex items-start">
                     <div className="flex-shrink-0">
-                      <Mail className="h-6 w-6 text-blue-500" />
+                      <Mail className="h-6 w-6 text-cyberblue" />
                     </div>
                     <div className="ml-4">
                       <h4 className="text-sm font-medium text-zinc-900 dark:text-white">Email</h4>
-                      <a href={`mailto:${siteConfig.contact.email}`} className="text-zinc-600 dark:text-zinc-300 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                      <a href={`mailto:${siteConfig.contact.email}`} className="text-zinc-600 dark:text-zinc-300 hover:text-cyberblue dark:hover:text-cyberblue transition-colors">
                         {siteConfig.contact.email}
                       </a>
                     </div>
@@ -293,11 +313,11 @@ const ContactSection: React.FC = () => {
                   
                   <div className="flex items-start">
                     <div className="flex-shrink-0">
-                      <Phone className="h-6 w-6 text-blue-500" />
+                      <Phone className="h-6 w-6 text-cyberblue" />
                     </div>
                     <div className="ml-4">
                       <h4 className="text-sm font-medium text-zinc-900 dark:text-white">Phone</h4>
-                      <a href={`tel:${siteConfig.contact.phone.replace(/\s+/g, '')}`} className="text-zinc-600 dark:text-zinc-300 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                      <a href={`tel:${siteConfig.contact.phone.replace(/\s+/g, '')}`} className="text-zinc-600 dark:text-zinc-300 hover:text-cyberblue dark:hover:text-cyberblue transition-colors">
                         {siteConfig.contact.phone}
                       </a>
                     </div>
@@ -305,7 +325,7 @@ const ContactSection: React.FC = () => {
                   
                   <div className="flex items-start">
                     <div className="flex-shrink-0">
-                      <MapPin className="h-6 w-6 text-blue-500" />
+                      <MapPin className="h-6 w-6 text-cyberblue" />
                     </div>
                     <div className="ml-4">
                       <h4 className="text-sm font-medium text-zinc-900 dark:text-white">Address</h4>
