@@ -64,7 +64,7 @@ const AboutSection: React.FC = () => {
                   <span className="text-gradient">ALAVI</span>
                 </h2>
                 <p className="text-lg text-zinc-600 dark:text-zinc-200 mb-6 max-w-2xl">
-                  We are a team of passionate designers and developers dedicated to creating exceptional digital experiences that drive results for our clients.
+                  Driven by a passion for design and code, our team builds impactful digital experiences tailored to achieve your business goals.
                 </p>
                 <p className="text-zinc-600 dark:text-zinc-200 mb-8 max-w-2xl">
                   With expertise in web design, development, and digital strategy, we collaborate closely with businesses to bring their vision to life through innovative solutions.

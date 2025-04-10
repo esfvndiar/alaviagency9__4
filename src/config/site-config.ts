@@ -24,7 +24,7 @@ export const siteConfig = {
   
   // Social media links
   social: {
-    twitter: 'https://twitter.com/alaviagency',
+    x: 'https://twitter.com/alaviagency',
     facebook: 'https://facebook.com/alaviagency',
     instagram: 'https://instagram.com/alaviagency',
     github: 'https://github.com/alaviagency',

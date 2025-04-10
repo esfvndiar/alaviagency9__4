@@ -1,26 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { useState, ReactNode } from 'react';
 import Toast, { ToastType } from '../components/Toast';
-
-interface ToastMessage {
-  id: string;
-  message: string;
-  type: ToastType;
-  duration?: number;
-}
-
-interface ToastContextProps {
-  showToast: (message: string, type: ToastType, duration?: number) => void;
-}
-
-const ToastContext = createContext<ToastContextProps | undefined>(undefined);
-
-export const useToast = () => {
-  const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
-  }
-  return context;
-};
+import { ToastContext, ToastMessage } from './toastDefinitions';
 
 interface ToastProviderProps {
   children: ReactNode;
@@ -41,7 +21,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="toast-container">
+      <div className="fixed bottom-4 right-4 z-[100] flex flex-col space-y-2">
         {toasts.map(toast => (
           <Toast
             key={toast.id}
