@@ -58,7 +58,7 @@ const MasonryGrid: React.FC<MasonryGridProps> = ({
     } else {
       setVisibleItems(Array(children.length).fill(true));
     }
-  }, [children.length, animateEntrance, theme]);
+  }, [children.length, animateEntrance, theme, children]);
   
   useEffect(() => {
     // Reset the rendered items when columns change

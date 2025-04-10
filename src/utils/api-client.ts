@@ -20,6 +20,26 @@ export interface ContactFormData {
   token?: string;
 }
 
+// Site configuration type
+export interface SiteConfigType {
+  name: string;
+  description: string;
+  url: string;
+  contactEmail: string;
+  socialLinks: {
+    twitter?: string;
+    facebook?: string;
+    instagram?: string;
+    linkedin?: string;
+    github?: string;
+  };
+  features: {
+    darkMode: boolean;
+    animations: boolean;
+    newsletter: boolean;
+  };
+}
+
 // Error types
 export class ApiError extends Error {
   statusCode: number;
@@ -112,9 +132,9 @@ export const apiClient = {
    * Get site configuration
    * This is a placeholder for future API endpoints
    */
-  getSiteConfig: async (): Promise<ApiResponse<any>> => {
+  getSiteConfig: async (): Promise<ApiResponse<SiteConfigType>> => {
     try {
-      return await fetchWithErrorHandling<any>('/api/config');
+      return await fetchWithErrorHandling<SiteConfigType>('/api/config');
     } catch (error) {
       if (error instanceof ApiError || error instanceof NetworkError) {
         return {

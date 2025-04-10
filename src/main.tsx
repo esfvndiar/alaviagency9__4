@@ -7,7 +7,11 @@ import { setupGlobalErrorHandlers } from './utils/error-handling'
 declare global {
   interface Window {
     swRegistrationError?: string;
-    Sentry?: any; // For future error reporting integration
+    Sentry?: {
+      captureException: (error: Error) => void;
+      captureMessage: (message: string, level?: string) => void;
+      configureScope: (callback: (scope: unknown) => void) => void;
+    };
   }
 }
 

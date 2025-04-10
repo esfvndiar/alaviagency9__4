@@ -16,20 +16,22 @@ export const measurePerformance = (label: string, callback: () => void): number 
   }
 };
 
+// Type for function parameters
+type AnyFunction = (...args: unknown[]) => unknown;
+
 // Debounce function with TypeScript support
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends AnyFunction>(
   func: T,
   wait: number,
   immediate = false
 ): (...args: Parameters<T>) => void {
   let timeout: ReturnType<typeof setTimeout> | null = null;
   
-  return function(this: any, ...args: Parameters<T>): void {
-    const context = this;
-    
-    const later = function() {
+  // Use arrow function to avoid 'this' binding issues
+  return (...args: Parameters<T>): void => {
+    const later = () => {
       timeout = null;
-      if (!immediate) func.apply(context, args);
+      if (!immediate) func(...args);
     };
     
     const callNow = immediate && !timeout;
@@ -41,23 +43,22 @@ export function debounce<T extends (...args: any[]) => any>(
     timeout = setTimeout(later, wait);
     
     if (callNow) {
-      func.apply(context, args);
+      func(...args);
     }
   };
 }
 
 // Throttle function with TypeScript support
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends AnyFunction>(
   func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
   let inThrottle = false;
   
-  return function(this: any, ...args: Parameters<T>): void {
-    const context = this;
-    
+  // Use arrow function to avoid 'this' binding issues
+  return (...args: Parameters<T>): void => {
     if (!inThrottle) {
-      func.apply(context, args);
+      func(...args);
       inThrottle = true;
       
       setTimeout(() => {

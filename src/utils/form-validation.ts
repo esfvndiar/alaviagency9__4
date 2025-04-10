@@ -8,6 +8,7 @@ import { siteConfig } from '../config/site-config';
 export type ValidationResult = {
   isValid: boolean;
   message?: string;
+  errors?: Record<string, string>;
 };
 
 /**
@@ -17,7 +18,8 @@ export const validateRequired = (value: string, fieldName: string): ValidationRe
   if (!value || value.trim() === '') {
     return {
       isValid: false,
-      message: `${fieldName} is required`
+      message: `${fieldName} is required`,
+      errors: { [fieldName.toLowerCase()]: `${fieldName} is required` }
     };
   }
   return { isValid: true };
@@ -35,14 +37,16 @@ export const validateLength = (
   if (minLength && value.length < minLength) {
     return {
       isValid: false,
-      message: `${fieldName} must be at least ${minLength} characters`
+      message: `${fieldName} must be at least ${minLength} characters`,
+      errors: { [fieldName.toLowerCase()]: `${fieldName} must be at least ${minLength} characters` }
     };
   }
   
   if (maxLength && value.length > maxLength) {
     return {
       isValid: false,
-      message: `${fieldName} cannot exceed ${maxLength} characters`
+      message: `${fieldName} cannot exceed ${maxLength} characters`,
+      errors: { [fieldName.toLowerCase()]: `${fieldName} cannot exceed ${maxLength} characters` }
     };
   }
   
@@ -58,7 +62,8 @@ export const validateEmail = (email: string): ValidationResult => {
   if (!email || !emailPattern.test(email)) {
     return {
       isValid: false,
-      message: 'Please enter a valid email address'
+      message: 'Please enter a valid email address',
+      errors: { email: 'Please enter a valid email address' }
     };
   }
   
@@ -75,7 +80,8 @@ export const validatePhone = (phone: string): ValidationResult => {
   if (!phone || !phonePattern.test(phone)) {
     return {
       isValid: false,
-      message: 'Please enter a valid phone number'
+      message: 'Please enter a valid phone number',
+      errors: { phone: 'Please enter a valid phone number' }
     };
   }
   
@@ -92,7 +98,8 @@ export const validateUrl = (url: string): ValidationResult => {
   } catch (error) {
     return {
       isValid: false,
-      message: 'Please enter a valid URL'
+      message: 'Please enter a valid URL',
+      errors: { url: 'Please enter a valid URL' }
     };
   }
 };

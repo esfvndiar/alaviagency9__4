@@ -188,7 +188,10 @@ const FAQSection: React.FC = () => {
                       aria-labelledby={`faq-question-${index}`}
                     >
                       <div 
-                        ref={el => answerRefs.current[index] = el} 
+                        ref={(el: HTMLDivElement | null) => {
+                          answerRefs.current[index] = el;
+                          return undefined;
+                        }}
                         className="p-5 text-zinc-600 dark:text-zinc-300 border-t border-zinc-100 dark:border-zinc-700"
                       >
                         {faq.answer}

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, ComponentType } from 'react';
+import React, { Suspense, lazy, ReactElement } from 'react';
 import ErrorBoundary from './ErrorBoundary';
 
 // Skeleton loader component for lazy-loaded components
@@ -21,21 +21,17 @@ export const LazyCTASection = lazy(() => import('./CTASection'));
 export const LazyContactSection = lazy(() => import('./ContactSection'));
 
 // Generic wrapper for lazy-loaded components
-interface LazyComponentProps<P> {
-  component: React.LazyExoticComponent<ComponentType<P>>;
-  props?: P;
+interface LazyComponentProps {
+  component: React.LazyExoticComponent<React.ComponentType<Record<string, unknown>>>;
+  props?: Record<string, unknown>;
   componentName?: string;
   fallback?: React.ReactNode;
   onError?: () => void;
 }
 
-export const LazyComponent = <P extends {}>({
-  component: Component,
-  props,
-  componentName,
-  fallback,
-  onError
-}: LazyComponentProps<P>): JSX.Element => {
+export function LazyComponent(props: LazyComponentProps): ReactElement {
+  const { component: Component, props: componentProps = {}, componentName, fallback, onError } = props;
+  
   return (
     <ErrorBoundary
       componentName={componentName || 'component'} 
@@ -43,8 +39,8 @@ export const LazyComponent = <P extends {}>({
       fallback={fallback}
     >
       <Suspense fallback={fallback || <ComponentLoader />}>
-        <Component {...(props as P)} />
+        <Component {...componentProps} />
       </Suspense>
     </ErrorBoundary>
   );
-};
+}

@@ -5,21 +5,32 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { v4 as uuidv4 } from 'uuid';
 import { serialize } from 'cookie';
 
+// Rate limiting configuration
+const MAX_REQUESTS = 5;
+const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
 // Rate limiting with Redis (pseudocode)
 // In a real implementation, you would use a Redis client
 const rateLimitCheck = async (ip: string): Promise<boolean> => {
-  const MAX_REQUESTS = 5;
-  const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+  // Simple in-memory implementation for demonstration
+  const requestCounts: Record<string, { count: number; timestamp: number }> = {};
   
-  // Pseudocode for Redis implementation
-  // const count = await redis.incr(`ratelimit:${ip}`);
-  // if (count === 1) {
-  //   await redis.expire(`ratelimit:${ip}`, Math.floor(WINDOW_MS / 1000));
-  // }
-  // return count > MAX_REQUESTS;
+  // Clear old entries
+  const now = Date.now();
+  Object.keys(requestCounts).forEach(key => {
+    if (now - requestCounts[key].timestamp > WINDOW_MS) {
+      delete requestCounts[key];
+    }
+  });
   
-  // Placeholder implementation
-  return false;
+  // Check and update current IP
+  if (!requestCounts[ip]) {
+    requestCounts[ip] = { count: 1, timestamp: now };
+    return false;
+  }
+  
+  requestCounts[ip].count += 1;
+  return requestCounts[ip].count > MAX_REQUESTS;
 };
 
 // Email validation
@@ -53,22 +64,27 @@ const generateCsrfToken = (res: NextApiResponse): string => {
   return token;
 };
 
+// Main handler function
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // Only allow POST method
+  // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method not allowed' });
+    return res.status(405).json({
+      success: false,
+      message: 'Method not allowed'
+    });
   }
   
   try {
-    // Get client IP
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '0.0.0.0';
-    const clientIP = Array.isArray(ip) ? ip[0] : ip;
+    // Get client IP for rate limiting
+    const ip = req.headers['x-forwarded-for'] || 
+               req.socket.remoteAddress || 
+               'unknown';
     
-    // Check rate limiting
-    const isRateLimited = await rateLimitCheck(clientIP);
+    // Check rate limit
+    const isRateLimited = await rateLimitCheck(typeof ip === 'string' ? ip : 'unknown');
     if (isRateLimited) {
       return res.status(429).json({
         success: false,
@@ -76,23 +92,25 @@ export default async function handler(
       });
     }
     
-    // Get data from request body
-    const { name, email, subject, message, token } = req.body;
-    
     // Verify CSRF token
-    const csrfToken = req.cookies.csrf_token;
-    if (!csrfToken || csrfToken !== token) {
+    const csrfCookie = req.cookies.csrf_token;
+    const csrfHeader = req.headers['x-csrf-token'];
+    
+    if (!csrfCookie || !csrfHeader || csrfCookie !== csrfHeader) {
       return res.status(403).json({
         success: false,
-        message: 'Invalid security token. Please refresh the page and try again.'
+        message: 'CSRF token validation failed'
       });
     }
+    
+    // Get form data
+    const { name, email, subject, message } = req.body;
     
     // Validate required fields
     if (!name || !email || !message) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields'
+        message: 'Name, email, and message are required'
       });
     }
     
@@ -133,6 +151,7 @@ export default async function handler(
     // await sendEmail(sanitizedData);
     // or
     // await db.contacts.create(sanitizedData);
+    console.log('Contact form submission:', sanitizedData);
     
     // Generate new CSRF token for next request
     generateCsrfToken(res);
@@ -149,7 +168,7 @@ export default async function handler(
     // Generic error message to avoid exposing implementation details
     return res.status(500).json({
       success: false,
-      message: 'An error occurred while processing your request. Please try again later.'
+      message: 'An error occurred. Please try again later.'
     });
   }
 }

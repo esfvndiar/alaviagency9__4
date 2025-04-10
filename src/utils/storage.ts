@@ -95,7 +95,7 @@ export const userPreferencesStorage = createTypedStorage<{
   fontSize: 'medium',
 });
 
-export const formDraftStorage = createTypedStorage<Record<string, any>>(
+export const formDraftStorage = createTypedStorage<Record<string, unknown>>(
   STORAGE_KEYS.FORM_DRAFT,
   {}
 );

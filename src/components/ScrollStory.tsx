@@ -31,40 +31,44 @@ const ScrollStory: React.FC<ScrollStoryProps> = ({ sections, className = '' }) =
   }, [sections]);
   
   // Debounced scroll handler to improve performance
-  const handleScroll = useCallback(debounce(() => {
-    if (!containerRef.current) return;
-    
-    // Check if the container is in view
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const isContainerInView = 
-      containerRect.top < window.innerHeight && 
-      containerRect.bottom > 0;
-    
-    setIsInView(isContainerInView);
-    
-    if (!isContainerInView) return;
-    
-    // Find the section that is most visible in the viewport
-    const viewportCenter = window.innerHeight / 2;
-    
-    let closestSection = 0;
-    let closestDistance = Infinity;
-    
-    sectionRefs.current.forEach((section, index) => {
-      if (!section) return;
+  const handleScroll = useCallback(() => {
+    const debouncedCheck = debounce(() => {
+      if (!containerRef.current) return;
       
-      const rect = section.getBoundingClientRect();
-      const sectionCenter = rect.top + rect.height / 2;
-      const distance = Math.abs(sectionCenter - viewportCenter);
+      // Check if the container is in view
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const isContainerInView = 
+        containerRect.top < window.innerHeight && 
+        containerRect.bottom > 0;
       
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestSection = index;
-      }
-    });
+      setIsInView(isContainerInView);
+      
+      if (!isContainerInView) return;
+      
+      // Find the section that is most visible in the viewport
+      const viewportCenter = window.innerHeight / 2;
+      
+      let closestSection = 0;
+      let closestDistance = Infinity;
+      
+      sectionRefs.current.forEach((section, index) => {
+        if (!section) return;
+        
+        const rect = section.getBoundingClientRect();
+        const sectionCenter = rect.top + rect.height / 2;
+        const distance = Math.abs(sectionCenter - viewportCenter);
+        
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestSection = index;
+        }
+      });
+      
+      setActiveSection(closestSection);
+    }, 100);
     
-    setActiveSection(closestSection);
-  }, 100), [containerRef, sectionRefs]);
+    debouncedCheck();
+  }, []);
   
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
