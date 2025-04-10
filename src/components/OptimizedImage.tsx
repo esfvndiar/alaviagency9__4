@@ -12,6 +12,8 @@ interface OptimizedImageProps {
   onLoad?: () => void;
   blurDataURL?: string;
   quality?: number;
+  fetchPriority?: 'high' | 'low' | 'auto';
+  sizes?: string;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
@@ -25,6 +27,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   onLoad,
   blurDataURL,
   quality = 80,
+  fetchPriority = 'auto',
+  sizes = '100vw',
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -32,9 +36,12 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   
   // Generate WebP source if the original is jpg/jpeg/png
   const webpSrc = src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+  const avifSrc = src.replace(/\.(jpg|jpeg|png)$/i, '.avif');
   
   // Generate low quality placeholder for blur-up effect
-  const placeholderSrc = blurDataURL || `${src}?quality=10&w=50`;
+  const placeholderSrc = blurDataURL || src.includes('?') 
+    ? `${src}&quality=10&w=50` 
+    : `${src}?quality=10&w=50`;
   
   // Add quality parameter to image URLs if provided
   const optimizedSrc = quality && quality < 100 && !src.includes('quality=') 
@@ -44,11 +51,38 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const optimizedWebpSrc = quality && quality < 100 && !webpSrc.includes('quality=')
     ? `${webpSrc}${webpSrc.includes('?') ? '&' : '?'}quality=${quality}`
     : webpSrc;
+    
+  const optimizedAvifSrc = quality && quality < 100 && !avifSrc.includes('quality=')
+    ? `${avifSrc}${avifSrc.includes('?') ? '&' : '?'}quality=${quality}`
+    : avifSrc;
   
   // Handle image load event
   const handleImageLoad = () => {
     setIsLoaded(true);
     if (onLoad) onLoad();
+    
+    // Report performance metrics
+    try {
+      if (window.performance && 
+          typeof window.performance.getEntriesByName === 'function') {
+        const entries = performance.getEntriesByName(optimizedSrc);
+        const imgPerf = entries && entries.length > 0 ? entries[0] : null;
+        
+        if (imgPerf && 'duration' in imgPerf) {
+          // Report to analytics or console for debugging
+          console.debug('Image loaded:', {
+            src: optimizedSrc,
+            duration: imgPerf.duration,
+            transferSize: ('transferSize' in imgPerf) 
+              ? (imgPerf as PerformanceResourceTiming).transferSize 
+              : 'unknown',
+          });
+        }
+      }
+    } catch (error) {
+      // Silently catch any errors from performance API to avoid breaking the app
+      console.debug('Performance measurement error:', error);
+    }
   };
   
   // Handle image error
@@ -63,9 +97,11 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     setIsError(false);
   }, [src]);
 
-  // Implement intersection observer for lazy loading
+  // Add support for native lazy loading but use Intersection Observer as fallback
   useEffect(() => {
-    if (!priority && imgRef.current) {
+    // Only use IntersectionObserver if browser doesn't support native lazy loading
+    // or if this is a priority image
+    if (!priority && imgRef.current && !('loading' in HTMLImageElement.prototype)) {
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach(entry => {
@@ -76,7 +112,10 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
             }
           });
         },
-        { rootMargin: '200px 0px' } // Start loading when image is 200px from viewport
+        { 
+          rootMargin: '200px 0px', // Start loading when image is 200px from viewport
+          threshold: 0.01 // Trigger when at least 1% of the image is visible
+        }
       );
       
       observer.observe(imgRef.current);
@@ -107,25 +146,35 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         </div>
       ) : (
         <picture>
+          {/* AVIF format for browsers that support it */}
+          <source 
+            srcSet={optimizedAvifSrc}
+            type="image/avif" 
+            sizes={sizes}
+          />
+          
           {/* WebP format for browsers that support it */}
           <source 
-            srcSet={priority ? optimizedWebpSrc : undefined}
-            data-srcset={!priority ? optimizedWebpSrc : undefined}
+            srcSet={optimizedWebpSrc}
             type="image/webp" 
+            sizes={sizes}
           />
           
           {/* Original format as fallback */}
           <img
             ref={imgRef}
             src={priority ? optimizedSrc : placeholderSrc}
-            data-src={!priority ? optimizedSrc : undefined}
             alt={alt}
             width={width}
             height={height}
             onLoad={handleImageLoad}
             onError={handleImageError}
             loading={priority ? 'eager' : 'lazy'}
+            {...(typeof document !== 'undefined' && 'fetchPriority' in document.createElement('img')
+              ? { fetchpriority: fetchPriority }
+              : {})}
             decoding="async"
+            sizes={sizes}
             className={`w-full h-full transition-opacity duration-300 ${objectFit ? `object-${objectFit}` : 'object-cover'} ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
             style={{ 
               filter: !isLoaded && !isError ? 'blur(10px)' : 'none',

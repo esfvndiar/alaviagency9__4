@@ -8,6 +8,68 @@
     <meta name="author" content="ALAVI" />
     <meta name="keywords" content="web design, web development, UI/UX design, digital agency, brand identity, digital marketing" />
     
+    <!-- Performance Optimizations -->
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://cdn.gpteng.co">
+    
+    <!-- Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.gpteng.co" crossorigin>
+    
+    <!-- Preload Critical Assets - Removed incorrect paths -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Add Critical CSS Inline for FCP Optimization -->
+    <style>
+      /* Critical CSS for First Contentful Paint */
+      :root {
+        --background: 0 0% 100%;
+        --foreground: 240 10% 3.9%;
+        --color-cyberblue: #0ea5e9;
+        --color-mintgreen: #10b981;
+      }
+      body {
+        margin: 0;
+        background-color: white;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      #root {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .page-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100%;
+        background-color: white;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background: 240 10% 3.9%;
+          --foreground: 0 0% 98%;
+        }
+        body {
+          background-color: #09090b;
+          color: #f2f2f2;
+        }
+        .page-loading {
+          background-color: #09090b;
+        }
+      }
+    </style>
+    
     <!-- SEO Meta Tags -->
     <meta name="robots" content="index, follow" />
     <meta name="googlebot" content="index, follow" />
@@ -22,19 +84,18 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="ALAVI" />
     <meta name="application-name" content="ALAVI" />
-
-    <!-- Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/montserrat-var.woff2" as="font" type="font/woff2" crossorigin>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0ea5e9">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Favicon -->
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#3b82f6">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -96,9 +157,31 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Initial Loading State - Improves Perceived Performance -->
+      <div class="page-loading">
+        <svg width="50" height="50" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="#0ea5e9">
+          <g fill="none" fill-rule="evenodd">
+            <g transform="translate(1 1)" stroke-width="2">
+              <circle stroke-opacity=".5" cx="18" cy="18" r="18"/>
+              <path d="M36 18c0-9.94-8.06-18-18-18">
+                <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite"/>
+              </path>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- No-JS Fallback -->
+    <noscript>
+      <div style="text-align: center; padding: 2rem; font-family: system-ui, sans-serif;">
+        <h1>JavaScript Required</h1>
+        <p>Please enable JavaScript to view this website. ALAVI Agency provides creative digital solutions including web design, development, and digital marketing.</p>
+      </div>
+    </noscript>
   </body>
 </html>

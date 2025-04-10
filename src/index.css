@@ -47,6 +47,16 @@
     --color-mintgreen: #10b981;
     --cyberblue: 210 100% 50%;
     --mintgreen: 160 100% 50%;
+    
+    /* Gradient color definitions */
+    --gradient-primary: linear-gradient(to right, #0ea5e9, #10b981);
+    --gradient-animated: linear-gradient(90deg, #3b82f6 0%, #0ea5e9 25%, #10b981 50%, #0ea5e9 75%, #3b82f6 100%);
+    --gradient-lava: linear-gradient(45deg, #0ea5e9 0%, #4f46e5 20%, #7c3aed 40%, #db2777 60%, #f59e0b 80%, #10b981 100%);
+    
+    /* Animation timing variables */
+    --animation-duration-normal: 8s;
+    --animation-duration-fast: 3s;
+    --animation-timing: linear;
   }
 
   .dark {
@@ -107,13 +117,10 @@
 
   @keyframes gradient-shift {
     0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
+      background-position: 0% center;
     }
     100% {
-      background-position: 0% 50%;
+      background-position: 200% center;
     }
   }
 
@@ -169,14 +176,32 @@
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
-    background-image: linear-gradient(to right, #0ea5e9, #10b981);
-    will-change: background-position;
+    -webkit-text-fill-color: transparent;
+    background-image: var(--gradient-primary);
+    will-change: background-position, transform;
     background-size: 100%;
+    transform: translate3d(0,0,0);
+    /* Fallback for older browsers */
+    position: relative;
   }
   
   .dark .text-gradient {
-    background-image: linear-gradient(to right, #0ea5e9, #10b981);
+    background-image: var(--gradient-primary);
     opacity: 0.9;
+  }
+  
+  /* Accessibility fallback */
+  @supports not (background-clip: text) {
+    .text-gradient {
+      color: #0ea5e9;
+      -webkit-text-fill-color: #0ea5e9;
+      background-image: none;
+    }
+    
+    .dark .text-gradient {
+      color: #0ea5e9;
+      -webkit-text-fill-color: #0ea5e9;
+    }
   }
   
   .glassmorphism {
@@ -192,25 +217,88 @@
   }
 
   .animated-gradient-text {
-    background-image: linear-gradient(
-      90deg, 
-      #3b82f6 0%, 
-      #0ea5e9 25%, 
-      #10b981 50%, 
-      #0ea5e9 75%, 
-      #3b82f6 100%
-    );
+    background-image: var(--gradient-animated);
     background-size: 200% auto;
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
-    animation: gradientShift 8s linear infinite;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift var(--animation-duration-normal) var(--animation-timing) infinite;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-    will-change: background-position;
+    will-change: background-position, transform;
+    transform: translate3d(0,0,0);
+    position: relative;
   }
 
   .animated-gradient-text:hover {
-    animation: gradientShift 3s linear infinite;
+    animation: gradientShift var(--animation-duration-fast) var(--animation-timing) infinite;
+  }
+  
+  /* Accessibility fallback */
+  @supports not (background-clip: text) {
+    .animated-gradient-text {
+      color: #3b82f6;
+      -webkit-text-fill-color: #3b82f6;
+      background-image: none;
+      animation: none;
+    }
+  }
+  
+  /* Adding a more prominent version for specific accents */
+  .text-gradient-accent {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    background-image: var(--gradient-primary);
+    background-size: 200% auto;
+    animation: gradientShift 5s ease infinite;
+    will-change: background-position, transform;
+    transform: translate3d(0,0,0);
+  }
+  
+  /* New variant that only activates on hover */
+  .text-gradient-hover {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: inherit;
+    -webkit-text-fill-color: initial;
+    background-image: var(--gradient-primary);
+    background-size: 200% auto;
+    background-position: 0% center;
+    will-change: background-position, color, -webkit-text-fill-color, transform;
+    transform: translate3d(0,0,0);
+    transition: color 0.3s ease, -webkit-text-fill-color 0.3s ease;
+  }
+  
+  .text-gradient-hover:hover {
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift var(--animation-duration-fast) var(--animation-timing) infinite;
+  }
+  
+  /* Vertical gradient variant */
+  .text-gradient-vertical {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(to bottom, #0ea5e9, #10b981);
+    will-change: background-position, transform;
+    transform: translate3d(0,0,0);
+    background-size: 100% 200%;
+  }
+  
+  /* Diagonal gradient variant */
+  .text-gradient-diagonal {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(135deg, #0ea5e9, #10b981);
+    will-change: background-position, transform;
+    transform: translate3d(0,0,0);
+    background-size: 200% 200%;
   }
 
   .btn-highlight {
@@ -425,25 +513,30 @@
   }
 
   .text-lava {
-    background: linear-gradient(
-      45deg,
-      #0ea5e9 0%,    /* cyberblue */
-      #4f46e5 20%,   /* indigo-600 */
-      #7c3aed 40%,   /* violet-600 */
-      #db2777 60%,   /* pink-600 */
-      #f59e0b 80%,   /* amber-500 */
-      #10b981 100%   /* mintgreen */
-    );
+    background: var(--gradient-lava);
     background-size: 300% 300%;
     animation: lavaFlow 4s ease-in-out infinite;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    -webkit-text-fill-color: transparent;
     position: relative;
-    will-change: background-position;
+    will-change: background-position, transform;
+    transform: translate3d(0,0,0);
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     display: inline-block;
     filter: brightness(1.05) contrast(1.1);
+  }
+  
+  /* Accessibility fallback */
+  @supports not (background-clip: text) {
+    .text-lava {
+      color: #0ea5e9;
+      -webkit-text-fill-color: #0ea5e9;
+      background-image: none;
+      animation: none;
+      filter: none;
+    }
   }
 
   @keyframes pulse {
@@ -720,15 +813,55 @@
     linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
 }
 
-/* High contrast mode improvements */
+/* Apply hardware acceleration to critical elements */
+.hardware-accelerated {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+  will-change: transform;
+}
+
+/* High-performance gradient text container */
+.gradient-container {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
+  position: relative;
+  display: inline-block;
+}
+
+/* High-contrast mode improvements */
 @media (prefers-contrast: high) {
-  .text-gradient {
+  .text-gradient,
+  .animated-gradient-text,
+  .text-gradient-accent,
+  .text-gradient-hover,
+  .text-gradient-vertical,
+  .text-gradient-diagonal,
+  .text-lava {
     @apply text-blue-700 font-bold;
+    background-image: none;
+    background-clip: initial;
+    -webkit-background-clip: initial;
+    color: #0ea5e9;
+    -webkit-text-fill-color: #0ea5e9;
     text-shadow: none;
+    animation: none;
+    will-change: auto;
   }
   
-  .glassmorphism {
-    @apply bg-white border border-gray-400 shadow-none;
+  .dark .text-gradient,
+  .dark .animated-gradient-text,
+  .dark .text-gradient-accent,
+  .dark .text-gradient-hover,
+  .dark .text-gradient-vertical,
+  .dark .text-gradient-diagonal,
+  .dark .text-lava {
+    color: #38bdf8;
+    -webkit-text-fill-color: #38bdf8;
   }
 }
 
@@ -838,4 +971,52 @@
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Optimize animation performance for mobile devices */
+@media (max-width: 768px) {
+  :root {
+    --animation-duration-normal: 5s;
+    --animation-duration-fast: 2s;
+  }
+  
+  .animated-gradient-text,
+  .text-gradient-accent,
+  .text-lava {
+    will-change: background-position;
+    background-size: 250% auto;
+  }
+}
+
+/* Respect user preferences for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --animation-duration-normal: 20s;
+    --animation-duration-fast: 10s;
+  }
+  
+  .animated-gradient-text,
+  .text-gradient-accent,
+  .text-gradient-hover:hover,
+  .text-lava {
+    animation-duration: 20s !important;
+    transition-duration: 0.5s !important;
+  }
+  
+  .text-gradient-hover:hover {
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    background-position: 0% center;
+    animation: none;
+  }
+  
+  .wave-text span {
+    animation: none;
+    transform: none;
+  }
+  
+  .text-lava {
+    animation: none;
+    background-position: 0% 50%;
+  }
 }

@@ -2,15 +2,16 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState, useCallback } from 'react';
 import CookieConsent from "./components/CookieConsent";
 import { clearNonEssentialCookies } from "./utils/cookieManager";
 import LoadingSpinner from "./components/LoadingSpinner";
 import ServiceWorkerUpdater from "./components/ServiceWorkerUpdater";
 import ServiceWorkerErrorNotifier from "./components/ServiceWorkerErrorNotifier";
 import { CookieSettings } from "./types/global";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // Configure lazy loading with preload capability for better performance
 const createLazyComponent = (
@@ -60,6 +61,24 @@ const PreloadManager = () => {
   return null;
 };
 
+// Component to wrap routes with error boundary
+const RouteErrorBoundary = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
+  
+  const handleNavigateHome = useCallback(() => {
+    navigate('/', { replace: true });
+  }, [navigate]);
+  
+  return (
+    <ErrorBoundary 
+      componentName="Route" 
+      onNavigateHome={handleNavigateHome}
+    >
+      {children}
+    </ErrorBoundary>
+  );
+};
+
 // Optimized query client configuration
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -67,6 +86,16 @@ const queryClient = new QueryClient({
       staleTime: 60 * 1000, // 1 minute stale time for better caching
       gcTime: 5 * 60 * 1000, // 5 minutes garbage collection time
       refetchOnWindowFocus: false, // Disable refetching on window focus for better performance
+      retry: (failureCount, error) => {
+        // Don't retry on 404s or network errors (offline)
+        if (
+          error instanceof Error && 
+          (error.message.includes('404') || error.message.includes('network'))
+        ) {
+          return false;
+        }
+        return failureCount < 2; // Retry twice at most
+      },
     },
   },
 });
@@ -81,38 +110,70 @@ const App = () => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <ServiceWorkerErrorNotifier />
-          <BrowserRouter>
-            <PreloadManager />
-            <Suspense fallback={<LoadingSpinner />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/work" element={<Work />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/legal" element={<Legal />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-            {/* ServiceWorkerUpdater is now inside BrowserRouter to benefit from code-splitting */}
-            <Suspense fallback={null}>
-              <LazyServiceWorkerUpdater />
-            </Suspense>
-          </BrowserRouter>
-          <CookieConsent 
-            onAccept={handleCookieAccept}
-            onDecline={handleCookieDecline}
-          />
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ErrorBoundary componentName="App">
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <ServiceWorkerErrorNotifier />
+            <BrowserRouter>
+              <ErrorBoundary componentName="Router">
+                <PreloadManager />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Routes>
+                    <Route path="/" element={
+                      <RouteErrorBoundary>
+                        <Index />
+                      </RouteErrorBoundary>
+                    } />
+                    <Route path="/work" element={
+                      <RouteErrorBoundary>
+                        <Work />
+                      </RouteErrorBoundary>
+                    } />
+                    <Route path="/services" element={
+                      <RouteErrorBoundary>
+                        <Services />
+                      </RouteErrorBoundary>
+                    } />
+                    <Route path="/about" element={
+                      <RouteErrorBoundary>
+                        <About />
+                      </RouteErrorBoundary>
+                    } />
+                    <Route path="/contact" element={
+                      <RouteErrorBoundary>
+                        <Contact />
+                      </RouteErrorBoundary>
+                    } />
+                    <Route path="/legal" element={
+                      <RouteErrorBoundary>
+                        <Legal />
+                      </RouteErrorBoundary>
+                    } />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={
+                      <RouteErrorBoundary>
+                        <NotFound />
+                      </RouteErrorBoundary>
+                    } />
+                  </Routes>
+                </Suspense>
+                {/* ServiceWorkerUpdater is now inside BrowserRouter to benefit from code-splitting */}
+                <Suspense fallback={null}>
+                  <LazyServiceWorkerUpdater />
+                </Suspense>
+              </ErrorBoundary>
+            </BrowserRouter>
+            <CookieConsent 
+              onAccept={handleCookieAccept}
+              onDecline={handleCookieDecline}
+            />
+          </TooltipProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 
