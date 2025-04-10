@@ -52,13 +52,12 @@ export function throttle<T extends (...args: any[]) => any>(
   limit: number
 ): (...args: Parameters<T>) => void {
   let inThrottle = false;
-  let lastResult: ReturnType<T>;
   
   return function(this: any, ...args: Parameters<T>): void {
     const context = this;
     
     if (!inThrottle) {
-      lastResult = func.apply(context, args);
+      func.apply(context, args);
       inThrottle = true;
       
       setTimeout(() => {
