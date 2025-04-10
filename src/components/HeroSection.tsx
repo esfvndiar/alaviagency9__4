@@ -9,11 +9,19 @@ const TYPING_PAUSE = 2000;
 const STATIC_TEXT_PAUSE = 500;
 
 const HeroSection: React.FC = () => {
-  const [staticText, setStaticText] = useState('');
-  const [dynamicText, setDynamicText] = useState('');
+  // Consolidate related state to reduce re-renders
+  const [texts, setTexts] = useState({
+    staticText: '',
+    dynamicText: ''
+  });
+  // Use refs for animation state that doesn't need to trigger re-renders
+  const isTypingStaticRef = useRef(true);
+  const isDeletingRef = useRef(false);
+  const loopNumRef = useRef(0);
+  
+  // Only use state for values that need to cause a re-render
   const [isTypingStatic, setIsTypingStatic] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [loopNum, setLoopNum] = useState(0);
   
   // Use refs for animation state to avoid re-renders and improve performance
   const typingSpeedRef = useRef(TYPING_SPEED_NORMAL);
@@ -71,8 +79,14 @@ const HeroSection: React.FC = () => {
       
       // Static text typing animation
       if (isTypingStatic) {
-        if (staticText.length < fullStaticText.length) {
-          setStaticText(prevText => fullStaticText.substring(0, prevText.length + 1));
+        if (texts.staticText.length < fullStaticText.length) {
+          // Batch state updates to reduce renders
+          if (animationQueueRef.current.length === 0) {
+            setTexts(prevTexts => ({ 
+              ...prevTexts, 
+              staticText: fullStaticText.substring(0, prevTexts.staticText.length + 1) 
+            }));
+          }
         } else {
           // Finished typing static text, schedule transition to dynamic text
           if (timeoutId === null) {
@@ -85,26 +99,38 @@ const HeroSection: React.FC = () => {
       } 
       // Dynamic text animation
       else {
-        const i = loopNum % rotatingTexts.length;
+        const i = loopNumRef.current % rotatingTexts.length;
         const fullText = rotatingTexts[i];
         
         if (isDeleting) {
           // Optimize deletion speed
           typingSpeedRef.current = TYPING_SPEED_FAST;
           
-          if (dynamicText.length > 0) {
-            setDynamicText(prevText => fullText.substring(0, prevText.length - 1));
+          if (texts.dynamicText.length > 0) {
+            // Batch state updates to reduce renders
+            if (animationQueueRef.current.length === 0) {
+              setTexts(prevTexts => ({ 
+                ...prevTexts, 
+                dynamicText: fullText.substring(0, prevTexts.dynamicText.length - 1) 
+              }));
+            }
           } else {
             // When finished deleting, move to the next word
             setIsDeleting(false);
-            setLoopNum(prevNum => prevNum + 1);
+            loopNumRef.current = loopNumRef.current + 1;
           }
         } else {
           // Reset to normal typing speed
           typingSpeedRef.current = TYPING_SPEED_NORMAL;
           
-          if (dynamicText.length < fullText.length) {
-            setDynamicText(prevText => fullText.substring(0, prevText.length + 1));
+          if (texts.dynamicText.length < fullText.length) {
+            // Batch state updates to reduce renders
+            if (animationQueueRef.current.length === 0) {
+              setTexts(prevTexts => ({ 
+                ...prevTexts, 
+                dynamicText: fullText.substring(0, prevTexts.dynamicText.length + 1) 
+              }));
+            }
           } else {
             // When finished typing a word, schedule deletion after pause
             if (timeoutId === null) {
@@ -139,7 +165,7 @@ const HeroSection: React.FC = () => {
         clearTimeout(timeoutId);
       }
     };
-  }, [staticText.length, dynamicText.length, isTypingStatic, isDeleting, loopNum, rotatingTexts]);
+  }, [texts.staticText.length, texts.dynamicText.length, isTypingStatic, isDeleting, rotatingTexts]);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -172,7 +198,7 @@ const HeroSection: React.FC = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="relative font-space-grotesk text-5xl md:text-7xl font-bold mb-0 inline-block">
             <div className="text-zinc-900 dark:text-white block mb-2 md:mb-4 h-[1.2em] relative flex items-center justify-center">
-              <span className="transform-gpu">{staticText}</span>
+              <span className="transform-gpu">{texts.staticText}</span>
               {isTypingStatic && (
                 <span
                   className="inline-block w-[2px] h-[1em] bg-zinc-900 dark:bg-white animate-blink ml-[2px] align-middle will-change-opacity"
@@ -185,7 +211,7 @@ const HeroSection: React.FC = () => {
                 className="text-gradient will-change-transform"
                 style={{ transform: 'translate3d(0,0,0)' }}
               >
-                {dynamicText}
+                {texts.dynamicText}
               </span>
               {!isTypingStatic && (
                 <span

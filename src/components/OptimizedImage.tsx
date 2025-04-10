@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import SkeletonLoader from './SkeletonLoader';
 
 interface OptimizedImageProps {
@@ -57,7 +57,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     : avifSrc;
   
   // Handle image load event
-  const handleImageLoad = () => {
+  const handleImageLoad = useCallback(() => {
     setIsLoaded(true);
     if (onLoad) onLoad();
     
@@ -70,26 +70,28 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         
         if (imgPerf && 'duration' in imgPerf) {
           // Report to analytics or console for debugging
-          console.debug('Image loaded:', {
-            src: optimizedSrc,
-            duration: imgPerf.duration,
-            transferSize: ('transferSize' in imgPerf) 
-              ? (imgPerf as PerformanceResourceTiming).transferSize 
-              : 'unknown',
-          });
+          if (process.env.NODE_ENV === 'development') {
+            console.debug('Image loaded:', {
+              src: optimizedSrc,
+              duration: imgPerf.duration,
+              transferSize: ('transferSize' in imgPerf) 
+                ? (imgPerf as PerformanceResourceTiming).transferSize 
+                : 'unknown',
+            });
+          }
         }
       }
     } catch (error) {
       // Silently catch any errors from performance API to avoid breaking the app
       console.debug('Performance measurement error:', error);
     }
-  };
+  }, [optimizedSrc, onLoad]);
   
   // Handle image error
-  const handleImageError = () => {
+  const handleImageError = useCallback(() => {
     setIsError(true);
     console.error(`Failed to load image: ${src}`);
-  };
+  }, [src]);
   
   // Reset state when src changes
   useEffect(() => {

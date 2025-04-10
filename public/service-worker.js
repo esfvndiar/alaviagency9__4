@@ -201,34 +201,524 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// Background sync for deferred operations (like form submissions)
+// Store pending form submissions for syncing when back online
+const FORM_QUEUE_NAME = 'offline-forms';
+let db = null;
+
+// Initialize IndexedDB for storing offline form submissions
+function initializeDB() {
+  // Return existing connection if available
+  if (db) {
+    return Promise.resolve(db);
+  }
+  
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('alaviOfflineDB', 1);
+    
+    request.onerror = (event) => {
+      console.error('IndexedDB error:', event.target.error);
+      db = null;
+      reject(event.target.error);
+    };
+    
+    request.onupgradeneeded = (event) => {
+      const database = event.target.result;
+      if (!database.objectStoreNames.contains(FORM_QUEUE_NAME)) {
+        database.createObjectStore(FORM_QUEUE_NAME, { keyPath: 'id', autoIncrement: true });
+      }
+    };
+    
+    request.onsuccess = (event) => {
+      db = event.target.result;
+      
+      // Handle connection closing unexpectedly
+      db.onclose = () => {
+        db = null;
+      };
+      
+      // Handle version change (from another tab)
+      db.onversionchange = () => {
+        db.close();
+        db = null;
+        console.log('Database version changed, please reload the page');
+      };
+      
+      resolve(db);
+    };
+  });
+}
+
+// When service worker starts, initialize the database
+initializeDB().catch(error => {
+  console.error('Failed to initialize offline storage:', error);
+});
+
+// Enhanced background sync for deferred operations (like form submissions)
 self.addEventListener('sync', (event) => {
   if (event.tag === 'contact-form-submission') {
     event.waitUntil(syncContactForm());
+  } else if (event.tag === 'newsletter-subscription') {
+    event.waitUntil(syncNewsletterSubscription());
+  } else if (event.tag === 'content-update') {
+    event.waitUntil(updateCachedContent());
   }
 });
 
+// Push notification support
+self.addEventListener('push', (event) => {
+  if (!event.data) {
+    console.warn('Push event received but no data');
+    return;
+  }
+  
+  let notification;
+  try {
+    notification = event.data.json();
+  } catch (e) {
+    // If not JSON, treat as text
+    notification = {
+      title: 'New Notification',
+      body: event.data.text(),
+      icon: '/favicon.ico'
+    };
+  }
+  
+  const options = {
+    body: notification.body || 'You have a new notification',
+    icon: notification.icon || '/favicon.ico',
+    badge: notification.badge || '/favicon.ico',
+    data: notification.data || {},
+    actions: notification.actions || []
+  };
+  
+  event.waitUntil(
+    self.registration.showNotification(notification.title, options)
+  );
+});
+
+// Handle notification clicks
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  
+  // This looks to see if the current is already open and focuses if it is
+  event.waitUntil(
+    clients.matchAll({ type: 'window' })
+      .then((clientList) => {
+        const url = event.notification.data.url || '/';
+        
+        // If we have a client already open, focus it
+        for (const client of clientList) {
+          if (client.url === url && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        
+        // Otherwise open a new window
+        if (clients.openWindow) {
+          return clients.openWindow(url);
+        }
+      })
+  );
+});
+
+// Periodic background sync
+// This requires the user to grant the 'periodic-background-sync' permission
+if ('periodicSync' in self.registration) {
+  // Listen for periodic sync events
+  self.addEventListener('periodicsync', (event) => {
+    if (event.tag === 'content-update') {
+      event.waitUntil(updateCachedContent());
+    } else if (event.tag === 'news-update') {
+      event.waitUntil(fetchLatestNews());
+    }
+  });
+}
+
 // Function to sync contact form data when back online
 function syncContactForm() {
-  return fetch('/api/contact-queue')
-    .then(response => response.json())
-    .then(data => {
-      const promises = data.map(formData => {
+  return getQueuedItems(FORM_QUEUE_NAME)
+    .then(queuedItems => {
+      const promises = queuedItems.map(formData => {
         return fetch('/api/contact', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(formData.data)
         }).then(response => {
           if (response.ok) {
             // Remove from queue if successful
-            return fetch(`/api/contact-queue/${formData.id}`, {
-              method: 'DELETE'
-            });
+            return removeQueuedItem(FORM_QUEUE_NAME, formData.id);
           }
+          throw new Error('Failed to sync contact form');
         });
       });
       return Promise.all(promises);
     });
+}
+
+// Function to sync newsletter subscriptions when back online
+function syncNewsletterSubscription() {
+  return getQueuedItems('newsletter-queue')
+    .then(queuedItems => {
+      const promises = queuedItems.map(subscription => {
+        return fetch('/api/newsletter/subscribe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(subscription.data)
+        }).then(response => {
+          if (response.ok) {
+            return removeQueuedItem('newsletter-queue', subscription.id);
+          }
+          throw new Error('Failed to sync newsletter subscription');
+        });
+      });
+      return Promise.all(promises);
+    });
+}
+
+// Function to update cached content
+function updateCachedContent() {
+  // Get a list of all URLs that should be refreshed
+  const urlsToRefresh = [
+    '/',
+    '/about',
+    '/services',
+    '/work',
+    '/contact',
+    '/api/latest-projects',
+    '/api/testimonials'
+  ];
+  
+  return Promise.all(
+    urlsToRefresh.map(url => {
+      return fetch(url, { cache: 'no-cache' })
+        .then(response => {
+          if (response && response.status === 200) {
+            const responseClone = response.clone();
+            return caches.open(CACHE_NAME).then(cache => {
+              return cache.put(url, responseClone);
+            });
+          }
+        })
+        .catch(error => {
+          console.warn(`Failed to refresh ${url}:`, error);
+        });
+    })
+  );
+}
+
+// Function to fetch latest news
+async function fetchLatestNews() {
+  try {
+    const response = await fetch('/api/news', { cache: 'no-cache' });
+    
+    if (!response || !response.ok) {
+      throw new Error(`Failed to fetch news: ${response ? response.status : 'No response'}`);
+    }
+    
+    // Cache the response
+    const responseClone = response.clone();
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put('/api/news', responseClone);
+    
+    // Parse the JSON
+    const data = await response.json();
+    
+    // Show notification if there are new items
+    if (data && data.hasNewItems) {
+      await self.registration.showNotification('New Content Available', {
+        body: 'Check out our latest news and updates!',
+        icon: '/favicon.ico',
+        data: {
+          url: '/news'
+        }
+      });
+    }
+    
+    return data;
+  } catch (error) {
+    console.warn('Failed to fetch latest news:', error);
+    return null;
+  }
+}
+
+// Helper function to get items from IndexedDB queue
+function getQueuedItems(storeName) {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      return initializeDB().then(newDb => {
+        db = newDb;
+        return getQueuedItems(storeName);
+      });
+    }
+    
+    const transaction = db.transaction(storeName, 'readonly');
+    const store = transaction.objectStore(storeName);
+    const request = store.getAll();
+    
+    request.onerror = (event) => {
+      reject(event.target.error);
+    };
+    
+    request.onsuccess = (event) => {
+      resolve(event.target.result);
+    };
+  });
+}
+
+// Helper function to remove an item from IndexedDB queue
+function removeQueuedItem(storeName, id) {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      return reject(new Error('Database not initialized'));
+    }
+    
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const request = store.delete(id);
+    
+    request.onerror = (event) => {
+      reject(event.target.error);
+    };
+    
+    request.onsuccess = () => {
+      resolve();
+    };
+  });
+}
+
+// Helper function to add an item to IndexedDB queue
+function addQueuedItem(storeName, data) {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      return initializeDB().then(newDb => {
+        db = newDb;
+        return addQueuedItem(storeName, data);
+      }).catch(reject);
+    }
+    
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const request = store.add({ data, timestamp: Date.now() });
+    
+    request.onerror = (event) => {
+      reject(event.target.error);
+    };
+    
+    request.onsuccess = (event) => {
+      resolve(event.target.result);
+    };
+  });
+}
+
+// Handle message from clients
+self.addEventListener('message', event => {
+  const message = event.data;
+  
+  if (message && message.type === 'STORE_FORM') {
+    const { storeName, data } = message.payload;
+    // Make sure we have the DB initialized
+    initializeDB()
+      .then(db => {
+        // Use the correct store name from the message
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        // Add timestamp if not already present
+        const record = { ...data, timestamp: data.timestamp || new Date().toISOString() };
+        const request = store.add(record);
+        
+        request.onsuccess = () => {
+          console.log(`Form data stored successfully in ${storeName}`);
+          // Register a background sync
+          if ('sync' in self.registration) {
+            self.registration.sync.register('contact-form-submission')
+              .then(() => console.log('Background sync registered'))
+              .catch(error => console.error('Background sync registration failed:', error));
+          }
+        };
+        
+        request.onerror = (err) => {
+          console.error(`Error storing form data in ${storeName}:`, err);
+        };
+      })
+      .catch(error => {
+        console.error('Failed to initialize database for storing form:', error);
+        // Fallback to storing in localStorage via a message back to the client
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'STORE_FORM_FALLBACK',
+              payload: { data }
+            });
+          });
+        });
+      });
+  } else if (message && message.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// Register background sync
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-contact-forms') {
+    event.waitUntil(syncContactForms());
+  } else if (event.tag === 'sync-newsletter') {
+    event.waitUntil(syncNewsletter());
+  }
+});
+
+// Sync contact forms data
+async function syncContactForms() {
+  try {
+    const forms = await getQueuedItems(FORM_QUEUE_NAME);
+    
+    if (forms.length === 0) {
+      return;
+    }
+    
+    console.log(`Attempting to sync ${forms.length} contact forms`);
+    
+    // Process each form
+    for (const form of forms) {
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(form.data)
+        });
+        
+        if (response.ok) {
+          // If successfully sent, remove from IndexedDB
+          await removeQueuedItem(FORM_QUEUE_NAME, form.id);
+          console.log(`Successfully synced form from ${form.data?.email || 'unknown'}`);
+          
+          // Show notification if permission granted
+          if (self.Notification && self.Notification.permission === 'granted') {
+            self.registration.showNotification('Form Submitted', {
+              body: `Your message has been sent successfully.`,
+              icon: '/logo192.png',
+            });
+          }
+        } else {
+          console.error('Failed to sync form:', await response.text());
+        }
+      } catch (error) {
+        console.error(`Error syncing form from ${form.data?.email || 'unknown'}:`, error);
+      }
+    }
+  } catch (error) {
+    console.error('Error during contact forms sync:', error);
+  }
+}
+
+// Sync newsletter subscriptions
+async function syncNewsletter() {
+  try {
+    const subscriptions = await getQueuedItems('newsletter-queue');
+    
+    if (subscriptions.length === 0) {
+      return;
+    }
+    
+    console.log(`Attempting to sync ${subscriptions.length} newsletter subscriptions`);
+    
+    // Process each subscription
+    for (const subscription of subscriptions) {
+      try {
+        const response = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(subscription.data)
+        });
+        
+        if (response.ok) {
+          // If successfully sent, remove from IndexedDB
+          await removeQueuedItem('newsletter-queue', subscription.id);
+          console.log(`Successfully synced newsletter subscription for ${subscription.data?.email || 'unknown'}`);
+        } else {
+          console.error('Failed to sync newsletter subscription:', await response.text());
+        }
+      } catch (error) {
+        console.error(`Error syncing newsletter for ${subscription.data?.email || 'unknown'}:`, error);
+      }
+    }
+  } catch (error) {
+    console.error('Error during newsletter sync:', error);
+  }
+}
+
+// Register periodic background sync if supported
+if ('periodicSync' in self.registration) {
+  // Try to register periodic sync to check for updates
+  const tryPeriodicSync = async () => {
+    try {
+      // Check if permission is already granted
+      const status = await navigator.permissions.query({
+        name: 'periodic-background-sync',
+      });
+      
+      if (status.state === 'granted') {
+        await self.registration.periodicSync.register('content-update', {
+          minInterval: 24 * 60 * 60 * 1000, // Once per day
+        });
+        console.log('Periodic background sync registered');
+      }
+    } catch (error) {
+      console.error('Periodic background sync registration failed:', error);
+    }
+  };
+  
+  tryPeriodicSync();
+}
+
+// Handle periodic background sync
+self.addEventListener('periodicsync', event => {
+  if (event.tag === 'content-update') {
+    event.waitUntil(updateCache());
+  }
+});
+
+// Update cache with latest content
+async function updateCache() {
+  try {
+    // Fetch the latest news
+    const response = await fetch('/api/latest-content');
+    
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Cache the new content
+      const cache = await caches.open(CACHE_NAME);
+      
+      // Update cached pages with fresh content
+      for (const item of data.items) {
+        try {
+          const freshResponse = await fetch(item.url);
+          if (freshResponse.ok) {
+            await cache.put(item.url, freshResponse);
+            console.log(`Updated cache for: ${item.url}`);
+          }
+        } catch (error) {
+          console.error(`Failed to update cache for ${item.url}:`, error);
+        }
+      }
+      
+      // Show notification about the update if permission is granted
+      if (self.Notification && self.Notification.permission === 'granted') {
+        self.registration.showNotification('Content Updated', {
+          body: 'New content is available for offline viewing.',
+          icon: '/logo192.png',
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error updating cache:', error);
+  }
 }

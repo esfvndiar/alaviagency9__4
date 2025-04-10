@@ -1,10 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap'); */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* Add font-display to improve font loading performance */
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300 700;
+    font-display: swap;
+    src: local('Inter'), url(https://fonts.gstatic.com/s/inter/v12/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2) format('woff2');
+  }
+  
+  @font-face {
+    font-family: 'Space Grotesk';
+    font-style: normal;
+    font-weight: 300 700;
+    font-display: swap;
+    src: local('Space Grotesk'), url(https://fonts.gstatic.com/s/spacegrotesk/v15/V8mQoQDjQSkFtoMM3T6r8E7mF71Q-gOoraIAEj7oUXskPMBBSSJLm2E.woff2) format('woff2');
+  }
+  
   html {
     scroll-behavior: smooth;
     background-color: white;
@@ -117,10 +134,13 @@
 
   @keyframes gradient-shift {
     0% {
-      background-position: 0% center;
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
     }
     100% {
-      background-position: 200% center;
+      background-position: 0% 50%;
     }
   }
 
@@ -217,21 +237,24 @@
   }
 
   .animated-gradient-text {
-    background-image: var(--gradient-animated);
-    background-size: 200% auto;
+    background: linear-gradient(
+      90deg,
+      var(--gradient-1) 0%,
+      var(--gradient-2) 25%,
+      var(--gradient-3) 50%,
+      var(--gradient-4) 75%,
+      var(--gradient-1) 100%
+    );
+    background-size: 400% 100%;
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: gradientShift var(--animation-duration-normal) var(--animation-timing) infinite;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-    will-change: background-position, transform;
-    transform: translate3d(0,0,0);
-    position: relative;
+    animation: gradientShift 8s linear infinite;
+    transition: all 0.2s ease;
   }
 
   .animated-gradient-text:hover {
-    animation: gradientShift var(--animation-duration-fast) var(--animation-timing) infinite;
+    animation-duration: 3s;
   }
   
   /* Accessibility fallback */
@@ -484,10 +507,13 @@
 
   @keyframes gradientShift {
     0% {
-      background-position: 0% center;
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
     }
     100% {
-      background-position: 200% center;
+      background-position: 0% 50%;
     }
   }
 
@@ -1019,4 +1045,41 @@
     animation: none;
     background-position: 0% 50%;
   }
+}
+
+/* Web Vitals Debug Overlay */
+.web-vitals-debug {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-family: monospace;
+  font-size: 14px;
+  padding: 10px;
+  z-index: 9999;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.web-vitals-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.web-vitals-metric.good {
+  background-color: rgba(0, 128, 0, 0.5);
+}
+
+.web-vitals-metric.needs-improvement {
+  background-color: rgba(255, 165, 0, 0.5);
+}
+
+.web-vitals-metric.poor {
+  background-color: rgba(255, 0, 0, 0.5);
 }

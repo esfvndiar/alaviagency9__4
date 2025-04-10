@@ -137,6 +137,23 @@ function dispatch(action: Action) {
   })
 }
 
+// Add listener with safety check to prevent duplicates
+function addListener(listener: (state: State) => void) {
+  // Check if listener already exists to prevent duplicate subscriptions
+  if (!listeners.includes(listener)) {
+    listeners.push(listener)
+  }
+  return () => removeListener(listener)
+}
+
+// Remove listener safely
+function removeListener(listener: (state: State) => void) {
+  const index = listeners.indexOf(listener)
+  if (index > -1) {
+    listeners.splice(index, 1)
+  }
+}
+
 type Toast = Omit<ToasterToast, "id">
 
 function toast({ ...props }: Toast) {
@@ -172,12 +189,9 @@ function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 
   React.useEffect(() => {
-    listeners.push(setState)
+    addListener(setState)
     return () => {
-      const index = listeners.indexOf(setState)
-      if (index > -1) {
-        listeners.splice(index, 1)
-      }
+      removeListener(setState)
     }
   }, [state])
 

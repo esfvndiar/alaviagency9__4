@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { Mail, Send, Loader2, CheckCircle, AlertCircle, Calendar } from 'lucide-react';
+import { Mail, Send, Loader2, CheckCircle, AlertCircle, Calendar, MapPin, Phone } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
 import { submitContactForm, generateCSRFToken } from './api/contact';
+import { isBackgroundSyncSupported, registerSync } from '../utils/backgroundSync/syncUtils';
 
 interface FormData {
   name: string;
@@ -23,16 +24,32 @@ const initialFormData: FormData = {
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'offline-queued'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isBackgroundSyncAvailable, setIsBackgroundSyncAvailable] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
 
-  // Generate CSRF token on component mount
+  // Generate CSRF token on component mount and check background sync support
   useEffect(() => {
     const token = generateCSRFToken();
     setFormData(prev => ({ ...prev, token }));
-  }, []);
+    
+    // Check if background sync is supported
+    setIsBackgroundSyncAvailable(isBackgroundSyncSupported());
+    
+    // Listen for online/offline events to update UI
+    const handleOnline = () => {
+      if (submitStatus === 'offline-queued') {
+        setSubmitStatus('idle');
+        setErrorMessage('You are back online. Your message will be sent automatically.');
+        setTimeout(() => setErrorMessage(''), 5000);
+      }
+    };
+    
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, [submitStatus]);
 
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -77,27 +94,61 @@ const Contact: React.FC = () => {
     }
 
     try {
-      // Call our enhanced API implementation
-      const response = await submitContactForm(formData);
-      
-      if (response.success) {
-        setSubmitStatus('success');
-        // Reset form but keep the new CSRF token
-        const token = generateCSRFToken();
-        setFormData({
-          name: '',
-          email: '',
-          subject: '',
-          message: '',
-          token
-        });
-        
-        // Scroll to top of form for success message visibility
-        if (formRef.current) {
-          formRef.current.scrollIntoView({ behavior: 'smooth' });
+      if (!navigator.onLine) {
+        // We're offline, use background sync if available
+        if (isBackgroundSyncAvailable) {
+          const success = await registerSync({
+            url: '/api/contact',
+            method: 'POST',
+            body: formData,
+            tag: 'contact-form-sync',
+            callback: () => {
+              // This will be called if the request is immediately successful
+              setSubmitStatus('success');
+              const token = generateCSRFToken();
+              setFormData({
+                name: '',
+                email: '',
+                subject: '',
+                message: '',
+                token
+              });
+            }
+          });
+          
+          if (success) {
+            setSubmitStatus('offline-queued');
+            // We don't reset the form data here as we want to keep it until sync succeeds
+          } else {
+            throw new Error('Failed to queue form submission for background sync');
+          }
+        } else {
+          // Background sync not supported, show error
+          throw new Error('You are currently offline. Please try again when you have an internet connection.');
         }
       } else {
-        throw new Error(response.message);
+        // Online submission flow
+        const response = await submitContactForm(formData);
+        
+        if (response.success) {
+          setSubmitStatus('success');
+          // Reset form but keep the new CSRF token
+          const token = generateCSRFToken();
+          setFormData({
+            name: '',
+            email: '',
+            subject: '',
+            message: '',
+            token
+          });
+          
+          // Scroll to top of form for success message visibility
+          if (formRef.current) {
+            formRef.current.scrollIntoView({ behavior: 'smooth' });
+          }
+        } else {
+          throw new Error(response.message);
+        }
       }
     } catch (error) {
       setSubmitStatus('error');
@@ -164,6 +215,22 @@ const Contact: React.FC = () => {
                         <CheckCircle className="w-16 h-16 text-green-500 mb-4" />
                         <h3 className="text-2xl font-medium mb-2 text-zinc-900 dark:text-white">Message Sent!</h3>
                         <p className="text-zinc-600 dark:text-zinc-300 text-center mb-6">Thank you for reaching out. We'll get back to you shortly.</p>
+                        <button 
+                          className="px-6 py-3 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors"
+                          onClick={() => setSubmitStatus('idle')}
+                        >
+                          Send Another Message
+                        </button>
+                      </div>
+                    )}
+
+                    {submitStatus === 'offline-queued' && (
+                      <div className="absolute inset-0 bg-white dark:bg-zinc-800 flex flex-col items-center justify-center p-8 animate-fade-in z-10">
+                        <CheckCircle className="w-16 h-16 text-blue-500 mb-4" />
+                        <h3 className="text-2xl font-medium mb-2 text-zinc-900 dark:text-white">Message Saved!</h3>
+                        <p className="text-zinc-600 dark:text-zinc-300 text-center mb-6">
+                          Your message has been saved and will be sent automatically when you're back online.
+                        </p>
                         <button 
                           className="px-6 py-3 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors"
                           onClick={() => setSubmitStatus('idle')}

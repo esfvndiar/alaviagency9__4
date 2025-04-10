@@ -18,6 +18,9 @@ interface ErrorBoundaryState {
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   private offlineCheckInterval: number | null = null;
+  private handleOnline: (() => void) | null = null;
+  private handleOffline: (() => void) | null = null;
+  private isMountedRef = true;
   
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -48,10 +51,22 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     window.removeEventListener('error', this.handleGlobalError);
     window.removeEventListener('unhandledrejection', this.handlePromiseRejection);
     
+    // Clean up online/offline event listeners
+    if (this.handleOnline) {
+      window.removeEventListener('online', this.handleOnline);
+    }
+    if (this.handleOffline) {
+      window.removeEventListener('offline', this.handleOffline);
+    }
+    
     // Clear interval if it exists
     if (this.offlineCheckInterval) {
       window.clearInterval(this.offlineCheckInterval);
+      this.offlineCheckInterval = null;
     }
+    
+    // Mark component as unmounted
+    this.isMountedRef = false;
   }
 
   setupOfflineDetection = (): void => {
@@ -60,9 +75,13 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       // Check initial online status
       this.setState({ isOffline: !navigator.onLine });
       
+      // Define event handlers with proper binding for cleanup
+      this.handleOnline = () => this.setState({ isOffline: false });
+      this.handleOffline = () => this.setState({ isOffline: true });
+      
       // Add event listeners for online/offline events
-      window.addEventListener('online', () => this.setState({ isOffline: false }));
-      window.addEventListener('offline', () => this.setState({ isOffline: true }));
+      window.addEventListener('online', this.handleOnline);
+      window.addEventListener('offline', this.handleOffline);
       
       // Set up periodic connectivity check (every 30 seconds)
       this.offlineCheckInterval = window.setInterval(() => {
@@ -76,39 +95,25 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             setTimeout(() => reject(new Error('Connection timed out')), 5000)
           );
           
-          // Perform a tiny fetch to confirm we're actually online
+          // Execute the ping and update state if needed
           Promise.race([
-            fetch(pingUrl, { 
-              method: 'HEAD',
-              cache: 'no-store',
-              mode: 'no-cors',
-              headers: { 'Cache-Control': 'no-cache' }
-            }),
+            fetch(pingUrl, { method: 'HEAD', cache: 'no-store' }),
             timeout
           ])
             .then(() => {
-              // If successful and we were previously marked offline, recover
               if (this.state.isOffline) {
                 this.setState({ isOffline: false });
-                if (this.state.hasError) {
-                  this.handleReset();
-                }
               }
             })
-            .catch((err) => {
-              // If fetch fails, we're actually offline
-              this.setState({ isOffline: true });
-              // Don't log the timeout error to avoid console clutter
-              if (!(err instanceof Error && err.message === 'Connection timed out')) {
-                console.debug('Network check failed:', err);
+            .catch(() => {
+              if (!this.state.isOffline) {
+                this.setState({ isOffline: true });
               }
             });
-        } else {
-          this.setState({ isOffline: true });
         }
       }, 30000);
     }
-  }
+  };
 
   handleGlobalError = (event: ErrorEvent): void => {
     // Only handle errors that aren't already caught

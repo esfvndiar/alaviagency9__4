@@ -116,13 +116,19 @@ const ServiceWorkerUpdater: React.FC = () => {
       try {
         const registration = await navigator.serviceWorker.getRegistration();
         if (registration) {
+          // Store the registration reference for cleanup
+          const registrationRef = registration;
+          
+          // Check for updates initially
           checkForUpdates(registration);
           
           // Set up periodic checks
           intervalRef.current = window.setInterval(async () => {
             try {
               // Force an update check
-              await registration.update();
+              await registrationRef.update();
+              // After update, check for waiting worker again
+              checkForUpdates(registrationRef);
             } catch (error) {
               console.error('ServiceWorkerUpdater: Error checking for updates', { 
                 error: error instanceof Error ? error.message : String(error)
@@ -157,8 +163,31 @@ const ServiceWorkerUpdater: React.FC = () => {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-
-      // WeakMaps don't need explicit clearing as they don't prevent garbage collection
+      
+      // Clean up event listeners that were added
+      navigator.serviceWorker.getRegistration().then(registration => {
+        if (registration) {
+          // Remove updatefound listener if it exists
+          const updateFoundHandler = updateFoundHandlersRef.current.get(registration);
+          if (updateFoundHandler) {
+            registration.removeEventListener('updatefound', updateFoundHandler);
+            updateFoundHandlersRef.current.delete(registration);
+          }
+          
+          // Remove statechange listeners from any workers
+          [registration.installing, registration.waiting, registration.active]
+            .filter(Boolean)
+            .forEach(worker => {
+              const stateChangeHandler = stateChangeHandlersRef.current.get(worker);
+              if (stateChangeHandler) {
+                worker.removeEventListener('statechange', stateChangeHandler);
+                stateChangeHandlersRef.current.delete(worker);
+              }
+            });
+        }
+      }).catch(err => {
+        console.error('Error cleaning up service worker listeners:', err);
+      });
     };
   }, [checkForUpdates]);
 

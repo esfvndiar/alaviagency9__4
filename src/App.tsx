@@ -43,20 +43,30 @@ const LazyServiceWorkerUpdater = lazy(() => import("./components/ServiceWorkerUp
 const PreloadManager = () => {
   const location = useLocation();
   
+  // Memoize preload functions to prevent recreation on every render
+  const preloadHome = useCallback(() => {
+    import("./pages/Work");
+    import("./pages/Services");
+  }, []);
+  
+  const preloadWork = useCallback(() => {
+    import("./pages/Contact");
+  }, []);
+  
+  const preloadServices = useCallback(() => {
+    import("./pages/About");
+  }, []);
+  
   useEffect(() => {
     // Preload related pages based on current route
     if (location.pathname === '/') {
-      // Preload likely next pages when on home page
-      import("./pages/Work");
-      import("./pages/Services");
+      preloadHome();
     } else if (location.pathname === '/work') {
-      // Preload contact when on work page
-      import("./pages/Contact");
+      preloadWork();
     } else if (location.pathname === '/services') {
-      // Preload about and contact when on services page
-      import("./pages/About");
+      preloadServices();
     }
-  }, [location.pathname]);
+  }, [location.pathname, preloadHome, preloadWork, preloadServices]);
   
   return null;
 };

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useTheme } from '../hooks/use-theme';
 import { debounce } from '@/lib/utils';
+import OptimizedImage from '@/components/OptimizedImage';
 
 interface StorySection {
   id: string;
@@ -185,18 +186,14 @@ const ScrollStory: React.FC<ScrollStoryProps> = ({ sections, className = '' }) =
                     } ${section.align === 'right' ? 'order-1' : ''}`}
                   >
                     <div className="relative rounded-xl overflow-hidden shadow-2xl">
-                      <picture>
-                        <source 
-                          srcSet={section.image.replace(/\.(jpg|jpeg|png)$/i, '.webp')} 
-                          type="image/webp" 
-                        />
-                        <img
-                          src={section.image}
-                          alt={section.imageAlt || section.title}
-                          className="w-full h-auto object-cover"
-                          loading="lazy"
-                        />
-                      </picture>
+                      <OptimizedImage
+                        src={section.image}
+                        alt={section.imageAlt || section.title}
+                        className="w-full h-auto"
+                        objectFit="cover"
+                        quality={85}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                     </div>
                   </div>
