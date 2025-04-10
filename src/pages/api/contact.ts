@@ -153,15 +153,14 @@ export async function submitContactForm(data: ContactData): Promise<ResponseData
         }
         
         // Sanitize inputs to prevent XSS
-        const sanitizedData = {
+        const _sanitizedData = {
           name: sanitizeInput(data.name),
           email: sanitizeInput(data.email),
           subject: data.subject ? sanitizeInput(data.subject) : '',
           message: sanitizeInput(data.message)
         };
         
-        // Log the submission (in a real app, this would send to a server)
-        console.log('Contact form submission:', sanitizedData);
+        // Send email using Nodemailer transport
         
         // Generate a new CSRF token for the next submission
         generateCSRFToken();

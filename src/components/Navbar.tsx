@@ -105,15 +105,15 @@ const Navbar: React.FC<NavbarProps> = ({ onMobileMenuToggle }) => {
             <a
               key={link.title}
               href={link.href}
-              className={`text-sm font-medium transition-all duration-300 relative group ${
+              className={`text-sm font-medium transition-all duration-300 relative group ${ // Added duration-300 here for consistency
                 link.title === 'Reach Out' 
-                ? 'px-4 py-2 rounded-full bg-gradient-to-r from-[#14b8a6] to-[#0ea5e9] text-white hover:shadow-md hover:-translate-y-0.5' 
+                ? 'px-4 py-2 rounded-full bg-gradient-to-r from-[#14b8a6] to-[#0ea5e9] text-white hover:shadow-lg hover:-translate-y-1 transform' // Increased shadow and translate, added transform base
                 : 'text-zinc-800 dark:text-zinc-100 hover:text-zinc-900 dark:hover:text-white'
               }`}
             >
               {link.title}
               {link.title !== 'Reach Out' && (
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-zinc-900 dark:bg-white transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute -bottom-1 left-0 block h-0.5 w-full bg-zinc-900 dark:bg-white transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100 transform-origin-left"></span>
               )}
             </a>
           ))}
@@ -125,6 +125,8 @@ const Navbar: React.FC<NavbarProps> = ({ onMobileMenuToggle }) => {
             onClick={toggleMobileMenu}
             className="text-zinc-900 dark:text-white hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-200 dark:focus:ring-zinc-500 rounded-md p-1"
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu-content"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -136,6 +138,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMobileMenuToggle }) => {
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
         links={NAV_LINKS}
+        id="mobile-menu-content"
       />
     </nav>
   );

@@ -9,9 +9,10 @@ interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   links: Array<{ title: string; href: string }>;
+  id?: string;
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links }) => {
+const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) => {
   // State to track if we're in the browser environment
   const [mounted, setMounted] = useState(false);
   // State to track if menu should be rendered at all (separate from animation)
@@ -80,6 +81,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links }) => {
   // Portal content - this will be rendered directly to document.body
   const menuContent = (
     <div 
+      id={id}
       className={`fixed inset-0 bg-white dark:bg-zinc-900 z-[9999] transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}

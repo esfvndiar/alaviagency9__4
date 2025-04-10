@@ -23,13 +23,11 @@ const Legal = lazy(() => import("./pages/Legal"));
 const queryClient = new QueryClient();
 
 const App = () => {
-  const handleCookieAccept = (settings: CookieSettings) => {
-    console.log("Cookie settings accepted:", settings);
+  const handleCookieAccept = (_settings: CookieSettings) => {
     // Here you can initialize analytics, marketing tools, etc. based on settings
   };
 
   const handleCookieDecline = () => {
-    console.log("Cookies declined, only necessary cookies will be used");
     clearNonEssentialCookies();
   };
 

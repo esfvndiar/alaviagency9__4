@@ -71,11 +71,20 @@ const AboutSection: React.FC = () => {
                 </p>
               </div>
               
-              <AnimatedText 
-                text="We are a full-service IT agency specializing in creating exceptional digital experiences. Our expertise spans web design, development, mobile applications, marketing, and strategic consulting."
-                className="text-lg text-zinc-600 dark:text-zinc-200 mb-6"
-              />
-              
+              <ScrollReveal delay={0.1}>
+                <AnimatedText
+                  text="We are a full-service IT agency specializing in creating exceptional digital experiences. Our expertise spans web design, development, mobile applications, marketing, and strategic consulting."
+                  className="text-lg text-zinc-600 dark:text-zinc-200 mb-6"
+                />
+              </ScrollReveal>
+              <ScrollReveal delay={0.2}>
+                <AnimatedText
+                  text="full-service IT agency"
+                  el="h2"
+                  className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6 text-zinc-900 dark:text-white tracking-tighter leading-tight"
+                  data-testid="animated-heading"
+                />
+              </ScrollReveal>
               <p className="text-zinc-600 dark:text-zinc-200">
                 Our approach combines technical excellence with creative innovation to deliver solutions that not only meet but exceed client expectations. We believe in collaborative partnerships and transparent communication throughout every project.
               </p>

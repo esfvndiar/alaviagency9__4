@@ -104,7 +104,7 @@ export default async function handler(
     }
     
     // Get form data
-    const { name, email, subject, message } = req.body;
+    const { name, email, message } = req.body;
     
     // Validate required fields
     if (!name || !email || !message) {
@@ -139,11 +139,11 @@ export default async function handler(
     }
     
     // Sanitize inputs
-    const sanitizedData = {
-      name: sanitizeInput(name),
-      email: sanitizeInput(email),
-      subject: subject ? sanitizeInput(subject) : '',
-      message: sanitizeInput(message)
+    const _sanitizedData = {
+      name: sanitizeInput(req.body.name),
+      email: sanitizeInput(req.body.email),
+      subject: req.body.subject ? sanitizeInput(req.body.subject) : '',
+      message: sanitizeInput(req.body.message)
     };
     
     // In a real implementation, you would send an email or store in database
@@ -151,7 +151,8 @@ export default async function handler(
     // await sendEmail(sanitizedData);
     // or
     // await db.contacts.create(sanitizedData);
-    console.log('Contact form submission:', sanitizedData);
+    
+    // Configure Nodemailer transport (replace with your email service details)
     
     // Generate new CSRF token for next request
     generateCsrfToken(res);

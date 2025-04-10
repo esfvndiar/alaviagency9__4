@@ -2,19 +2,23 @@ import React, { useEffect, useRef, useState } from 'react';
 
 interface AnimatedTextProps {
   text: string;
+  el?: keyof React.JSX.IntrinsicElements;
   className?: string;
   animation?: 'words' | 'chars' | 'lines';
   staggerDelay?: number;
+  'data-testid'?: string;
 }
 
 const AnimatedText: React.FC<AnimatedTextProps> = ({ 
   text, 
+  el: Tag = 'h2', 
   className = '',
   animation = 'words',
-  staggerDelay = 0.05
+  staggerDelay = 0.05,
+  'data-testid': dataTestId
 }) => {
   const [visible, setVisible] = useState(false);
-  const textRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -136,10 +140,12 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
     }
   };
 
-  return (
-    <div ref={textRef} className={`overflow-hidden ${className}`}>
-      {renderAnimation()}
-    </div>
+  return React.createElement(Tag, {
+      ref: textRef,
+      className: `overflow-hidden ${className}`,
+      'data-testid': dataTestId
+    },
+    renderAnimation()
   );
 };
 

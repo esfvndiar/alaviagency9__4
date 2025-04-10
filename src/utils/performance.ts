@@ -69,22 +69,18 @@ export function throttle<T extends AnyFunction>(
 }
 
 // Measure component render time
-export const measureRenderTime = (componentName: string) => {
+export const measureRenderTime = (_componentName: string) => {
   const startTime = performance.now();
   
   return () => {
     const endTime = performance.now();
     const renderTime = endTime - startTime;
     
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[Performance] ${componentName} rendered in ${renderTime.toFixed(2)}ms`);
-    }
-    
     // Report to monitoring service if render time is too high
     if (renderTime > 100) {
       // Could send to monitoring service
       // if (window.Sentry) {
-      //   window.Sentry.captureMessage(`Slow render: ${componentName} (${renderTime.toFixed(2)}ms)`);
+      //   window.Sentry.captureMessage(`Slow render: ${_componentName} (${renderTime.toFixed(2)}ms)`);
       // }
     }
     

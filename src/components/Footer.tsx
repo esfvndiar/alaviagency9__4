@@ -111,7 +111,7 @@ const Footer: React.FC = () => {
                   href={url} 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-zinc-500 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors"
+                  className="text-zinc-500 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors block transform transition-transform duration-200 ease-in-out hover:scale-110"
                   aria-label={key.charAt(0).toUpperCase() + key.slice(1)} // Add aria-label for accessibility
                 >
                   {socialIcons[key] ? socialIcons[key] : key.charAt(0).toUpperCase() + key.slice(1)} {/* Use icon or fallback to text */}
