@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { useTheme } from './ThemeProvider';
+import { useTheme } from '../hooks/use-theme';
 import { debounce } from '@/lib/utils';
 
 interface StorySection {
@@ -19,7 +19,7 @@ interface ScrollStoryProps {
 }
 
 const ScrollStory: React.FC<ScrollStoryProps> = ({ sections, className = '' }) => {
-  const { theme } = useTheme();
+  const { isDarkTheme } = useTheme();
   const [activeSection, setActiveSection] = useState(0);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -28,7 +28,7 @@ const ScrollStory: React.FC<ScrollStoryProps> = ({ sections, className = '' }) =
   // Initialize refs array
   useEffect(() => {
     sectionRefs.current = sections.map(() => null);
-  }, [sections.length]);
+  }, [sections]);
   
   // Debounced scroll handler to improve performance
   const handleScroll = useCallback(debounce(() => {
@@ -64,7 +64,7 @@ const ScrollStory: React.FC<ScrollStoryProps> = ({ sections, className = '' }) =
     });
     
     setActiveSection(closestSection);
-  }, 100), []);
+  }, 100), [containerRef, sectionRefs]);
   
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -77,12 +77,16 @@ const ScrollStory: React.FC<ScrollStoryProps> = ({ sections, className = '' }) =
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
     };
-  }, [handleScroll, theme]);
+  }, [handleScroll]);
   
   return (
     <div 
       ref={containerRef}
-      className={`scroll-story relative ${className}`}
+      className={`scroll-story ${isInView ? 'in-view' : ''} ${className}`}
+      style={{
+        backgroundColor: isDarkTheme ? '#121212' : '#f8f9fa',
+        color: isDarkTheme ? '#e0e0e0' : '#333333'
+      }}
     >
       {/* Progress indicator */}
       <div className="fixed left-8 top-1/2 transform -translate-y-1/2 z-40 hidden lg:block">
@@ -125,7 +129,10 @@ const ScrollStory: React.FC<ScrollStoryProps> = ({ sections, className = '' }) =
         return (
           <div
             key={section.id}
-            ref={el => sectionRefs.current[index] = el}
+            ref={(el) => {
+              sectionRefs.current[index] = el;
+              return undefined;
+            }}
             className={`min-h-screen flex items-center justify-center py-20 ${
               section.backgroundColor || ''
             }`}

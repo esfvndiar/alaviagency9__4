@@ -81,8 +81,11 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       
       observer.observe(imgRef.current);
       
+      // Store a reference to the current image element for cleanup
+      const currentImgRef = imgRef.current;
+      
       return () => {
-        if (imgRef.current) observer.unobserve(imgRef.current);
+        if (currentImgRef) observer.unobserve(currentImgRef);
       };
     }
   }, [src, priority, optimizedSrc]);

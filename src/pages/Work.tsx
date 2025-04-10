@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Layout from '../components/Layout';
 import { ArrowRight, Filter, Search, X, ChevronRight } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
@@ -101,9 +101,31 @@ const Work: React.FC = () => {
   
   const filterRef = useRef<HTMLDivElement>(null);
 
+  const filterProjects = useCallback(() => {
+    let result = [...PROJECTS];
+    
+    // Filter by category
+    if (activeCategory !== 'All') {
+      result = result.filter(project => project.category === activeCategory);
+    }
+    
+    // Filter by search term
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(
+        project => 
+          project.title.toLowerCase().includes(term) || 
+          project.description.toLowerCase().includes(term) ||
+          project.tags.some(tag => tag.toLowerCase().includes(term))
+      );
+    }
+    
+    setFilteredProjects(result);
+  }, [activeCategory, searchTerm]);
+
   useEffect(() => {
     filterProjects();
-  }, [activeCategory, searchTerm]);
+  }, [filterProjects]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -128,28 +150,6 @@ const Work: React.FC = () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
-
-  const filterProjects = () => {
-    let result = [...PROJECTS];
-    
-    // Filter by category
-    if (activeCategory !== 'All') {
-      result = result.filter(project => project.category === activeCategory);
-    }
-    
-    // Filter by search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(
-        project => 
-          project.title.toLowerCase().includes(term) || 
-          project.description.toLowerCase().includes(term) ||
-          project.tags.some(tag => tag.toLowerCase().includes(term))
-      );
-    }
-    
-    setFilteredProjects(result);
-  };
 
   const handleProjectHover = (entering: boolean, project?: Project) => {
     setIsCursorVisible(entering);

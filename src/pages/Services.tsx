@@ -163,14 +163,19 @@ const Services: React.FC = () => {
     );
 
     if (serviceRef.current) {
-      observer.observe(serviceRef.current);
+      // Store a reference to the current service element for cleanup
+      const currentServiceRef = serviceRef.current;
+      
+      observer.observe(currentServiceRef);
+      
+      return () => {
+        if (currentServiceRef) {
+          observer.unobserve(currentServiceRef);
+        }
+      };
     }
 
-    return () => {
-      if (serviceRef.current) {
-        observer.unobserve(serviceRef.current);
-      }
-    };
+    return undefined;
   }, []);
 
   useEffect(() => {

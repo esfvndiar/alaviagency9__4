@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useTheme } from './ThemeProvider';
+import { useTheme } from '../hooks/use-theme';
 
 interface MasonryGridProps {
   children: React.ReactNode[];
@@ -108,7 +108,7 @@ const MasonryGrid: React.FC<MasonryGridProps> = ({
     if (gridRef.current) {
       gridRef.current.style.height = `${maxColumnHeight}px`;
     }
-  }, [children, responsiveColumns, spacing, visibleItems]);
+  }, [children, responsiveColumns, spacing, visibleItems, gridRef]);
   
   return (
     <div 

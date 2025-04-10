@@ -111,16 +111,19 @@ const Contact: React.FC = () => {
   useEffect(() => {
     if (!calendarRef.current) return;
     
+    // Store a reference to the current calendar element for cleanup
+    const currentCalendarRef = calendarRef.current;
+    
     // This is a placeholder for calendar initialization
     // In a real application, you would initialize your calendar library here
     
     // For demonstration, we're just adding a class to show it's initialized
-    calendarRef.current.classList.add('calendar-initialized');
+    currentCalendarRef.classList.add('calendar-initialized');
     
     // Clean up function if needed
     return () => {
-      if (calendarRef.current) {
-        calendarRef.current.classList.remove('calendar-initialized');
+      if (currentCalendarRef) {
+        currentCalendarRef.classList.remove('calendar-initialized');
       }
     };
   }, []);
