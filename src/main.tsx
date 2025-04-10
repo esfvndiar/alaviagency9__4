@@ -1,13 +1,18 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import { setupGlobalErrorHandlers } from './utils/error-handling'
 
 // Create a global variable to track service worker registration status
 declare global {
   interface Window {
     swRegistrationError?: string;
+    Sentry?: any; // For future error reporting integration
   }
 }
+
+// Set up global error handlers
+setupGlobalErrorHandlers();
 
 // Register service worker for production environment
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

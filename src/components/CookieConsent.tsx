@@ -219,13 +219,13 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
   return (
     <div className="fixed bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 lg:left-8 lg:right-auto lg:max-w-lg z-[9999]">
       {showDetails ? (
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-zinc-100 overflow-hidden transition-all duration-300">
+        <div className="bg-white/95 dark:bg-zinc-800/95 backdrop-blur-md rounded-2xl shadow-xl border border-zinc-100 dark:border-zinc-700 overflow-hidden transition-all duration-300">
           <div className="p-5 md:p-6 relative">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-display font-semibold bg-gradient-to-r from-cyberblue to-mintgreen bg-clip-text text-transparent">Cookie-Einstellungen</h2>
               <button 
                 onClick={() => setShowDetails(false)}
-                className="text-zinc-400 hover:text-zinc-600 transition-colors p-2 rounded-full hover:bg-zinc-100/50"
+                className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition-colors p-2 rounded-full hover:bg-zinc-100/50 dark:hover:bg-zinc-700/50"
                 aria-label="Close cookie settings"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -235,15 +235,15 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
               </button>
             </div>
             
-            <p className="text-sm text-zinc-600 mb-5">
+            <p className="text-sm text-zinc-600 dark:text-zinc-300 mb-5">
               Wir verwenden Cookies für eine optimale Website-Erfahrung. Wählen Sie aus, welche Cookies Sie zulassen möchten.
             </p>
             
             <div className="space-y-3 mb-5">
-              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white hover:shadow-sm transition-all duration-200">
+              <div className="border border-zinc-100 dark:border-zinc-700 rounded-xl p-3.5 bg-white dark:bg-zinc-800 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-zinc-900 flex items-center">
+                    <h3 className="text-sm font-medium text-zinc-900 dark:text-white flex items-center">
                       <span className="w-5 h-5 mr-2 text-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -251,7 +251,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                       </span>
                       Notwendige Cookies
                     </h3>
-                    <p className="text-xs text-zinc-500 ml-7">Erforderlich für die Grundfunktionen</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 ml-7">Erforderlich für die Grundfunktionen</p>
                   </div>
                   <div className="bg-primary/10 text-primary text-xs font-medium py-1 px-2.5 rounded-full">
                     Erforderlich
@@ -259,10 +259,10 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                 </div>
               </div>
               
-              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white hover:shadow-sm transition-all duration-200">
+              <div className="border border-zinc-100 dark:border-zinc-700 rounded-xl p-3.5 bg-white dark:bg-zinc-800 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-zinc-900 flex items-center">
+                    <h3 className="text-sm font-medium text-zinc-900 dark:text-white flex items-center">
                       <span className="w-5 h-5 mr-2 text-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M2 12h2a10 10 0 0 1 20 0h-2"/>
@@ -274,7 +274,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                       </span>
                       Analyse
                     </h3>
-                    <p className="text-xs text-zinc-500 ml-7">Hilft uns, die Nutzung zu verstehen</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 ml-7">Hilft uns, die Nutzung zu verstehen</p>
                   </div>
                   <label className="inline-flex items-center cursor-pointer">
                     <input 
@@ -283,15 +283,15 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                       checked={settings.analytics}
                       onChange={() => handleToggleSetting('analytics')}
                     />
-                    <div className="relative w-9 h-5 bg-zinc-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                    <div className="relative w-9 h-5 bg-zinc-200 dark:bg-zinc-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 dark:after:border-zinc-500 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
                   </label>
                 </div>
               </div>
               
-              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white hover:shadow-sm transition-all duration-200">
+              <div className="border border-zinc-100 dark:border-zinc-700 rounded-xl p-3.5 bg-white dark:bg-zinc-800 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-zinc-900 flex items-center">
+                    <h3 className="text-sm font-medium text-zinc-900 dark:text-white flex items-center">
                       <span className="w-5 h-5 mr-2 text-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 20V10"/>
@@ -301,7 +301,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                       </span>
                       Marketing
                     </h3>
-                    <p className="text-xs text-zinc-500 ml-7">Für personalisierte Werbung</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 ml-7">Für personalisierte Werbung</p>
                   </div>
                   <label className="inline-flex items-center cursor-pointer">
                     <input 
@@ -310,15 +310,15 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                       checked={settings.marketing}
                       onChange={() => handleToggleSetting('marketing')}
                     />
-                    <div className="relative w-9 h-5 bg-zinc-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                    <div className="relative w-9 h-5 bg-zinc-200 dark:bg-zinc-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 dark:after:border-zinc-500 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
                   </label>
                 </div>
               </div>
               
-              <div className="border border-zinc-100 rounded-xl p-3.5 bg-white hover:shadow-sm transition-all duration-200">
+              <div className="border border-zinc-100 dark:border-zinc-700 rounded-xl p-3.5 bg-white dark:bg-zinc-800 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-zinc-900 flex items-center">
+                    <h3 className="text-sm font-medium text-zinc-900 dark:text-white flex items-center">
                       <span className="w-5 h-5 mr-2 text-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
@@ -326,7 +326,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                       </span>
                       Präferenzen
                     </h3>
-                    <p className="text-xs text-zinc-500 ml-7">Für eine personalisierte Erfahrung</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 ml-7">Für eine personalisierte Erfahrung</p>
                   </div>
                   <label className="inline-flex items-center cursor-pointer">
                     <input 
@@ -335,7 +335,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                       checked={settings.preferences}
                       onChange={() => handleToggleSetting('preferences')}
                     />
-                    <div className="relative w-9 h-5 bg-zinc-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                    <div className="relative w-9 h-5 bg-zinc-200 dark:bg-zinc-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 dark:after:border-zinc-500 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
                   </label>
                 </div>
               </div>
@@ -344,7 +344,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
             <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
               <button
                 onClick={handleSaveSettings}
-                className="w-full sm:flex-1 px-3 py-2 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
+                className="w-full sm:flex-1 px-3 py-2 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-800 dark:text-white rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm font-medium transition-colors shadow-sm hover:shadow"
               >
                 Auswahl speichern
               </button>
@@ -358,12 +358,12 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
           </div>
         </div>
       ) : (
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-zinc-100 overflow-hidden transition-all duration-300">
+        <div className="bg-white/95 dark:bg-zinc-800/95 backdrop-blur-md rounded-2xl shadow-xl border border-zinc-100 dark:border-zinc-700 overflow-hidden transition-all duration-300">
           <div className="p-5 md:p-6 relative">
             <div className="flex items-start">
               <div className="mr-4 mt-1 hidden sm:block">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyberblue to-mintgreen p-[2px]">
-                  <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
+                  <div className="w-full h-full bg-white dark:bg-zinc-800 rounded-full flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
                       <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
                       <path d="M8.5 8.5v.01"/>
@@ -376,20 +376,20 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                 </div>
               </div>
               <div className="flex-1">
-                <h2 className="text-base font-display font-semibold text-zinc-900 mb-1.5">Wir respektieren Ihre Privatsphäre</h2>
-                <p className="text-sm text-zinc-600 mb-4">
+                <h2 className="text-base font-display font-semibold text-zinc-900 dark:text-white mb-1.5">Wir respektieren Ihre Privatsphäre</h2>
+                <p className="text-sm text-zinc-600 dark:text-zinc-300 mb-4">
                   Diese Website verwendet Cookies, um Ihr Erlebnis zu verbessern. Sie können wählen, welche Cookies Sie zulassen möchten.
                 </p>
                 <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
                   <button
                     onClick={() => setShowDetails(true)}
-                    className="w-full sm:flex-1 px-3 py-2 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
+                    className="w-full sm:flex-1 px-3 py-2 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-800 dark:text-white rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm font-medium transition-colors shadow-sm hover:shadow"
                   >
                     Einstellungen
                   </button>
                   <button
                     onClick={handleDecline}
-                    className="w-full sm:flex-1 px-3 py-2 bg-white hover:bg-zinc-50 text-zinc-800 rounded-lg border border-zinc-200 text-sm font-medium transition-colors shadow-sm hover:shadow"
+                    className="w-full sm:flex-1 px-3 py-2 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-800 dark:text-white rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm font-medium transition-colors shadow-sm hover:shadow"
                   >
                     Nur notwendige
                   </button>

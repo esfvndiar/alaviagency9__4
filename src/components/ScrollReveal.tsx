@@ -9,6 +9,7 @@ interface ScrollRevealProps {
   className?: string;
   rootMargin?: string;
   once?: boolean;
+  staggered?: boolean;
 }
 
 const ScrollReveal: React.FC<ScrollRevealProps> = ({
@@ -19,13 +20,15 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   duration = 800,
   className = '',
   rootMargin = '0px',
-  once = true
+  once = true,
+  staggered = false
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [hasAnimated, setHasAnimated] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const animationFrameIdRef = useRef<number | null>(null);
+  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Skip if already animated and once is true
@@ -34,16 +37,37 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
     const currentRef = ref.current;
     if (!currentRef) return;
 
-    // Create the observer
+    // Create the observer with a more efficient callback
     observerRef.current = new IntersectionObserver(
-      ([entry]) => {
+      (entries) => {
         // Use requestAnimationFrame to batch visual updates
-        if (entry.isIntersecting) {
-          animationFrameIdRef.current = requestAnimationFrame(() => {
-            setIsVisible(true);
-            setHasAnimated(true);
-          });
+        if (entries[0].isIntersecting) {
+          if (animationFrameIdRef.current) {
+            cancelAnimationFrame(animationFrameIdRef.current);
+          }
+          
+          // Add a small staggered delay for smoother performance if staggered is true
+          if (staggered) {
+            const timeoutId = setTimeout(() => {
+              animationFrameIdRef.current = requestAnimationFrame(() => {
+                setIsVisible(true);
+                setHasAnimated(true);
+              });
+            }, Math.random() * 150); // Random delay between 0-150ms for staggered effect
+            
+            // Store the timeout ID for cleanup
+            timeoutIdRef.current = timeoutId;
+          } else {
+            animationFrameIdRef.current = requestAnimationFrame(() => {
+              setIsVisible(true);
+              setHasAnimated(true);
+            });
+          }
         } else if (!once) {
+          if (animationFrameIdRef.current) {
+            cancelAnimationFrame(animationFrameIdRef.current);
+          }
+          
           animationFrameIdRef.current = requestAnimationFrame(() => {
             setIsVisible(false);
           });
@@ -52,7 +76,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
       {
         root: null,
         rootMargin,
-        threshold,
+        threshold: staggered ? Math.max(0.15, threshold) : threshold, // Slightly higher threshold for staggered animations
       }
     );
 
@@ -69,8 +93,12 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
       if (animationFrameIdRef.current) {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
+      
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+      }
     };
-  }, [threshold, rootMargin, once, hasAnimated]);
+  }, [threshold, rootMargin, once, hasAnimated, staggered]);
 
   // Map animation type to appropriate CSS classes
   const getAnimationClass = () => {

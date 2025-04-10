@@ -237,16 +237,16 @@ const Work: React.FC = () => {
             <div className="relative w-full md:w-auto" ref={filterRef}>
               <button 
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="flex items-center space-x-2 px-4 py-2 bg-white rounded-full border border-zinc-200 shadow-sm hover:border-zinc-300 transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors"
               >
                 <Filter className="w-4 h-4" />
                 <span>{activeCategory}</span>
               </button>
               
               {isFilterOpen && (
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 py-2 border border-zinc-100">
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-lg shadow-lg z-10 py-2 border border-zinc-100 dark:border-zinc-700">
                   <button 
-                    className={`w-full text-left px-4 py-2 hover:bg-zinc-50 transition-colors ${activeCategory === 'All' ? 'text-blue-600 font-medium' : ''}`}
+                    className={`w-full text-left px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${activeCategory === 'All' ? 'text-blue-600 font-medium' : ''}`}
                     onClick={() => {
                       setActiveCategory('All');
                       setIsFilterOpen(false);
@@ -257,7 +257,7 @@ const Work: React.FC = () => {
                   {categories.map(category => (
                     <button 
                       key={category}
-                      className={`w-full text-left px-4 py-2 hover:bg-zinc-50 transition-colors ${activeCategory === category ? 'text-blue-600 font-medium' : ''}`}
+                      className={`w-full text-left px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors ${activeCategory === category ? 'text-blue-600 font-medium' : ''}`}
                       onClick={() => {
                         setActiveCategory(category);
                         setIsFilterOpen(false);
@@ -277,13 +277,13 @@ const Work: React.FC = () => {
               <input
                 type="text"
                 placeholder="Search projects..."
-                className="w-full pl-10 pr-4 py-2 border border-zinc-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               {searchTerm && (
                 <button
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-zinc-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 dark:text-zinc-200 hover:text-zinc-600 dark:hover:text-zinc-200"
                   onClick={() => setSearchTerm('')}
                 >
                   <X className="h-4 w-4" />
@@ -328,12 +328,12 @@ const Work: React.FC = () => {
                     
                     <div className="flex flex-wrap gap-2 mt-3">
                       {project.tags.slice(0, 3).map(tag => (
-                        <span key={tag} className="text-xs bg-zinc-100 text-zinc-800 px-2 py-1 rounded-full">
+                        <span key={tag} className="text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 px-2 py-1 rounded-full">
                           {tag}
                         </span>
                       ))}
                       {project.tags.length > 3 && (
-                        <span className="text-xs bg-zinc-100 text-zinc-800 px-2 py-1 rounded-full">
+                        <span className="text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 px-2 py-1 rounded-full">
                           +{project.tags.length - 3}
                         </span>
                       )}
@@ -352,7 +352,7 @@ const Work: React.FC = () => {
               </p>
               <a 
                 href="/contact" 
-                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white bg-zinc-900 rounded-full hover:bg-zinc-800 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white bg-zinc-900 dark:bg-zinc-800 rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-700 transition-all duration-300 hover:shadow-lg hover:scale-105"
               >
                 Start a Project
                 <ArrowRight className="ml-2 w-5 h-5" />

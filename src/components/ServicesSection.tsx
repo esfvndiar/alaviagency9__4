@@ -46,12 +46,12 @@ const ServicesSection: React.FC = () => {
                   </span>
                 </div>
                 
-                <h3 className="text-2xl font-display font-medium mb-3">{service.title}</h3>
-                <p className="text-zinc-600 mb-6">{service.description}</p>
+                <h3 className="text-2xl font-display font-medium mb-3 text-zinc-900 dark:text-white">{service.title}</h3>
+                <p className="text-zinc-600 dark:text-zinc-300 mb-6">{service.description}</p>
                 
                 <a 
                   href={service.link} 
-                  className="inline-flex items-center text-sm text-zinc-900 hover:text-primary transition-colors line-animation"
+                  className="inline-flex items-center text-sm text-zinc-900 dark:text-zinc-100 hover:text-primary dark:hover:text-primary transition-colors line-animation"
                 >
                   <span>Learn more</span>
                   <ArrowUpRight className="w-4 h-4 ml-1" />

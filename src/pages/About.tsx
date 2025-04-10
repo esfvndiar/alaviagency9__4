@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Layout from '../components/Layout';
 import { ArrowRight, ExternalLink } from 'lucide-react';
-import ScrollReveal from '../components/ScrollReveal';
+import Layout from '../components/Layout';
 
 interface TeamMember {
   id: number;
@@ -170,294 +169,221 @@ const About: React.FC = () => {
 
   return (
     <Layout>
-      <div className="relative overflow-hidden">
-        <section className="pt-32 pb-20 relative">
-          {/* Background gradient elements */}
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-            <div className="absolute -top-[30%] -left-[10%] w-[50%] h-[50%] bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-3xl"></div>
-            <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] bg-gradient-to-bl from-purple-500/10 to-transparent rounded-full blur-3xl"></div>
-            <div className="absolute bottom-[10%] left-[20%] w-[30%] h-[30%] bg-gradient-to-tr from-green-500/10 to-transparent rounded-full blur-3xl"></div>
-          </div>
-
-          <div className="container mx-auto px-6 relative z-10">
-            {/* Hero Section with animated gradient text */}
-            <div className="max-w-3xl mx-auto mb-20 text-center">
-              <h1 className="font-space-grotesk text-5xl md:text-7xl font-medium mb-6 relative">
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-zinc-50 to-white dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900 w-screen h-full min-h-full" />
+        <div className="absolute -top-20 -left-20 w-[120vw] h-[120vw] max-w-[800px] max-h-[800px] bg-cyberblue/10 dark:bg-cyberblue/20 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-20 -right-20 w-[120vw] h-[120vw] max-w-[800px] max-h-[800px] bg-mintgreen/10 dark:bg-mintgreen/20 rounded-full blur-[120px]" />
+        <div className="absolute top-3/4 left-1/3 w-[80vw] h-[80vw] max-w-[500px] max-h-[500px] bg-primary/5 dark:bg-primary/10 rounded-full blur-[100px]" />
+        
+        {/* Hero Section */}
+        <section className="pt-32 pb-20 relative z-10">
+          <div className="container mx-auto px-6">
+            <div className="max-w-4xl mx-auto">
+              <h1 className="text-fluid-3xl font-display font-bold mb-6 text-center relative">
                 <span className="inline-block relative">
-                  <span className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent blur-xl opacity-50">About Us</span>
-                  <span className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">About Us</span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent blur-xl opacity-50">About ALAVI</span>
+                  <span className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">About ALAVI</span>
                 </span>
               </h1>
-              <p className="text-xl text-zinc-600 md:text-2xl">
-                We're a team of digital innovators passionate about creating exceptional digital experiences that drive business growth.
+              <p className="text-fluid-lg text-zinc-700 dark:text-zinc-300 mb-12 text-center leading-relaxed">
+                We're a team of passionate designers and developers creating exceptional digital experiences.
               </p>
-            </div>
-
-            {/* Our Story with parallax effect */}
-            <div className="max-w-5xl mx-auto mb-24 relative">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <ScrollReveal>
-                  <div>
-                    <h2 className="font-space-grotesk text-3xl md:text-5xl font-medium mb-6 relative">
-                      <span className="inline-block relative">
-                        <span className="relative">Our Story</span>
-                        <div className="absolute -bottom-2 left-0 h-1 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
-                      </span>
-                    </h2>
-                    <p className="text-lg text-zinc-600 mb-6">
-                      Founded in 2015, Alavi began with a simple mission: to help businesses navigate the complex digital landscape and harness the power of technology to drive growth and innovation.
-                    </p>
-                    <p className="text-lg text-zinc-600 mb-6">
-                      What started as a small team of passionate digital experts has grown into a full-service digital agency with a global client base. Throughout our journey, we've remained committed to our core values of innovation, excellence, collaboration, and integrity.
-                    </p>
-                    <p className="text-lg text-zinc-600">
-                      Today, we're proud to partner with businesses of all sizes, from startups to Fortune 500 companies, helping them achieve their digital ambitions and stay ahead in an ever-evolving digital world.
-                    </p>
-                  </div>
-                </ScrollReveal>
-                
-                <ScrollReveal delay={200}>
-                  <div className="relative">
-                    <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-100 rounded-full opacity-70 animate-pulse"></div>
-                    <div className="absolute bottom-[10%] -right-10 w-40 h-40 bg-green-100 rounded-full opacity-70 animate-pulse" style={{animationDelay: '1s'}}></div>
-                    <div ref={parallaxRef} className="relative z-10">
-                      <img 
-                        src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-                        alt="Our team collaborating" 
-                        className="w-full h-auto rounded-2xl shadow-xl relative z-10 transition-all duration-700 hover:shadow-2xl hover:scale-[1.02]"
-                      />
-                    </div>
-                  </div>
-                </ScrollReveal>
-              </div>
-            </div>
-
-            {/* Our Values with 3D card effect */}
-            <div className="max-w-5xl mx-auto mb-24">
-              <ScrollReveal>
-                <h2 className="font-space-grotesk text-3xl md:text-5xl font-medium mb-12 text-center relative">
-                  <span className="inline-block relative">
-                    <span className="relative">Our Values</span>
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 w-16 bg-gradient-to-r from-purple-600 to-green-600 rounded-full"></div>
-                  </span>
-                </h2>
-              </ScrollReveal>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {VALUES.map((value, index) => (
-                  <ScrollReveal key={value.id} delay={index * 100}>
-                    <div 
-                      className="group bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-all duration-500 border border-zinc-100 hover:border-zinc-200 transform perspective-1000 hover:-rotate-y-2 hover:rotate-x-2"
-                      onMouseEnter={() => setActiveMember(value.id)}
-                      onMouseLeave={() => setActiveMember(null)}
-                    >
-                      <div className={`w-16 h-16 bg-${value.color}-100 rounded-2xl flex items-center justify-center mb-6 text-${value.color}-600 group-hover:scale-110 transition-transform duration-500`}>
-                        {value.icon}
-                      </div>
-                      <h3 className="text-2xl font-medium mb-3 group-hover:text-blue-600 transition-colors duration-300">{value.title}</h3>
-                      <p className="text-zinc-600">{value.description}</p>
-                    </div>
-                  </ScrollReveal>
-                ))}
-              </div>
-            </div>
-
-            {/* Our Team with responsive grid layout */}
-            <div className="max-w-6xl mx-auto mb-24">
-              <ScrollReveal>
-                <h2 className="font-space-grotesk text-3xl md:text-5xl font-medium mb-12 text-center relative">
-                  <span className="inline-block relative">
-                    <span className="relative">Meet Our Team</span>
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 w-16 bg-gradient-to-r from-green-600 to-blue-600 rounded-full"></div>
-                  </span>
-                </h2>
-              </ScrollReveal>
-              
-              <div className="relative">
-                <div className="overflow-x-auto pb-8 hide-scrollbar">
-                  <div className="flex space-x-6 px-4 max-w-full">
-                    {TEAM_MEMBERS.map((member, index) => (
-                      <ScrollReveal key={member.id} delay={index * 100}>
-                        <div 
-                          className={`bg-white rounded-xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 w-72 flex-shrink-0 ${activeMember === member.id ? 'ring-2 ring-blue-500' : ''}`}
-                          onMouseEnter={() => setActiveMember(member.id)}
-                          onMouseLeave={() => setActiveMember(null)}
-                        >
-                          <div className="relative h-80 overflow-hidden">
-                            <img 
-                              src={member.image} 
-                              alt={member.name} 
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
-                              <div className="flex space-x-3 mb-4 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500 delay-100">
-                                {member.social.linkedin && (
-                                  <a 
-                                    href={member.social.linkedin} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-colors"
-                                  >
-                                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                                  </svg>
-                                </a>
-                                )}
-                                {member.social.twitter && (
-                                  <a 
-                                    href={member.social.twitter} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-colors"
-                                  >
-                                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                      <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                                  </svg>
-                                </a>
-                                )}
-                                {member.social.github && (
-                                  <a 
-                                    href={member.social.github} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-colors"
-                                  >
-                                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                      <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-                                  </svg>
-                                </a>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="p-6">
-                            <div className="flex items-center justify-between mb-2">
-                              <h3 className="text-xl font-medium">{member.name}</h3>
-                              <span className="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-800 rounded-full">{member.specialty}</span>
-                            </div>
-                            <p className="text-blue-600 mb-4">{member.role}</p>
-                            <p className="text-zinc-600 line-clamp-3 group-hover:line-clamp-none transition-all duration-300">{member.bio}</p>
-                          </div>
-                        </div>
-                      </ScrollReveal>
-                    ))}
-                  </div>
-                </div>
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-20 h-full bg-gradient-to-r from-white to-transparent pointer-events-none"></div>
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-20 h-full bg-gradient-to-l from-white to-transparent pointer-events-none"></div>
-              </div>
-            </div>
-
-            {/* Stats Section with animated counters */}
-            <div className="max-w-5xl mx-auto mb-24">
-              <div className="relative rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-90"></div>
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')] bg-cover bg-center mix-blend-overlay opacity-20"></div>
-                <div className="relative p-12 text-white">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <ScrollReveal>
-                      <div className="text-center transform hover:scale-105 transition-transform duration-300">
-                        <div className="text-5xl font-medium mb-2">8+</div>
-                        <div className="text-white/80">Years of Experience</div>
-                      </div>
-                    </ScrollReveal>
-                    
-                    <ScrollReveal delay={100}>
-                      <div className="text-center transform hover:scale-105 transition-transform duration-300">
-                        <div className="text-5xl font-medium mb-2">200+</div>
-                        <div className="text-white/80">Projects Completed</div>
-                      </div>
-                    </ScrollReveal>
-                    
-                    <ScrollReveal delay={200}>
-                      <div className="text-center transform hover:scale-105 transition-transform duration-300">
-                        <div className="text-5xl font-medium mb-2">50+</div>
-                        <div className="text-white/80">Team Members</div>
-                      </div>
-                    </ScrollReveal>
-                    
-                    <ScrollReveal delay={300}>
-                      <div className="text-center transform hover:scale-105 transition-transform duration-300">
-                        <div className="text-5xl font-medium mb-2">15+</div>
-                        <div className="text-white/80">Countries Served</div>
-                      </div>
-                    </ScrollReveal>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* CTA Section with floating elements */}
-            <div className="max-w-4xl mx-auto text-center relative">
-              <div className="absolute -top-10 left-1/4 w-16 h-16 bg-blue-100 rounded-full opacity-50 animate-float"></div>
-              <div className="absolute top-20 right-1/4 w-12 h-12 bg-purple-100 rounded-full opacity-50 animate-float" style={{animationDelay: '1s'}}></div>
-              <div className="absolute -bottom-10 left-1/3 w-20 h-20 bg-green-100 rounded-full opacity-50 animate-float" style={{animationDelay: '2s'}}></div>
-              
-              <ScrollReveal>
-                <h2 className="font-space-grotesk text-3xl md:text-5xl font-medium mb-6 relative">
-                  <span className="inline-block">
-                    <span className="relative">Ready to work with us?</span>
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
-                  </span>
-                </h2>
-                <p className="text-xl text-zinc-600 mb-8">
-                  We're always looking for new challenges and exciting projects.
-                </p>
-                <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  <a 
-                    href="/contact" 
-                    className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-full overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
-                    onMouseEnter={() => setActiveMember(999)}
-                    onMouseLeave={() => setActiveMember(null)}
-                  >
-                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
-                    <span className="relative flex items-center">
-                      Get in Touch <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                    </span>
-                  </a>
-                  <a 
-                    href="/work" 
-                    className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-medium text-zinc-900 bg-white border border-zinc-300 rounded-full hover:border-zinc-400 shadow-sm hover:shadow-md transition-all duration-300"
-                    onMouseEnter={() => setActiveMember(998)}
-                    onMouseLeave={() => setActiveMember(null)}
-                  >
-                    <span className="relative flex items-center">
-                      View Our Work <ExternalLink className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                    </span>
-                  </a>
-                </div>
-              </ScrollReveal>
             </div>
           </div>
         </section>
-      </div>
 
-      <style>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-          100% { transform: translateY(0px); }
-        }
-        .animate-float {
-          animation: float 5s ease-in-out infinite;
-        }
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-        .-rotate-y-2 {
-          transform: rotateY(-2deg);
-        }
-        .rotate-x-2 {
-          transform: rotateX(2deg);
-        }
-      `}</style>
+        {/* Mission Section */}
+        <section className="container mx-auto px-4 sm:px-6 py-16 md:py-20 relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-fluid-2xl font-display font-semibold mb-6 relative">
+                  <span className="inline-block relative">
+                    <span className="relative">Our Mission</span>
+                    <div className="absolute -bottom-2 left-0 h-1 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
+                  </span>
+                </h2>
+                <p className="text-fluid-base text-zinc-700 dark:text-zinc-300 mb-6 leading-relaxed">
+                  At ALAVI, we believe in the power of technology to transform businesses and enhance lives. Our mission is to create digital solutions that are not only visually stunning but also intuitive, accessible, and impactful.
+                </p>
+                <p className="text-fluid-base text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                  We combine strategic thinking with technical expertise to deliver results that exceed expectations. Whether you're a startup looking to make your mark or an established brand seeking digital transformation, we're here to help you succeed.
+                </p>
+              </div>
+              <div className="relative">
+                <div className="aspect-square rounded-2xl overflow-hidden shadow-xl">
+                  <img 
+                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c" 
+                    alt="Team collaboration" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl -z-10"></div>
+                <div className="absolute -top-5 -left-5 w-20 h-20 border-l-4 border-t-4 border-cyberblue opacity-70" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Values Section */}
+        <section className="container mx-auto px-4 sm:px-6 py-16 md:py-24 bg-zinc-50/80 dark:bg-zinc-800/30 rounded-3xl my-16 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-fluid-2xl font-display font-semibold mb-6 relative">
+                <span className="inline-block relative">
+                  <span className="relative">Our Values</span>
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 w-16 bg-gradient-to-r from-purple-600 to-green-600 rounded-full"></div>
+                </span>
+              </h2>
+              <p className="text-fluid-base text-zinc-700 dark:text-zinc-300 max-w-2xl mx-auto">
+                These core principles guide everything we do, from how we work with clients to how we build our products.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {VALUES.map((value) => (
+                <div 
+                  key={value.id} 
+                  className="group team-card bg-white dark:bg-zinc-800 rounded-xl p-8 shadow-xl overflow-hidden transition-all duration-500 ease-in-out will-change-transform hover:shadow-2xl hover:-translate-y-2 h-[300px] flex flex-col hover:bg-gradient-to-br hover:from-white hover:via-white hover:to-blue-50 dark:hover:from-zinc-800 dark:hover:via-zinc-800 dark:hover:to-blue-900/20"
+                  onMouseEnter={() => setActiveMember(value.id)}
+                  onMouseLeave={() => setActiveMember(null)}
+                >
+                  <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                    {value.icon}
+                  </div>
+                  <h3 className="text-2xl font-medium mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">{value.title}</h3>
+                  <p className="team-card-bio text-zinc-600 dark:text-zinc-400 transition-all duration-500 ease-in-out max-h-[4.5rem] group-hover:max-h-[200px] overflow-y-auto pr-1">{value.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Team Section */}
+        <section className="container mx-auto px-4 sm:px-6 py-16 md:py-24 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-fluid-2xl font-display font-semibold mb-6 relative">
+                <span className="inline-block relative">
+                  <span className="relative">Meet Our Team</span>
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
+                </span>
+              </h2>
+              <p className="text-fluid-base text-zinc-700 dark:text-zinc-300 max-w-2xl mx-auto">
+                We're a diverse group of creative thinkers, problem solvers, and digital craftspeople.
+              </p>
+            </div>
+            
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-full max-w-5xl h-[500px] bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/10 dark:to-cyan-900/10 rounded-3xl -z-10"></div>
+              </div>
+              
+              <div className="py-12">
+                <div className="flex overflow-x-auto pb-8 px-4 scrollbar-hide snap-x snap-mandatory">
+                  <div className="flex space-x-6 md:space-x-8">
+                    {TEAM_MEMBERS.map((member) => (
+                      <div 
+                        key={member.id} 
+                        className={`team-card bg-white dark:bg-zinc-800 rounded-xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out will-change-transform hover:shadow-2xl hover:-translate-y-2 w-72 h-[500px] flex-shrink-0 flex flex-col group ${activeMember === member.id ? 'ring-2 ring-blue-500' : ''}`}
+                        onMouseEnter={() => setActiveMember(member.id)}
+                        onMouseLeave={() => setActiveMember(null)}
+                      >
+                        <div className="relative h-64 overflow-hidden">
+                          <img 
+                            src={member.image} 
+                            alt={member.name} 
+                            className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                          
+                          <div className="absolute bottom-0 left-0 w-full p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out flex justify-center space-x-4">
+                            {member.social.linkedin && (
+                              <a 
+                                href={member.social.linkedin} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-300"
+                                aria-label={`${member.name}'s LinkedIn`}
+                              >
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                              </svg>
+                            </a>
+                            )}
+                            {member.social.twitter && (
+                              <a 
+                                href={member.social.twitter} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-300"
+                                aria-label={`${member.name}'s Twitter`}
+                              >
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                  <path d="M23.953 4.57a10 10 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                              </svg>
+                            </a>
+                            )}
+                          </div>
+                        </div>
+                        <div className="p-6 flex-grow flex flex-col transition-all duration-500 ease-in-out group-hover:bg-blue-50 dark:group-hover:bg-blue-900/10 relative z-10">
+                          <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-xl font-medium group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors duration-300">{member.name}</h3>
+                            <span className="text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full group-hover:bg-blue-200 dark:group-hover:bg-blue-800/30 transition-colors duration-300 ease-in-out">{member.specialty}</span>
+                          </div>
+                          <p className="text-blue-600 dark:text-blue-400 mb-4 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300 ease-in-out">{member.role}</p>
+                          <div className="relative overflow-hidden flex-grow">
+                            <p className="team-card-bio text-zinc-600 dark:text-zinc-400 transition-all duration-500 ease-in-out max-h-[4.5rem] group-hover:max-h-[200px] overflow-y-auto pr-1">
+                              {member.bio}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <div className="container mx-auto px-4 sm:px-6 py-16 md:py-24 text-center relative z-10">
+          <h2 className="text-fluid-2xl font-display font-semibold mb-6 relative">
+            <span className="inline-block relative">
+              <span className="relative">Ready to work with us?</span>
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
+            </span>
+          </h2>
+          <p className="text-fluid-base text-zinc-700 dark:text-zinc-300 mb-8">
+            We're always looking for new challenges and exciting projects.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <a 
+              href="/contact" 
+              className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-full overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
+              onMouseEnter={() => setActiveMember(999)}
+              onMouseLeave={() => setActiveMember(null)}
+            >
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+              <span className="relative flex items-center">
+                Get in Touch <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+              </span>
+            </a>
+            <a 
+              href="/work" 
+              className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-medium text-zinc-900 bg-white border border-zinc-300 rounded-full hover:border-zinc-400 shadow-sm hover:shadow-md transition-all duration-300"
+              onMouseEnter={() => setActiveMember(998)}
+              onMouseLeave={() => setActiveMember(null)}
+            >
+              <span className="relative flex items-center">
+                View Our Work <ExternalLink className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
     </Layout>
   );
 };

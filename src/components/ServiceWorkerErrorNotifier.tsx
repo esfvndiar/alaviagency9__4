@@ -1,12 +1,17 @@
 import { useEffect } from 'react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { AlertCircle } from 'lucide-react';
+import { useErrorHandler } from '@/utils/error-handling';
+import ErrorBoundary from './ErrorBoundary';
 
 /**
  * Component that checks for service worker registration errors and displays them as toast notifications
  * This component should be mounted in the App component to ensure it runs after React is initialized
  */
 const ServiceWorkerErrorNotifier = () => {
+  const { toast } = useToast();
+  const { handleError } = useErrorHandler();
+
   useEffect(() => {
     // Check if there's a service worker registration error
     if (window.swRegistrationError) {
@@ -28,10 +33,17 @@ const ServiceWorkerErrorNotifier = () => {
       // Clear the error so it doesn't show again on page refresh
       delete window.swRegistrationError;
     }
-  }, []);
+  }, [toast, handleError]);
 
   // This component doesn't render anything
   return null;
 };
 
-export default ServiceWorkerErrorNotifier;
+// Wrap with ErrorBoundary to prevent this component from causing app crashes
+const ServiceWorkerErrorNotifierWithErrorBoundary = () => (
+  <ErrorBoundary componentName="ServiceWorkerErrorNotifier" fallback={null}>
+    <ServiceWorkerErrorNotifier />
+  </ErrorBoundary>
+);
+
+export default ServiceWorkerErrorNotifierWithErrorBoundary;

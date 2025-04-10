@@ -143,13 +143,13 @@ const FAQSection: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="py-20 md:py-32 relative bg-gradient-to-b from-white to-zinc-50">
+    <section id="faq" className="py-20 md:py-32 relative bg-gradient-to-b from-white to-zinc-50 dark:from-zinc-900 dark:to-zinc-800">
       <div className="container mx-auto px-5 md:px-10 max-w-6xl">
         {/* Header section with horizontal layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-16 gap-y-8 mb-16">
           <ScrollReveal className="lg:col-span-1">
             <div className="lg:mb-16">
-              <h2 className="text-3xl md:text-5xl font-display font-medium tracking-tight">
+              <h2 className="text-3xl md:text-5xl font-display font-medium tracking-tight text-zinc-900 dark:text-white">
                 <span className="inline-block md:inline">Frequently</span>
                 <span className="inline-block md:inline"> Asked </span>
                 <span className="text-gradient inline-block">Questions</span>
@@ -164,21 +164,21 @@ const FAQSection: React.FC = () => {
                 {faqs.map((faq, index) => (
                   <div 
                     key={index} 
-                    className="border border-zinc-200 rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md"
+                    className="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md"
                   >
                     <button
                       onClick={() => toggleFAQ(index)}
-                      className="w-full flex justify-between items-center p-5 text-left bg-white hover:bg-zinc-50 transition-colors"
+                      className="w-full flex justify-between items-center p-5 text-left bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
                       aria-expanded={openIndex === index}
                       aria-controls={`faq-answer-${index}`}
                     >
-                      <h3 id={`faq-question-${index}`} className="text-lg font-medium text-zinc-900">{faq.question}</h3>
+                      <h3 id={`faq-question-${index}`} className="text-lg font-medium text-zinc-900 dark:text-white">{faq.question}</h3>
                       <span className={`text-primary ml-4 flex-shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''}`}>
                         <ChevronDown className="w-5 h-5" />
                       </span>
                     </button>
                     <div 
-                      className={`transition-all duration-300 ease-in-out bg-white overflow-hidden`}
+                      className={`transition-all duration-300 ease-in-out bg-white dark:bg-zinc-800 overflow-hidden`}
                       style={{ 
                         maxHeight: openIndex === index ? `${answerHeights[index]}px` : '0',
                         opacity: openIndex === index ? 1 : 0
@@ -189,7 +189,7 @@ const FAQSection: React.FC = () => {
                     >
                       <div 
                         ref={el => answerRefs.current[index] = el} 
-                        className="p-5 text-zinc-600 border-t border-zinc-100"
+                        className="p-5 text-zinc-600 dark:text-zinc-300 border-t border-zinc-100 dark:border-zinc-700"
                       >
                         {faq.answer}
                       </div>

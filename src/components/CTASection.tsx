@@ -13,19 +13,23 @@ const CTASection: React.FC = () => {
   }, []);
 
   return (
-    <section id="contact" className="py-20 md:py-32 relative bg-gradient-to-b from-zinc-50 to-white overflow-hidden">
-      <div className="container mx-auto px-5 md:px-10 max-w-6xl">
+    <section id="contact" className="py-20 md:py-32 relative bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-900 dark:to-zinc-950 overflow-hidden">
+      {/* Add gradient background elements for depth */}
+      <div className="absolute -top-20 -left-20 w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] bg-cyberblue/5 dark:bg-cyberblue/20 rounded-full blur-[100px]" />
+      <div className="absolute -bottom-20 -right-20 w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] bg-mintgreen/5 dark:bg-mintgreen/20 rounded-full blur-[100px]" />
+      
+      <div className="container mx-auto px-5 md:px-10 max-w-6xl relative z-10">
         {/* CTA Section */}
         <div className="mb-24">
           <ScrollReveal animation="fade-up">
             <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-6 lg:gap-10">
               <div className="lg:col-span-6 text-left">
                 <h2 className="text-[6rem] sm:text-[8rem] md:text-[10rem] lg:text-[12rem] xl:text-[14rem] font-display font-bold tracking-tight leading-[0.8] -ml-2 md:-ml-4">
-                  <span className="text-lava inline-block">HEY!</span>
+                  <span className="text-lava inline-block dark:text-gradient">HEY!</span>
                 </h2>
               </div>
               <div className="lg:col-span-6 text-left lg:pl-0">
-                <p className="text-xl md:text-2xl font-medium text-zinc-800 mb-8 max-w-md">
+                <p className="text-xl md:text-2xl font-medium text-zinc-800 dark:text-white mb-8 max-w-md">
                   What are you waiting for? Let's create something big together.
                 </p>
                 <a 

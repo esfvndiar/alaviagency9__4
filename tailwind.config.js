@@ -6,17 +6,53 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
     "./index.html",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        primary: "#3B82F6", 
-        cyberblue: "#0ea5e9", 
-        mintgreen: "#10B981", 
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        cyberblue: "hsl(var(--cyberblue))",
+        mintgreen: "hsl(var(--mintgreen))",
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         display: ['Montserrat', 'sans-serif'],
         'space-grotesk': ['Space Grotesk', 'sans-serif'],
+      },
+      fontSize: {
+        'fluid-sm': 'clamp(0.875rem, 0.8rem + 0.375vw, 1rem)',
+        'fluid-base': 'clamp(1rem, 0.95rem + 0.25vw, 1.125rem)',
+        'fluid-lg': 'clamp(1.125rem, 1rem + 0.625vw, 1.5rem)',
+        'fluid-xl': 'clamp(1.5rem, 1.25rem + 1.25vw, 2.25rem)',
+        'fluid-2xl': 'clamp(2rem, 1.5rem + 2.5vw, 3.5rem)',
+        'fluid-3xl': 'clamp(2.5rem, 2rem + 2.5vw, 4rem)',
       },
       backgroundImage: {
         'grid-pattern': "url('/grid-pattern.svg')",

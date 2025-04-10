@@ -18,7 +18,6 @@ interface NavbarProps {
 }
 
 const NAV_LINKS: NavLink[] = [
-  { title: 'Home', href: '/' },
   { title: 'Work', href: '/work' },
   { title: 'Services', href: '/services' },
   { title: 'About', href: '/about' },
@@ -88,14 +87,14 @@ const Navbar: React.FC<NavbarProps> = ({ onMobileMenuToggle }) => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         navState.scrolled 
-          ? 'bg-white/30 backdrop-blur-md shadow-sm' 
+          ? 'bg-white/80 dark:bg-zinc-900/90 backdrop-blur-md shadow-sm' 
           : 'bg-transparent'
       } ${navState.hidden ? '-translate-y-full' : 'translate-y-0'}`}
     >
       <div className="container mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
         <a 
           href="/" 
-          className="text-xl sm:text-2xl font-space-grotesk font-medium text-zinc-900 tracking-tight"
+          className="text-xl sm:text-2xl font-space-grotesk font-medium text-zinc-900 dark:text-white tracking-tight"
         >
           ALAVI
         </a>
@@ -106,22 +105,30 @@ const Navbar: React.FC<NavbarProps> = ({ onMobileMenuToggle }) => {
             <a
               key={link.title}
               href={link.href}
-              className="text-sm font-medium text-zinc-800 hover:text-zinc-900 transition-colors relative group"
+              className={`text-sm font-medium transition-all duration-300 relative group ${
+                link.title === 'Reach Out' 
+                ? 'px-4 py-2 rounded-full bg-gradient-to-r from-[#14b8a6] to-[#0ea5e9] text-white hover:shadow-md hover:-translate-y-0.5' 
+                : 'text-zinc-800 dark:text-zinc-100 hover:text-zinc-900 dark:hover:text-white'
+              }`}
             >
               {link.title}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-zinc-900 transition-all duration-300 group-hover:w-full"></span>
+              {link.title !== 'Reach Out' && (
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-zinc-900 dark:bg-white transition-all duration-300 group-hover:w-full"></span>
+              )}
             </a>
           ))}
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          onClick={toggleMobileMenu}
-          className="md:hidden text-zinc-900 hover:text-zinc-700 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-200 rounded-md p-1"
-          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-        >
-          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="md:hidden flex items-center space-x-4">
+          <button
+            onClick={toggleMobileMenu}
+            className="text-zinc-900 dark:text-white hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-200 dark:focus:ring-zinc-500 rounded-md p-1"
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
