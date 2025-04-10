@@ -239,18 +239,20 @@
   .animated-gradient-text {
     background: linear-gradient(
       90deg,
-      var(--gradient-1) 0%,
-      var(--gradient-2) 25%,
-      var(--gradient-3) 50%,
-      var(--gradient-4) 75%,
-      var(--gradient-1) 100%
+      var(--gradient-1, #3b82f6) 0%,
+      var(--gradient-2, #0ea5e9) 25%,
+      var(--gradient-3, #10b981) 50%,
+      var(--gradient-4, #0ea5e9) 75%,
+      var(--gradient-1, #3b82f6) 100%
     );
     background-size: 400% 100%;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
     animation: gradientShift 8s linear infinite;
     transition: all 0.2s ease;
+    display: inline-block; /* Ensure the element takes the right size */
   }
 
   .animated-gradient-text:hover {
