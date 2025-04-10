@@ -343,22 +343,6 @@ const Work: React.FC = () => {
               ))}
             </div>
           )}
-          
-          <ScrollReveal>
-            <div className="mt-32 text-center">
-              <h2 className="text-3xl md:text-4xl font-space-grotesk font-medium mb-6">Ready to create something amazing?</h2>
-              <p className="text-xl text-zinc-600 mb-8 max-w-2xl mx-auto">
-                Let's collaborate on your next digital project and transform your vision into reality.
-              </p>
-              <a 
-                href="/contact" 
-                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white bg-zinc-900 dark:bg-zinc-800 rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-700 transition-all duration-300 hover:shadow-lg hover:scale-105"
-              >
-                Start a Project
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </a>
-            </div>
-          </ScrollReveal>
         </div>
       </section>
     </Layout>

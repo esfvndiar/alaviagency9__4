@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { X } from 'lucide-react';
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
 
 // Define a constant for animation duration to ensure consistency
 const ANIMATION_DURATION = 300; // in milliseconds
@@ -78,6 +79,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) =
   // Don't render anything if not mounted or shouldn't render
   if (!mounted || !shouldRender) return null;
 
+  // Helper function to determine if a link is internal or external
+  const isInternalLink = (href: string) => {
+    return href.startsWith('/') && !href.startsWith('//');
+  };
+
   // Portal content - this will be rendered directly to document.body
   const menuContent = (
     <div 
@@ -107,17 +113,33 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) =
                 transitionDelay: isOpen ? `${index * 50}ms` : '0ms'
               }}
             >
-              <a
-                href={link.href}
-                onClick={onClose}
-                className={`text-xl sm:text-2xl font-medium transition-all duration-300 ${
-                  link.title === 'Reach Out'
-                    ? 'px-6 py-3 rounded-full bg-gradient-to-r from-[#14b8a6] to-[#0ea5e9] text-white hover:shadow-md inline-block'
-                    : 'text-zinc-900 dark:text-white hover:text-primary dark:hover:text-primary'
-                }`}
-              >
-                {link.title}
-              </a>
+              {isInternalLink(link.href) ? (
+                <Link
+                  to={link.href}
+                  onClick={onClose}
+                  className={`text-xl sm:text-2xl font-medium transition-all duration-300 ${
+                    link.title === 'Reach Out'
+                      ? 'px-6 py-3 rounded-full bg-gradient-to-r from-[#14b8a6] to-[#0ea5e9] text-white hover:shadow-md inline-block'
+                      : 'text-zinc-900 dark:text-white hover:text-primary dark:hover:text-primary'
+                  }`}
+                >
+                  {link.title}
+                </Link>
+              ) : (
+                <a
+                  href={link.href}
+                  onClick={onClose}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`text-xl sm:text-2xl font-medium transition-all duration-300 ${
+                    link.title === 'Reach Out'
+                      ? 'px-6 py-3 rounded-full bg-gradient-to-r from-[#14b8a6] to-[#0ea5e9] text-white hover:shadow-md inline-block'
+                      : 'text-zinc-900 dark:text-white hover:text-primary dark:hover:text-primary'
+                  }`}
+                >
+                  {link.title}
+                </a>
+              )}
             </li>
           ))}
         </ul>

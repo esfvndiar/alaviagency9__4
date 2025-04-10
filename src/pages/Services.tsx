@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ArrowRight, Check, ChevronDown, ChevronUp, ArrowUpRight, Plus } from 'lucide-react';
 import Layout from '../components/Layout';
 import ScrollReveal from '../components/ScrollReveal';
@@ -510,32 +510,6 @@ const Services: React.FC = () => {
               ))}
             </div>
           </div>
-          
-          {/* CTA Section */}
-          <ScrollReveal>
-            <div className="mt-32 max-w-5xl mx-auto text-center">
-              <div className="bg-gradient-to-r from-zinc-900 dark:from-zinc-100 to-zinc-800 dark:to-zinc-200 rounded-3xl p-16 text-white relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 dark:bg-blue-400 rounded-full opacity-10 -translate-y-1/2 translate-x-1/4"></div>
-                  <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500 dark:bg-purple-400 rounded-full opacity-10 translate-y-1/3 -translate-x-1/3"></div>
-                </div>
-                
-                <div className="relative z-10">
-                  <h2 className="font-space-grotesk text-3xl md:text-4xl font-medium mb-4 text-zinc-100 dark:text-zinc-900">Ready to transform your business?</h2>
-                  <p className="text-xl text-zinc-300 dark:text-zinc-600 mb-8 max-w-2xl mx-auto">
-                    Let's discuss how our services can help you achieve your digital goals and drive growth for your organization.
-                  </p>
-                  <a 
-                    href="/contact" 
-                    className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-zinc-900 dark:text-white bg-white dark:bg-zinc-800 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all duration-300 hover:shadow-lg hover:scale-105"
-                  >
-                    Start a Conversation
-                    <ArrowUpRight className="ml-2 w-5 h-5" />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
         </div>
       </section>
     </Layout>

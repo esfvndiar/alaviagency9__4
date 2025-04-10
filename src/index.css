@@ -9,6 +9,9 @@
     scroll-behavior: smooth;
     background-color: white;
     overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   
   body {
@@ -69,12 +72,106 @@
     --cyberblue: 210 100% 50%;
     --mintgreen: 160 100% 50%;
   }
+
+  /* Force hardware acceleration on important animated elements */
+  .animate-gpu,
+  .transition-gpu,
+  .animate-blink,
+  [class*="animate-"],
+  .transform,
+  .will-change-transform,
+  .will-change-opacity {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* New award-winning animation keyframes */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0) rotate(0);
+    }
+    50% {
+      transform: translateY(-10px) rotate(2deg);
+    }
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 0.7;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes gradient-shift-reverse {
+    0% {
+      background-position: 100% 50%;
+    }
+    50% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Optimize animations to ensure consistent 120fps performance */
+  @keyframes accordion-down {
+    from {
+      height: 0;
+      transform: translateZ(0);
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+      transform: translateZ(0);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+      transform: translateZ(0);
+    }
+    to {
+      height: 0;
+      transform: translateZ(0);
+    }
+  }
+
+  @keyframes blink {
+    0%, 100% {
+      opacity: 1;
+      transform: translateZ(0);
+    }
+    50% {
+      opacity: 0;
+      transform: translateZ(0);
+    }
+  }
 }
 
 @layer components {
   .text-gradient {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500 font-semibold;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to right, #3b82f6, #8b5cf6);
+    will-change: background-position;
+    background-size: 100%;
   }
   
   .glassmorphism {
@@ -397,6 +494,61 @@
   .btn-pulse {
     animation: subtle-pulse 3s infinite;
   }
+
+  /* 120fps optimized animation classes */
+  .animate-blink {
+    animation: blink 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* Optimize common transitions for 120fps */
+  .transition-120fps {
+    transition-property: transform, opacity;
+    transition-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
+  }
+  
+  /* Apply hardware acceleration to scrolling containers */
+  .scroll-optimize {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    transform: translateZ(0);
+  }
+
+  /* Background with radial gradient */
+  .bg-radial-gradient {
+    background: radial-gradient(circle at center, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 70%);
+  }
+
+  /* Award-winning animation classes */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+
+  .animate-gradient-shift {
+    animation: gradient-shift 8s ease infinite;
+    background-size: 200% 200%;
+  }
+
+  .animate-gradient-shift-reverse {
+    animation: gradient-shift-reverse 8s ease infinite;
+    background-size: 200% 200%;
+  }
+
+  /* Animation delay utilities */
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .delay-700 {
+    animation-delay: 700ms;
+  }
+
+  .delay-1000 {
+    animation-delay: 1000ms;
+  }
 }
 
 @layer utilities {
@@ -536,6 +688,22 @@
     opacity: 0;
     transition: opacity 300ms;
   }
+
+  /* High performance box shadow */
+  .shadow-gpu {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateZ(0);
+  }
+  
+  /* Optimized animation duration for 120fps */
+  .duration-120fps {
+    transition-duration: 83ms; /* ~10 frames at 120fps */
+  }
+  
+  /* Optimized animation duration for 60fps fallback */
+  .duration-60fps {
+    transition-duration: 166ms; /* ~10 frames at 60fps */
+  }
 }
 
 /* Grid background pattern */
@@ -620,49 +788,6 @@
 .hero-content {
   position: relative;
   z-index: 1;
-}
-
-/* Button animations */
-.btn-animated {
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-animated::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transition: all 0.6s;
-  z-index: 1;
-}
-
-.btn-animated:hover::before {
-  left: 100%;
-}
-
-.btn-pulse {
-  animation: subtle-pulse 3s infinite;
-}
-
-@keyframes subtle-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
-  }
 }
 
 /* Improving performance and fixing potential animation issues with mobile devices */

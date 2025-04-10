@@ -28,7 +28,7 @@ const ServicesSection: React.FC = () => {
 
   return (
     <section id="services" className="py-20 md:py-32 relative">
-      <div className="container mx-auto px-5 md:px-10 max-w-6xl">
+      <div className="container mx-auto px-5 md:px-10 max-w-7xl">
         <ScrollReveal>
           <h2 className="text-3xl md:text-5xl font-display font-medium mb-16 tracking-tight">
             <span className="inline-block mr-3">Our</span>

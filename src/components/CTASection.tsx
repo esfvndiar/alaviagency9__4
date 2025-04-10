@@ -18,7 +18,7 @@ const CTASection: React.FC = () => {
       <div className="absolute -top-20 -left-20 w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] bg-cyberblue/5 dark:bg-cyberblue/20 rounded-full blur-[100px]" />
       <div className="absolute -bottom-20 -right-20 w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] bg-mintgreen/5 dark:bg-mintgreen/20 rounded-full blur-[100px]" />
       
-      <div className="container mx-auto px-5 md:px-10 max-w-6xl relative z-10">
+      <div className="container mx-auto px-5 md:px-10 max-w-7xl relative z-10">
         {/* CTA Section */}
         <div className="mb-24">
           <ScrollReveal animation="fade-up">
@@ -39,7 +39,7 @@ const CTASection: React.FC = () => {
                   onMouseLeave={() => setIsHovered(false)}
                   aria-label="Contact us"
                 >
-                  <span className="mr-2">Reach Out</span>
+                  <span className="mr-2">Get in Touch</span>
                   <ArrowRight className={`transition-transform duration-300 ease-in-out ${isHovered ? 'translate-x-2' : ''}`} />
                 </a>
               </div>

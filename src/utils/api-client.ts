@@ -43,18 +43,35 @@ export interface SiteConfigType {
 // Error types
 export class ApiError extends Error {
   statusCode: number;
+  code?: string;
   
-  constructor(message: string, statusCode: number = 500) {
+  constructor(message: string, statusCode: number = 500, code?: string) {
     super(message);
     this.name = 'ApiError';
     this.statusCode = statusCode;
+    this.code = code;
   }
 }
 
 export class NetworkError extends Error {
-  constructor(message: string = 'Network error occurred. Please check your connection.') {
+  code: string;
+  
+  constructor(message: string = 'Network error occurred. Please check your connection.', code: string = 'NETWORK_ERROR') {
     super(message);
     this.name = 'NetworkError';
+    this.code = code;
+  }
+}
+
+export class ValidationError extends Error {
+  code: string;
+  fields: Record<string, string>;
+  
+  constructor(message: string, fields: Record<string, string>, code: string = 'VALIDATION_ERROR') {
+    super(message);
+    this.name = 'ValidationError';
+    this.code = code;
+    this.fields = fields;
   }
 }
 
@@ -77,9 +94,17 @@ async function fetchWithErrorHandling<T>(
     const data = await response.json();
     
     if (!response.ok) {
+      if (response.status === 422) {
+        throw new ValidationError(
+          data.message || 'Validation failed',
+          data.errors || {},
+          data.code
+        );
+      }
       throw new ApiError(
         data.message || `Request failed with status ${response.status}`,
-        response.status
+        response.status,
+        data.code
       );
     }
     
@@ -89,7 +114,7 @@ async function fetchWithErrorHandling<T>(
       statusCode: response.status
     };
   } catch (error) {
-    if (error instanceof ApiError) {
+    if (error instanceof ApiError || error instanceof ValidationError) {
       throw error;
     } else if (error instanceof TypeError && error.message.includes('fetch')) {
       throw new NetworkError();

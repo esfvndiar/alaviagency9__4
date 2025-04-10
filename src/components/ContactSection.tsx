@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ScrollReveal from './ScrollReveal';
 import { Send, Mail, Phone, MapPin } from 'lucide-react';
 import { siteConfig } from '../config/site-config';
@@ -15,55 +15,80 @@ const ContactSection: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const formRef = useRef<HTMLFormElement>(null);
+  const submitTimeoutRef = useRef<NodeJS.Timeout>();
+
+  // Clear any existing timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (submitTimeoutRef.current) {
+        clearTimeout(submitTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear field-specific error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus('idle');
-    setErrorMessage('');
-
-    // Client-side validation using config rules
+  // Validate form data
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
     const { validation, messages } = siteConfig.forms.contact;
     
     if (!formData.name.trim() || 
         formData.name.length < validation.name.minLength || 
         formData.name.length > validation.name.maxLength) {
-      setIsSubmitting(false);
-      setSubmitStatus('error');
-      setErrorMessage(messages.validation.name);
-      return;
+      errors.name = messages.validation.name;
     }
 
     if (!formData.email.trim() || !validation.email.pattern.test(formData.email)) {
-      setIsSubmitting(false);
-      setSubmitStatus('error');
-      setErrorMessage(messages.validation.email);
-      return;
+      errors.email = messages.validation.email;
+    }
+
+    if (formData.subject && formData.subject.length > validation.subject.maxLength) {
+      errors.subject = `Subject must be less than ${validation.subject.maxLength} characters`;
     }
 
     if (!formData.message.trim() || 
         formData.message.length < validation.message.minLength || 
         formData.message.length > validation.message.maxLength) {
-      setIsSubmitting(false);
+      errors.message = messages.validation.message;
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
       setSubmitStatus('error');
-      setErrorMessage(messages.validation.message);
       return;
     }
 
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
+    setFieldErrors({});
+
     try {
-      // Use the typed API client for form submission
       const response = await apiClient.submitContactForm(formData);
       
       if (response.success) {
-        // Reset form on success
         setFormData({
           name: '',
           email: '',
@@ -73,16 +98,25 @@ const ContactSection: React.FC = () => {
         
         setSubmitStatus('success');
         
-        // Scroll to top of form for success message visibility
         if (formRef.current) {
           formRef.current.scrollIntoView({ behavior: 'smooth' });
         }
+
+        // Reset success message after 5 seconds
+        submitTimeoutRef.current = setTimeout(() => {
+          setSubmitStatus('idle');
+        }, 5000);
       } else {
-        throw new Error(response.message || messages.error);
+        throw new Error(response.message || siteConfig.forms.contact.messages.error);
       }
     } catch (error) {
       setSubmitStatus('error');
-      setErrorMessage(error instanceof Error ? error.message : messages.error);
+      if (error instanceof ValidationError) {
+        setFieldErrors(error.fields);
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage(error instanceof Error ? error.message : siteConfig.forms.contact.messages.error);
+      }
     } finally {
       setIsSubmitting(false);
     }

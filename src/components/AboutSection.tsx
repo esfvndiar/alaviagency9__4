@@ -18,7 +18,7 @@ const AboutSection: React.FC = () => {
       <div className="absolute -bottom-20 -right-20 w-[120vw] h-[120vw] max-w-[800px] max-h-[800px] bg-mintgreen/10 dark:bg-mintgreen/20 rounded-full blur-[120px]" />
       <div className="absolute top-3/4 left-1/3 w-[80vw] h-[80vw] max-w-[500px] max-h-[500px] bg-primary/5 dark:bg-primary/10 rounded-full blur-[100px]" />
       
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
+      <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <ScrollReveal animation="fade-right" threshold={0.2}>
             <div className="relative">

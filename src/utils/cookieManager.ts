@@ -1,11 +1,5 @@
 import Cookies from 'js-cookie';
-
-export interface CookieSettings {
-  necessary: boolean;
-  analytics: boolean;
-  marketing: boolean;
-  preferences: boolean;
-}
+import { CookieSettings } from '../types/global';
 
 const COOKIE_CONSENT_NAME = 'cookie-consent';
 const COOKIE_SETTINGS_NAME = 'cookie-settings';

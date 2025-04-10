@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import Layout from '../components/Layout';
+import { MessageSquare, Users, Lightbulb, Heart, Rocket, Award } from 'lucide-react';
+import ScrollReveal from '../components/ScrollReveal';
+import ContactCTA from '../components/ContactCTA';
 
 interface TeamMember {
   id: number;
@@ -348,41 +351,15 @@ const About: React.FC = () => {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <div className="container mx-auto px-4 sm:px-6 py-16 md:py-24 text-center relative z-10">
-          <h2 className="text-fluid-2xl font-display font-semibold mb-6 relative">
-            <span className="inline-block relative">
-              <span className="relative">Ready to work with us?</span>
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
-            </span>
-          </h2>
-          <p className="text-fluid-base text-zinc-700 dark:text-zinc-300 mb-8">
-            We're always looking for new challenges and exciting projects.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a 
-              href="/contact" 
-              className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-full overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
-              onMouseEnter={() => setActiveMember(999)}
-              onMouseLeave={() => setActiveMember(null)}
-            >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
-              <span className="relative flex items-center">
-                Get in Touch <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-              </span>
-            </a>
-            <a 
-              href="/work" 
-              className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-medium text-zinc-900 bg-white border border-zinc-300 rounded-full hover:border-zinc-400 shadow-sm hover:shadow-md transition-all duration-300"
-              onMouseEnter={() => setActiveMember(998)}
-              onMouseLeave={() => setActiveMember(null)}
-            >
-              <span className="relative flex items-center">
-                View Our Work <ExternalLink className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-              </span>
-            </a>
-          </div>
-        </div>
+        {/* CTA Section - replace with new component */}
+        <ContactCTA 
+          variant="gradient"
+          title="Ready to work with us?"
+          subtitle="We're always looking for new challenges and exciting projects."
+          buttonText="Get in Touch"
+          buttonIcon="arrow-up-right"
+          className="container mx-auto px-4 sm:px-6 max-w-5xl"
+        />
       </div>
     </Layout>
   );

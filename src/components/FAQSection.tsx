@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import ScrollReveal from './ScrollReveal';
 import { ChevronDown } from 'lucide-react';
 
@@ -7,12 +7,13 @@ interface FAQItem {
   answer: React.ReactNode;
 }
 
+// Define performance variables outside component to prevent recreation
+const ANIMATION_DURATION = 120; // optimized for 120fps (8.33ms per frame, ~14-15 frames)
+
 const FAQSection: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const answerRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [answerHeights, setAnswerHeights] = useState<number[]>([]);
-  const resizeObserverRef = useRef<ResizeObserver | null>(null);
-
+  
+  // Pre-defined array of FAQs for better performance
   const faqs: FAQItem[] = [
     {
       question: "What services does ALAVI offer?",
@@ -103,48 +104,13 @@ const FAQSection: React.FC = () => {
     }
   ];
 
-  // Update heights when window resizes or content changes
-  const updateHeights = useCallback(() => {
-    const newHeights = answerRefs.current.map(ref => ref?.scrollHeight || 0);
-    setAnswerHeights(newHeights);
+  const toggleFAQ = useCallback((index: number) => {
+    setOpenIndex(prev => prev === index ? null : index);
   }, []);
-
-  // Initialize heights and set up resize observer
-  useEffect(() => {
-    // Initialize heights
-    updateHeights();
-
-    // Set up resize observer to update heights when content changes
-    if (typeof ResizeObserver !== 'undefined') {
-      resizeObserverRef.current = new ResizeObserver(updateHeights);
-      
-      answerRefs.current.forEach(ref => {
-        if (ref) {
-          resizeObserverRef.current?.observe(ref);
-        }
-      });
-    }
-
-    // Update heights on window resize
-    window.addEventListener('resize', updateHeights);
-
-    return () => {
-      // Clean up
-      window.removeEventListener('resize', updateHeights);
-      
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect();
-      }
-    };
-  }, [faqs.length, updateHeights]);
-
-  const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
 
   return (
     <section id="faq" className="py-20 md:py-32 relative bg-gradient-to-b from-white to-zinc-50 dark:from-zinc-900 dark:to-zinc-800">
-      <div className="container mx-auto px-5 md:px-10 max-w-6xl">
+      <div className="container mx-auto px-5 md:px-10 max-w-7xl">
         {/* Header section with horizontal layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-16 gap-y-8 mb-16">
           <ScrollReveal className="lg:col-span-1">
@@ -164,35 +130,51 @@ const FAQSection: React.FC = () => {
                 {faqs.map((faq, index) => (
                   <div 
                     key={index} 
-                    className="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md"
+                    className="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden shadow-sm hover:shadow-gpu transition-all duration-120fps transform-gpu"
+                    style={{
+                      transform: 'translate3d(0,0,0)',
+                      boxShadow: openIndex === index ? 'var(--tw-shadow)' : 'none'
+                    }}
                   >
                     <button
                       onClick={() => toggleFAQ(index)}
-                      className="w-full flex justify-between items-center p-5 text-left bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+                      className="w-full flex justify-between items-center p-5 text-left bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-120fps"
                       aria-expanded={openIndex === index}
                       aria-controls={`faq-answer-${index}`}
                     >
                       <h3 id={`faq-question-${index}`} className="text-lg font-medium text-zinc-900 dark:text-white">{faq.question}</h3>
-                      <span className={`text-primary ml-4 flex-shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''}`}>
+                      <span 
+                        className="text-primary ml-4 flex-shrink-0 transform transition-120fps will-change-transform"
+                        style={{
+                          transform: openIndex === index 
+                            ? 'translate3d(0,0,0) rotate(180deg)' 
+                            : 'translate3d(0,0,0) rotate(0deg)',
+                          transition: `transform ${ANIMATION_DURATION}ms cubic-bezier(0.2, 0, 0.2, 1)`
+                        }}
+                      >
                         <ChevronDown className="w-5 h-5" />
                       </span>
                     </button>
                     <div 
-                      className={`transition-all duration-300 ease-in-out bg-white dark:bg-zinc-800 overflow-hidden`}
-                      style={{ 
-                        maxHeight: openIndex === index ? `${answerHeights[index]}px` : '0',
-                        opacity: openIndex === index ? 1 : 0
+                      className="overflow-hidden bg-white dark:bg-zinc-800 will-change-transform will-change-opacity transform-gpu"
+                      style={{
+                        height: openIndex === index ? 'auto' : '0px',
+                        opacity: openIndex === index ? 1 : 0,
+                        transform: 'translate3d(0,0,0)',
+                        transition: `all ${ANIMATION_DURATION}ms cubic-bezier(0.2, 0, 0.2, 1)`
                       }}
                       id={`faq-answer-${index}`}
                       role="region"
                       aria-labelledby={`faq-question-${index}`}
                     >
                       <div 
-                        ref={(el: HTMLDivElement | null) => {
-                          answerRefs.current[index] = el;
-                          return undefined;
-                        }}
                         className="p-5 text-zinc-600 dark:text-zinc-300 border-t border-zinc-100 dark:border-zinc-700"
+                        style={{
+                          transform: openIndex === index 
+                            ? 'translate3d(0,0,0)' 
+                            : 'translate3d(0,-10px,0)',
+                          transition: `transform ${ANIMATION_DURATION}ms cubic-bezier(0.2, 0, 0.2, 1)`
+                        }}
                       >
                         {faq.answer}
                       </div>
@@ -208,4 +190,4 @@ const FAQSection: React.FC = () => {
   );
 };
 
-export default FAQSection;
+export default React.memo(FAQSection);

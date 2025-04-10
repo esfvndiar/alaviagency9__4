@@ -1,67 +1,35 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Cookies from 'js-cookie';
-
-interface CookieSettings {
-  necessary: boolean;
-  analytics: boolean;
-  marketing: boolean;
-  preferences: boolean;
-}
-
-interface CookieConsentProps {
-  onAccept?: (settings: CookieSettings) => void;
-  onDecline?: () => void;
-}
+import { checkBrowserSupport } from '../utils/browserSupport';
+import { CookieSettings, CookieConsentProps } from '../types/global';
 
 const CONSENT_COOKIE_NAME = 'cookie-consent';
 const SETTINGS_COOKIE_NAME = 'cookie-settings';
 const CONSENT_STORAGE_KEY = 'alavi-cookie-consent';
 
-const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) => {
+// Default settings moved outside component to prevent recreation on each render
+const DEFAULT_SETTINGS: CookieSettings = {
+  necessary: true, // Always required
+  analytics: false,
+  marketing: false,
+  preferences: false,
+};
+
+const CookieConsent: React.FC<CookieConsentProps> = React.memo(({ onAccept, onDecline }) => {
   const [visible, setVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const [settings, setSettings] = useState<CookieSettings>({
-    necessary: true, // Always required
-    analytics: false,
-    marketing: false,
-    preferences: false,
-  });
+  const [settings, setSettings] = useState<CookieSettings>(DEFAULT_SETTINGS);
+  
+  // Use a ref to track if component is mounted
+  const isMountedRef = useRef(true);
 
-  // Check if browser supports cookies and localStorage
-  const checkBrowserSupport = useCallback(() => {
-    let cookiesSupported = true;
-    let localStorageSupported = true;
+  // Memoize browser support check to avoid recomputing on each render
+  const browserSupport = useMemo(() => checkBrowserSupport(), []);
 
-    // Check cookies support
-    try {
-      Cookies.set('cookie_test', 'test', { expires: 1 });
-      if (Cookies.get('cookie_test') !== 'test') {
-        cookiesSupported = false;
-      }
-      Cookies.remove('cookie_test');
-    } catch (e) {
-      cookiesSupported = false;
-    }
-
-    // Check localStorage support
-    try {
-      localStorage.setItem('ls_test', 'test');
-      if (localStorage.getItem('ls_test') !== 'test') {
-        localStorageSupported = false;
-      }
-      localStorage.removeItem('ls_test');
-    } catch (e) {
-      localStorageSupported = false;
-    }
-
-    return { cookiesSupported, localStorageSupported };
-  }, []);
-
-  // Check if consent has been given before - using both cookies and localStorage
-  // to ensure persistence across all pages and subdomains
+  // Check if consent has been given before
   useEffect(() => {
     const checkConsent = () => {
-      const { cookiesSupported, localStorageSupported } = checkBrowserSupport();
+      const { cookiesSupported, localStorageSupported } = browserSupport;
       
       // If neither cookies nor localStorage are supported, don't show the banner
       // as we can't store consent anyway
@@ -112,14 +80,23 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
       return false;
     };
     
-    // Only show the banner if no consent has been given
-    if (!checkConsent()) {
+    // Only show the banner if no consent has been given and browser is supported
+    const { cookiesSupported, localStorageSupported } = browserSupport;
+    if ((cookiesSupported || localStorageSupported) && !checkConsent()) {
       setVisible(true);
     }
-  }, [checkBrowserSupport]);
+  }, [browserSupport]);
 
-  const saveConsent = (consentType: string, settingsData: CookieSettings) => {
-    const { cookiesSupported, localStorageSupported } = checkBrowserSupport();
+  // Set mounted ref to false when component unmounts
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Memoized save consent function to prevent recreation on each render
+  const saveConsent = useCallback((consentType: string, settingsData: CookieSettings) => {
+    const { cookiesSupported, localStorageSupported } = browserSupport;
     
     // Save in cookies if supported
     if (cookiesSupported) {
@@ -149,9 +126,10 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
         console.error('Error saving cookie consent to localStorage:', e);
       }
     }
-  };
+  }, [browserSupport]);
 
-  const handleAcceptAll = () => {
+  // Event handlers wrapped in useCallback to prevent recreation
+  const handleAcceptAll = useCallback(() => {
     const allSettings = {
       necessary: true,
       analytics: true,
@@ -162,15 +140,15 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
     saveConsent('all', allSettings);
     setVisible(false);
     if (onAccept) onAccept(allSettings);
-  };
+  }, [saveConsent, onAccept]);
 
-  const handleSaveSettings = () => {
+  const handleSaveSettings = useCallback(() => {
     saveConsent('custom', settings);
     setVisible(false);
     if (onAccept) onAccept(settings);
-  };
+  }, [saveConsent, settings, onAccept]);
 
-  const handleDecline = () => {
+  const handleDecline = useCallback(() => {
     const necessaryOnly = {
       necessary: true,
       analytics: false,
@@ -181,38 +159,40 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
     saveConsent('necessary', necessaryOnly);
     setVisible(false);
     if (onDecline) onDecline();
-  };
+  }, [saveConsent, onDecline]);
 
-  const handleToggleSetting = (key: keyof CookieSettings) => {
+  const handleToggleSetting = useCallback((key: keyof CookieSettings) => {
     if (key === 'necessary') return; // Necessary cookies can't be toggled
     
     setSettings(prev => ({
       ...prev,
       [key]: !prev[key]
     }));
-  };
+  }, []);
 
   // Function to open cookie settings from anywhere in the app
-  const openCookieSettings = () => {
+  const openCookieSettings = useCallback(() => {
     setVisible(true);
     setShowDetails(true);
-  };
+  }, []);
 
-  // Expose the function to window for global access
+  // Toggle details visibility
+  const toggleDetails = useCallback((show: boolean) => {
+    setShowDetails(show);
+  }, []);
+
+  // Expose the function to window for global access with proper cleanup
   useEffect(() => {
-    // Define a proper type for the window object with our custom property
-    interface CustomWindow extends Window {
-      openCookieSettings?: () => void;
-    }
-    
     // Cast window to our custom type
-    const customWindow = window as CustomWindow;
-    customWindow.openCookieSettings = openCookieSettings;
+    window.openCookieSettings = openCookieSettings;
     
     return () => {
-      delete customWindow.openCookieSettings;
+      // Only cleanup if the component is still mounted
+      if (isMountedRef.current) {
+        delete window.openCookieSettings;
+      }
     };
-  }, []);
+  }, [openCookieSettings]);
 
   if (!visible) return null;
 
@@ -224,7 +204,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-display font-semibold bg-gradient-to-r from-cyberblue to-mintgreen bg-clip-text text-transparent">Cookie-Einstellungen</h2>
               <button 
-                onClick={() => setShowDetails(false)}
+                onClick={() => toggleDetails(false)}
                 className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition-colors p-2 rounded-full hover:bg-zinc-100/50 dark:hover:bg-zinc-700/50"
                 aria-label="Close cookie settings"
               >
@@ -382,7 +362,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
                 </p>
                 <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
                   <button
-                    onClick={() => setShowDetails(true)}
+                    onClick={() => toggleDetails(true)}
                     className="w-full sm:flex-1 px-3 py-2 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-800 dark:text-white rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm font-medium transition-colors shadow-sm hover:shadow"
                   >
                     Einstellungen
@@ -407,6 +387,9 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
       )}
     </div>
   );
-};
+});
+
+// Add display name for better debugging in React DevTools
+CookieConsent.displayName = 'CookieConsent';
 
 export default CookieConsent;

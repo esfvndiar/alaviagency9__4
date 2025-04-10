@@ -1,38 +1,78 @@
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-import { setupGlobalErrorHandlers } from './utils/error-handling'
+import './index.css';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import { setupGlobalErrorHandlers } from './utils/error-handling';
+import './types/global.d';
 
-// Create a global variable to track service worker registration status
-declare global {
-  interface Window {
-    swRegistrationError?: string;
-    Sentry?: {
-      captureException: (error: Error) => void;
-      captureMessage: (message: string, level?: string) => void;
-      configureScope: (callback: (scope: unknown) => void) => void;
-    };
-  }
-}
-
-// Set up global error handlers
+// Initialize error handling
 setupGlobalErrorHandlers();
 
-// Register service worker for production environment
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(_registration => {
-      })
-      .catch(error => {
-        console.error('Service Worker registration failed:', error);
-        // Store the error message for later use
-        window.swRegistrationError = error.message || 'Failed to register service worker';
-        
-        // We can't use toast directly here because React isn't mounted yet
-        // The error will be displayed by ServiceWorkerErrorNotifier component
-      });
-  });
-}
+// Create a dedicated function for registering service worker to improve initial load performance
+const registerServiceWorker = () => {
+  if ('serviceWorker' in navigator && import.meta.env.PROD) {
+    window.addEventListener('load', () => {
+      // Defer registration until after the page has loaded
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          // Store the registration for later use
+          window.swRegistration = registration;
+          
+          // Log successful registration
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          
+          // Track service worker lifecycle events
+          registration.onupdatefound = () => {
+            const installingWorker = registration.installing;
+            if (installingWorker) {
+              installingWorker.onstatechange = () => {
+                console.log('Service worker state:', installingWorker.state);
+              };
+            }
+          };
+        })
+        .catch(error => {
+          // Store detailed error information for the error notifier component
+          window.swRegistrationError = {
+            message: error.message,
+            stack: error.stack,
+            timestamp: new Date().toISOString()
+          };
+          console.error('ServiceWorker registration failed: ', error);
+        });
+    });
+  }
+};
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Render React app first for faster initial load
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+// Defer non-critical operations
+if (typeof window !== 'undefined') {
+  // Use requestIdleCallback or setTimeout fallback to register service worker during idle time
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(() => {
+      registerServiceWorker();
+    });
+  } else {
+    // Fallback to setTimeout with a reasonable delay
+    setTimeout(() => {
+      registerServiceWorker();
+    }, 1000);
+  }
+  
+  // Implement progressive loading for web fonts
+  if ('fonts' in document) {
+    // Load fonts asynchronously
+    Promise.all([
+      (document as any).fonts.load('1em Inter'),
+      (document as any).fonts.load('1em Poppins')
+    ]).catch(err => {
+      console.warn('Web fonts could not be loaded:', err);
+    });
+  }
+}
