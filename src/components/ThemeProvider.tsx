@@ -4,7 +4,7 @@ import { type ThemeProviderProps } from 'next-themes/dist/types';
 /**
  * Theme provider component that wraps the application to provide theme context
  * Uses next-themes package for theme management
- * Always defaults to light mode regardless of system preference
+ * Defaults to light mode but allows user to toggle between themes
  */
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
@@ -12,7 +12,6 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
       attribute="class"
       defaultTheme="light"
       enableSystem={false}
-      forcedTheme="light"
       disableTransitionOnChange
       {...props}
     >
