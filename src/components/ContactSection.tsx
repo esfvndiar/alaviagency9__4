@@ -22,9 +22,10 @@ const ContactSection: React.FC = () => {
 
   // Clear any existing timeouts on unmount
   useEffect(() => {
+    const currentTimeout = submitTimeoutRef.current;
     return () => {
-      if (submitTimeoutRef.current) {
-        clearTimeout(submitTimeoutRef.current);
+      if (currentTimeout) {
+        clearTimeout(currentTimeout);
       }
     };
   }, []);
@@ -122,11 +123,13 @@ const ContactSection: React.FC = () => {
         error !== null && 
         'name' in error && 
         error.name === 'ValidationError' &&
-        'fieldErrors' in error
+        'fields' in error &&
+        'message' in error
       ) {
         // Now TypeScript knows error has fields and message properties
-        setFieldErrors(error.fieldErrors as Record<string, string>);
-        setErrorMessage((error as { message: string }).message);
+        const validationError = error as { fields: Record<string, string>; message: string };
+        setFieldErrors(validationError.fields);
+        setErrorMessage(validationError.message);
       } else if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
@@ -135,11 +138,6 @@ const ContactSection: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const resetErrors = () => {
-    setFieldErrors({});
-    setErrorMessage('');
   };
 
   return (

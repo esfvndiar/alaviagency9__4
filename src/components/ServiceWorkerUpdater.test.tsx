@@ -1,5 +1,4 @@
 import { describe, it } from 'vitest';
-import ServiceWorkerUpdater from './ServiceWorkerUpdater';
 
 /**
  * NOTE: Testing ServiceWorkerUpdater properly requires mocking complex browser APIs

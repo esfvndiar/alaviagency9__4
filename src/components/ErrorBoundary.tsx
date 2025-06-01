@@ -20,8 +20,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   private offlineCheckInterval: number | null = null;
   private handleOnline: (() => void) | null = null;
   private handleOffline: (() => void) | null = null;
-  private isMountedRef = true;
-  
+
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = {
@@ -64,9 +63,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       window.clearInterval(this.offlineCheckInterval);
       this.offlineCheckInterval = null;
     }
-    
-    // Mark component as unmounted
-    this.isMountedRef = false;
   }
 
   setupOfflineDetection = (): void => {
@@ -286,16 +282,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     }
 
     return children;
-  }
-}
-
-// Declare global types
-declare global {
-  interface Window {
-    Sentry?: {
-      captureException: (error: Error, options?: any) => void;
-    };
-    gtag?: (command: string, action: string, params: any) => void;
   }
 }
 

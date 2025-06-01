@@ -1,3 +1,5 @@
+// This file only exports components and related utilities
+/* eslint-disable react-refresh/only-export-components */
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 

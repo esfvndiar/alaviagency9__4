@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Cookies from 'js-cookie';
-import { checkBrowserSupport } from '../utils/browserSupport';
+import { getBrowserInfo } from '../utils/browserSupport';
 import { CookieSettings, CookieConsentProps } from '../types/global';
 
 const CONSENT_COOKIE_NAME = 'cookie-consent';
@@ -24,7 +24,7 @@ const CookieConsent: React.FC<CookieConsentProps> = React.memo(({ onAccept, onDe
   const isMountedRef = useRef(true);
 
   // Memoize browser support check to avoid recomputing on each render
-  const browserSupport = useMemo(() => checkBrowserSupport(), []);
+  const browserSupport = useMemo(() => getBrowserInfo(), []);
 
   // Check if consent has been given before
   useEffect(() => {

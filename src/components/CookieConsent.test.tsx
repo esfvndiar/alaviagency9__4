@@ -15,7 +15,7 @@ vi.mock('js-cookie', () => ({
 
 // Mock the browser support utility
 vi.mock('../utils/browserSupport', () => ({
-  checkBrowserSupport: vi.fn(),
+  getBrowserInfo: vi.fn(),
 }));
 
 // Mock localStorage
@@ -53,13 +53,14 @@ describe('CookieConsent', () => {
     localStorageMock.clear();
 
     // Mock browser support to return true by default for tests
-    vi.spyOn(browserSupport, 'checkBrowserSupport').mockReturnValue({
+    vi.spyOn(browserSupport, 'getBrowserInfo').mockReturnValue({
       cookiesSupported: true,
       localStorageSupported: true,
     });
 
     // Ensure consent is not found by default
-    vi.spyOn(Cookies, 'get').mockReturnValue(undefined);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn(Cookies, 'get').mockReturnValue(undefined as any);
     vi.spyOn(localStorageMock, 'getItem'); // Spy on getItem
     vi.spyOn(localStorageMock, 'setItem'); // Spy on setItem
   });
@@ -85,7 +86,9 @@ describe('CookieConsent', () => {
   });
 
   it('should not render if consent cookie exists', () => {
-     vi.spyOn(Cookies, 'get').mockImplementation((name) => name === 'cookie-consent' ? 'all' : undefined);
+     const mockedGet = vi.mocked(Cookies.get);
+     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     mockedGet.mockReturnValue('all' as any);
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
     expect(screen.queryByText(/Diese Website verwendet Cookies/i)).not.toBeInTheDocument();
   });
@@ -267,7 +270,9 @@ describe('CookieConsent', () => {
 
   it('should render when no cookie consent is stored', () => {
     // Mock js-cookie get to return undefined
-    vi.spyOn(Cookies, 'get').mockReturnValue({});
+    const mockedGet = vi.mocked(Cookies.get);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mockedGet.mockReturnValue(undefined as any);
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
     // Check banner renders
     expect(screen.getByRole('heading', { name: /Cookie Consent/i })).toBeInTheDocument();
@@ -275,9 +280,9 @@ describe('CookieConsent', () => {
 
   it('should call onAccept with all cookies when "Accept All" is clicked', () => {
     // Mock js-cookie get to return no consent value
-    vi.spyOn(Cookies, 'get').mockImplementation((name): {[key: string]: string} => 
-      name === 'cookie-consent' ? {} : {}
-    );
+    const mockedGet = vi.mocked(Cookies.get);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mockedGet.mockReturnValue(undefined as any);
     
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
     fireEvent.click(screen.getByRole('button', { name: /Accept All/i }));

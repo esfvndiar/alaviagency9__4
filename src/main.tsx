@@ -1,7 +1,6 @@
 import './index.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './App.css';
 import { setupGlobalErrorHandlers } from './utils/error-handling';
@@ -47,8 +46,8 @@ if (import.meta.env.PROD) {
       // Store error for display to user
       const errorDetails = {
         message: error.message || 'Failed to register service worker',
-        timestamp: new Date().toISOString(),
-        stack: error.stack || '',
+        timestamp: Date.now(),
+        details: error.stack || '',
       };
       window.swRegistrationError = errorDetails;
       console.error('Service worker registration failed:', error);
@@ -63,7 +62,7 @@ if (import.meta.env.PROD) {
 }
 
 // Function to setup push notification subscription
-async function setupPushSubscription(registration) {
+async function setupPushSubscription(registration: ServiceWorkerRegistration): Promise<void> {
   try {
     let subscription = await registration.pushManager.getSubscription();
     
@@ -103,7 +102,7 @@ async function setupPushSubscription(registration) {
 }
 
 // Helper function to convert base64 to Uint8Array for VAPID key
-function urlBase64ToUint8Array(base64String) {
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
   const base64 = (base64String + padding)
     .replace(/-/g, '+')

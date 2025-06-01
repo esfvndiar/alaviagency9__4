@@ -1,10 +1,8 @@
-import Cookies from 'js-cookie';
-
 /**
- * Checks if the browser environment supports cookies and localStorage.
- * @returns {{ cookiesSupported: boolean, localStorageSupported: boolean }}
+ * Browser support detection utilities
  */
-export const checkBrowserSupport = () => {
+
+export const getBrowserInfo = () => {
   let cookiesSupported = true;
   let localStorageSupported = true;
 

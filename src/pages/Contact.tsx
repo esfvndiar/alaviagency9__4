@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { Mail, Send, Loader2, CheckCircle, AlertCircle, Calendar, MapPin, Phone } from 'lucide-react';
+import { Mail, Send, Loader2, CheckCircle, AlertCircle, Calendar } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
 import { submitContactForm, generateCSRFToken } from './api/contact';
 import { isBackgroundSyncSupported, registerSync } from '../utils/backgroundSync/syncUtils';
@@ -100,7 +100,7 @@ const Contact: React.FC = () => {
           const success = await registerSync({
             url: '/api/contact',
             method: 'POST',
-            body: formData,
+            body: JSON.stringify(formData),
             tag: 'contact-form-sync',
             callback: () => {
               // This will be called if the request is immediately successful

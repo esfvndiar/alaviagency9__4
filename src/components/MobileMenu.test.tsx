@@ -1,6 +1,6 @@
 // src/components/MobileMenu.test.tsx
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import MobileMenu from './MobileMenu';
 import { BrowserRouter } from 'react-router-dom';
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -28,120 +28,63 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   priority = false
 }) => {
   const [isVisible, setIsVisible] = useState(disabled || priority);
-  const [hasAnimated, setHasAnimated] = useState(disabled || priority);
   const ref = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const animationFrameIdRef = useRef<number | null>(null);
-  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
 
   // Check if reduced motion is preferred
   const prefersReducedMotion = typeof window !== 'undefined' 
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
     : false;
 
-  // Memoize animation setup to reduce renders
-  const setupAnimation = useCallback(() => {
-    // Skip animations if disabled or if user prefers reduced motion
-    if (disabled || prefersReducedMotion) {
+  useEffect(() => {
+    // Skip if disabled, priority, or reduced motion is preferred
+    if (disabled || priority || prefersReducedMotion) {
       setIsVisible(true);
-      setHasAnimated(true);
       return;
     }
-    
-    // Skip if already animated and once is true
-    if (hasAnimated && once) return;
-    
+
     const currentRef = ref.current;
     if (!currentRef) return;
 
-    // Create the observer with a more efficient callback
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        // Only process the first entry
-        const entry = entries[0];
-        
-        // Use requestAnimationFrame to batch visual updates
-        if (entry.isIntersecting) {
-          if (animationFrameIdRef.current) {
-            cancelAnimationFrame(animationFrameIdRef.current);
+    // Observer configuration
+    const options: IntersectionObserverInit = {
+      root: null,
+      rootMargin,
+      threshold: staggered ? Math.max(0.15, threshold) : threshold
+    };
+
+    // Create observer
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && entry.intersectionRatio > threshold) {
+          // Apply delay if specified
+          if (delay > 0 || staggered) {
+            const delayTime = staggered ? Math.random() * 150 : delay;
+            setTimeout(() => {
+              setIsVisible(true);
+            }, delayTime);
+          } else {
+            setIsVisible(true);
           }
           
-          // Add a small staggered delay for smoother performance if staggered is true
-          if (staggered) {
-            const timeoutId = setTimeout(() => {
-              animationFrameIdRef.current = requestAnimationFrame(() => {
-                setIsVisible(true);
-                setHasAnimated(true);
-              });
-            }, Math.random() * 150); // Random delay between 0-150ms for staggered effect
-            
-            // Store the timeout ID for cleanup
-            timeoutIdRef.current = timeoutId;
-          } else if (delay > 0) {
-            // Apply specific delay if requested
-            const timeoutId = setTimeout(() => {
-              animationFrameIdRef.current = requestAnimationFrame(() => {
-                setIsVisible(true);
-                setHasAnimated(true);
-              });
-            }, delay);
-            
-            timeoutIdRef.current = timeoutId;
-          } else {
-            // No delay needed, apply immediately on next frame
-            animationFrameIdRef.current = requestAnimationFrame(() => {
-              setIsVisible(true);
-              setHasAnimated(true);
-            });
+          if (once) {
+            observer.unobserve(entry.target);
           }
         } else if (!once) {
-          if (animationFrameIdRef.current) {
-            cancelAnimationFrame(animationFrameIdRef.current);
-          }
-          
-          // For repeat animations, use RAF for smoother transitions
-          animationFrameIdRef.current = requestAnimationFrame(() => {
-            setIsVisible(false);
-          });
+          setIsVisible(false);
         }
-      },
-      {
-        root: null,
-        rootMargin,
-        threshold: staggered ? Math.max(0.15, threshold) : threshold, // Slightly higher threshold for staggered animations
-      }
-    );
+      });
+    }, options);
 
     // Start observing
-    observerRef.current.observe(currentRef);
-  }, [threshold, rootMargin, once, hasAnimated, staggered, delay, disabled, prefersReducedMotion]);
-
-  useEffect(() => {
-    // For priority elements, make them visible immediately without animation
-    if (priority) {
-      setIsVisible(true);
-      setHasAnimated(true);
-      return;
-    }
-    
-    setupAnimation();
+    observer.observe(currentRef);
 
     // Cleanup function
     return () => {
-      if (observerRef.current && ref.current) {
-        observerRef.current.unobserve(ref.current);
-        observerRef.current.disconnect();
-      }
-      
-      if (animationFrameIdRef.current) {
-        cancelAnimationFrame(animationFrameIdRef.current);
-      }
-      
-      if (timeoutIdRef.current) {
-        clearTimeout(timeoutIdRef.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
-  }, [setupAnimation, priority]);
+  }, [threshold, rootMargin, once, staggered, delay, disabled, priority, prefersReducedMotion]);
 
   // Map animation type to appropriate CSS classes
   const getAnimationClass = () => {

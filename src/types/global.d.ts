@@ -5,8 +5,35 @@
 export {};
 
 declare global {
+  // Service Worker API extensions
+  interface ServiceWorkerRegistration {
+    sync: SyncManager;
+    periodicSync: PeriodicSyncManager;
+  }
+
+  interface Window {
+    SyncManager: typeof SyncManager;
+    PeriodicSyncManager: typeof PeriodicSyncManager;
+  }
+
+  interface SyncManager {
+    register(tag: string): Promise<void>;
+    getTags(): Promise<string[]>;
+  }
+
+  interface PeriodicSyncManager {
+    register(tag: string, options?: { minInterval?: number }): Promise<void>;
+    getTags(): Promise<string[]>;
+    unregister(tag: string): Promise<void>;
+  }
+
   // Window extensions
   interface Window {
+    /**
+     * Service worker registration reference
+     */
+    swRegistration?: ServiceWorkerRegistration;
+
     /**
      * Service worker registration error information
      */
@@ -20,10 +47,15 @@ declare global {
      * Sentry error reporting API
      */
     Sentry?: {
-      captureException: (error: Error) => void;
+      captureException: (error: Error, options?: Record<string, unknown>) => void;
       captureMessage: (message: string, level?: string) => void;
       configureScope: (callback: (scope: unknown) => void) => void;
     };
+
+    /**
+     * Google Analytics gtag function
+     */
+    gtag?: (command: string, action: string, params: Record<string, unknown>) => void;
 
     /**
      * Function to open cookie settings from anywhere in the app

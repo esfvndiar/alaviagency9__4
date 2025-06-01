@@ -9,7 +9,7 @@ type SyncOptions = {
   url: string;
   method: string;
   headers?: Record<string, string>;
-  body?: any;
+  body?: string | Record<string, unknown>;
   tag?: string;
   callback?: () => void;
 };
@@ -122,7 +122,7 @@ export const openSyncStore = async () => {
       resolve(store);
     };
     
-    request.onerror = (event) => {
+    request.onerror = () => {
       reject(new Error('Error opening IndexedDB for sync storage'));
     };
   });
@@ -170,7 +170,7 @@ interface SyncEntry {
 /**
  * Process any pending sync entries (called by service worker)
  */
-export const processPendingSyncs = async (tag: string = 'sync-data'): Promise<void> => {
+export const processPendingSyncs = async (): Promise<void> => {
   try {
     const syncStore = await openSyncStore();
     const getAll = syncStore.getAll();

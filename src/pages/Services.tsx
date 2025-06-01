@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ArrowRight, Check, ChevronDown, ChevronUp, ArrowUpRight, Plus } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, Check, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import Layout from '../components/Layout';
 import ScrollReveal from '../components/ScrollReveal';
 

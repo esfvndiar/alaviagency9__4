@@ -103,6 +103,10 @@ const ServiceWorkerUpdater: React.FC = () => {
       return;
     }
     
+    // Capture ref values at the start of the effect
+    const currentUpdateFoundHandlers = updateFoundHandlersRef.current;
+    const currentStateChangeHandlers = stateChangeHandlersRef.current;
+    
     // Create a custom event listener for when a new service worker is waiting
     const controllerChangeHandler = () => {
       // When the controller changes (new service worker activated), reload the page
@@ -167,23 +171,27 @@ const ServiceWorkerUpdater: React.FC = () => {
       // Clean up event listeners that were added
       navigator.serviceWorker.getRegistration().then(registration => {
         if (registration) {
-          // Remove updatefound listener if it exists
-          const updateFoundHandler = updateFoundHandlersRef.current.get(registration);
+          // Remove updatefound listeners
+          const updateFoundHandler = currentUpdateFoundHandlers.get(registration);
           if (updateFoundHandler) {
             registration.removeEventListener('updatefound', updateFoundHandler);
-            updateFoundHandlersRef.current.delete(registration);
+            currentUpdateFoundHandlers.delete(registration);
           }
-          
+
           // Remove statechange listeners from any workers
           [registration.installing, registration.waiting, registration.active]
-            .filter(Boolean)
+            .filter((worker): worker is ServiceWorker => worker !== null)
             .forEach(worker => {
-              const stateChangeHandler = stateChangeHandlersRef.current.get(worker);
+              const stateChangeHandler = currentStateChangeHandlers.get(worker);
               if (stateChangeHandler) {
                 worker.removeEventListener('statechange', stateChangeHandler);
-                stateChangeHandlersRef.current.delete(worker);
+                currentStateChangeHandlers.delete(worker);
               }
             });
+
+          // Reset state
+          setWaitingWorker(null);
+          setShowUpdatePrompt(false);
         }
       }).catch(err => {
         console.error('Error cleaning up service worker listeners:', err);

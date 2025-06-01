@@ -139,7 +139,7 @@ export default async function handler(
     }
     
     // Sanitize inputs
-    const _sanitizedData = {
+    const sanitizedData = {
       name: sanitizeInput(req.body.name),
       email: sanitizeInput(req.body.email),
       subject: req.body.subject ? sanitizeInput(req.body.subject) : '',
@@ -151,6 +151,12 @@ export default async function handler(
     // await sendEmail(sanitizedData);
     // or
     // await db.contacts.create(sanitizedData);
+    
+    // Log sanitized data for debugging (remove in production)
+    console.log('Processing contact form with sanitized data:', { 
+      name: sanitizedData.name, 
+      email: sanitizedData.email.substring(0, 3) + '***' // Partially redacted for logs
+    });
     
     // Configure Nodemailer transport (replace with your email service details)
     

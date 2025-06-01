@@ -4,18 +4,18 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
-import { Suspense, lazy, useEffect, useState, useCallback } from 'react';
+import { Suspense, lazy, useEffect, useCallback } from 'react';
 import CookieConsent from "./components/CookieConsent";
 import { clearNonEssentialCookies } from "./utils/cookieManager";
 import LoadingSpinner from "./components/LoadingSpinner";
-import ServiceWorkerUpdater from "./components/ServiceWorkerUpdater";
 import ServiceWorkerErrorNotifier from "./components/ServiceWorkerErrorNotifier";
+import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import { CookieSettings } from "./types/global";
 import ErrorBoundary from "./components/ErrorBoundary";
 
 // Configure lazy loading with preload capability for better performance
 const createLazyComponent = (
-  factory: () => Promise<{ default: React.ComponentType<unknown> }>, 
+  factory: () => Promise<{ default: React.ComponentType<Record<string, unknown>> }>, 
   preload = false
 ) => {
   const Component = lazy(factory);
@@ -180,6 +180,8 @@ const App = () => {
               onAccept={handleCookieAccept}
               onDecline={handleCookieDecline}
             />
+            {/* Analytics Dashboard - only shows in development or when toggled */}
+            {process.env.NODE_ENV === 'development' && <AnalyticsDashboard />}
           </TooltipProvider>
         </ThemeProvider>
       </QueryClientProvider>

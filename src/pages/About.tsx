@@ -1,8 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowRight, ExternalLink } from 'lucide-react';
 import Layout from '../components/Layout';
-import { MessageSquare, Users, Lightbulb, Heart, Rocket, Award } from 'lucide-react';
-import ScrollReveal from '../components/ScrollReveal';
 import ContactCTA from '../components/ContactCTA';
 
 interface TeamMember {
@@ -351,15 +348,8 @@ const About: React.FC = () => {
           </div>
         </section>
 
-        {/* CTA Section - replace with new component */}
-        <ContactCTA 
-          variant="gradient"
-          title="Ready to work with us?"
-          subtitle="We're always looking for new challenges and exciting projects."
-          buttonText="Get in Touch"
-          buttonIcon="arrow-up-right"
-          className="container mx-auto px-4 sm:px-6 max-w-5xl"
-        />
+        {/* CTA Section */}
+        <ContactCTA className="container mx-auto px-4 sm:px-6 max-w-5xl" />
       </div>
     </Layout>
   );

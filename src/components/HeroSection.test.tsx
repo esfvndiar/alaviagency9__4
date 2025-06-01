@@ -104,17 +104,16 @@ describe('HeroSection Component', () => {
   });
 
   it('should render background gradient elements', () => {
-    const { container } = renderHero();
+    const { container } = render(<HeroSection />);
     
     // Check for background gradient elements
     const gradientElements = container.querySelectorAll('.blur-3xl');
-    expect(gradientElements.length).toBe(3); // There should be 3 gradient elements
+    expect(gradientElements.length).toBe(1); // There should be 1 gradient element
     
     // Check for specific gradient classes
-    const gradientClasses = Array.from(gradientElements).map(el => el.className);
-    expect(gradientClasses.some(className => className.includes('from-cyberblue'))).toBeTruthy();
-    expect(gradientClasses.some(className => className.includes('from-mintgreen'))).toBeTruthy();
-    expect(gradientClasses.some(className => className.includes('to-transparent'))).toBeTruthy();
+    expect(container.querySelector('.bg-gradient-to-b')).toBeInTheDocument();
+    expect(container.querySelector('.bg-gradient-to-br')).toBeInTheDocument();
+    expect(container.querySelector('.bg-gradient-to-tr')).toBeInTheDocument();
   });
 
   it('should have animation elements for typing effect', () => {

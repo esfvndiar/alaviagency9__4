@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Layout from '../components/Layout';
-import { ArrowRight, Filter, Search, X, ChevronRight } from 'lucide-react';
+import { Filter, Search, X, ChevronRight } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
 
 interface Project {

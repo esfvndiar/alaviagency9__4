@@ -1,12 +1,14 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { ArrowDown } from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { ArrowRight } from 'lucide-react';
 
-// Animation constants for 120fps performance
-const TYPING_FRAME_DURATION = 8; // ~8.33ms per frame at 120fps
-const TYPING_SPEED_NORMAL = 80;
-const TYPING_SPEED_FAST = 30;
-const TYPING_PAUSE = 2000;
-const STATIC_TEXT_PAUSE = 500;
+const TYPING_SPEEDS = {
+  // Animation constants for 120fps performance
+  TYPING_FRAME_DURATION: 8, // ~8.33ms per frame at 120fps
+  TYPING_SPEED_NORMAL: 80,
+  TYPING_SPEED_FAST: 30,
+  TYPING_PAUSE: 2000,
+  STATIC_TEXT_PAUSE: 500
+};
 
 const HeroSection: React.FC = () => {
   // Consolidate related state to reduce re-renders
@@ -14,9 +16,7 @@ const HeroSection: React.FC = () => {
     staticText: '',
     dynamicText: ''
   });
-  // Use refs for animation state that doesn't need to trigger re-renders
-  const isTypingStaticRef = useRef(true);
-  const isDeletingRef = useRef(false);
+  // Use refs for loop state that doesn't need to trigger re-renders
   const loopNumRef = useRef(0);
   
   // Only use state for values that need to cause a re-render
@@ -24,7 +24,7 @@ const HeroSection: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   
   // Use refs for animation state to avoid re-renders and improve performance
-  const typingSpeedRef = useRef(TYPING_SPEED_NORMAL);
+  const typingSpeedRef = useRef(TYPING_SPEEDS.TYPING_SPEED_NORMAL);
   const rafIdRef = useRef<number | null>(null);
   const lastTimeRef = useRef(0);
   const isAnimatingRef = useRef(true);
@@ -93,7 +93,7 @@ const HeroSection: React.FC = () => {
             timeoutId = window.setTimeout(() => {
               setIsTypingStatic(false);
               timeoutId = null;
-            }, STATIC_TEXT_PAUSE);
+            }, TYPING_SPEEDS.STATIC_TEXT_PAUSE);
           }
         }
       } 
@@ -104,7 +104,7 @@ const HeroSection: React.FC = () => {
         
         if (isDeleting) {
           // Optimize deletion speed
-          typingSpeedRef.current = TYPING_SPEED_FAST;
+          typingSpeedRef.current = TYPING_SPEEDS.TYPING_SPEED_FAST;
           
           if (texts.dynamicText.length > 0) {
             // Batch state updates to reduce renders
@@ -121,7 +121,7 @@ const HeroSection: React.FC = () => {
           }
         } else {
           // Reset to normal typing speed
-          typingSpeedRef.current = TYPING_SPEED_NORMAL;
+          typingSpeedRef.current = TYPING_SPEEDS.TYPING_SPEED_NORMAL;
           
           if (texts.dynamicText.length < fullText.length) {
             // Batch state updates to reduce renders
@@ -137,7 +137,7 @@ const HeroSection: React.FC = () => {
               timeoutId = window.setTimeout(() => {
                 setIsDeleting(true);
                 timeoutId = null;
-              }, TYPING_PAUSE);
+              }, TYPING_SPEEDS.TYPING_PAUSE);
             }
           }
         }
@@ -241,7 +241,7 @@ const HeroSection: React.FC = () => {
               style={{ transform: 'translate3d(0,0,0)' }}
             >
               Explore Solutions
-              <ArrowDown className="ml-2 h-4 w-4 will-change-transform transform-gpu" />
+              <ArrowRight className="ml-2 h-4 w-4 will-change-transform transform-gpu" />
             </a>
             <a 
               href="#contact" 
