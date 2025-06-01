@@ -7,8 +7,8 @@ interface ErrorData {
 // This could be replaced with any error tracking service like Sentry, LogRocket, etc.
 export function logError(error: ErrorData): void {
   // In development, log to console
-  if (process.env.NODE_ENV === 'development') {
-    console.error('[Error Tracking]:', error);
+  if (process.env.NODE_ENV === "development") {
+    console.error("[Error Tracking]:", error);
     return;
   }
 
@@ -18,4 +18,4 @@ export function logError(error: ErrorData): void {
   //   tags: { type: error.type },
   //   extra: error.data
   // });
-};
+}

@@ -1,5 +1,5 @@
-import React, { Suspense, lazy, ReactElement } from 'react';
-import ErrorBoundary from './ErrorBoundary';
+import React, { Suspense, lazy, ReactElement } from "react";
+import ErrorBoundary from "./ErrorBoundary";
 
 // Skeleton loader component for lazy-loaded components
 export const ComponentLoader: React.FC = () => (
@@ -13,16 +13,18 @@ export const ComponentLoader: React.FC = () => (
 );
 
 // Lazy loaded components with proper typing
-export const LazyHeroSection = lazy(() => import('./HeroSection'));
-export const LazyAboutSection = lazy(() => import('./AboutSection'));
-export const LazyFAQSection = lazy(() => import('./FAQSection'));
-export const LazyServicesSection = lazy(() => import('../pages/Services'));
-export const LazyCTASection = lazy(() => import('./CTASection'));
-export const LazyContactSection = lazy(() => import('./ContactSection'));
+export const LazyHeroSection = lazy(() => import("./HeroSection"));
+export const LazyAboutSection = lazy(() => import("./AboutSection"));
+export const LazyFAQSection = lazy(() => import("./FAQSection"));
+export const LazyServicesSection = lazy(() => import("../pages/Services"));
+export const LazyCTASection = lazy(() => import("./CTASection"));
+export const LazyContactSection = lazy(() => import("./ContactSection"));
 
 // Generic wrapper for lazy-loaded components
 interface LazyComponentProps {
-  component: React.LazyExoticComponent<React.ComponentType<Record<string, unknown>>>;
+  component: React.LazyExoticComponent<
+    React.ComponentType<Record<string, unknown>>
+  >;
   props?: Record<string, unknown>;
   componentName?: string;
   fallback?: React.ReactNode;
@@ -30,11 +32,17 @@ interface LazyComponentProps {
 }
 
 export function LazyComponent(props: LazyComponentProps): ReactElement {
-  const { component: Component, props: componentProps = {}, componentName, fallback, onError } = props;
-  
+  const {
+    component: Component,
+    props: componentProps = {},
+    componentName,
+    fallback,
+    onError,
+  } = props;
+
   return (
     <ErrorBoundary
-      componentName={componentName || 'component'} 
+      componentName={componentName || "component"}
       onReset={onError}
       fallback={fallback}
     >

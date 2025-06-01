@@ -10,7 +10,7 @@ interface AnalyticsEvent {
 interface PerformanceMetric {
   name: string;
   value: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
+  rating: "good" | "needs-improvement" | "poor";
   delta?: number;
   id?: string;
   navigationType?: string;
@@ -39,7 +39,7 @@ class Analytics {
 
   constructor() {
     this.sessionId = this.generateSessionId();
-    this.isEnabled = process.env.NODE_ENV === 'production';
+    this.isEnabled = import.meta.env.PROD;
     this.initializePerformanceObserver();
   }
 
@@ -48,7 +48,7 @@ class Analytics {
   }
 
   private initializePerformanceObserver(): void {
-    if (typeof window === 'undefined' || !window.PerformanceObserver) return;
+    if (typeof window === "undefined" || !window.PerformanceObserver) return;
 
     try {
       this.performanceObserver = new PerformanceObserver((list) => {
@@ -58,41 +58,65 @@ class Analytics {
       });
 
       // Observe different types of performance entries
-      this.performanceObserver.observe({ 
-        entryTypes: ['navigation', 'resource', 'paint', 'largest-contentful-paint', 'first-input', 'layout-shift'] 
+      this.performanceObserver.observe({
+        entryTypes: [
+          "navigation",
+          "resource",
+          "paint",
+          "largest-contentful-paint",
+          "first-input",
+          "layout-shift",
+        ],
       });
     } catch (error) {
-      console.debug('Performance Observer not supported:', error);
+      console.debug("Performance Observer not supported:", error);
     }
   }
 
   private trackPerformanceEntry(entry: PerformanceEntry): void {
     if (!this.isEnabled) return;
 
+    let value = 0;
+    let name = entry.name;
+
+    // Handle different performance entry types
+    if (entry.entryType === "navigation") {
+      value = entry.duration;
+      name = "navigation";
+    } else if (entry.entryType === "paint") {
+      value = (entry as PerformancePaintTiming).startTime;
+      name = entry.name; // 'first-paint' or 'first-contentful-paint'
+    } else {
+      value = entry.duration || 0;
+    }
+
     const metric: PerformanceMetric = {
-      name: entry.entryType,
-      value: entry.duration || (entry as PerformanceNavigationTiming | PerformancePaintTiming).value || 0,
-      rating: this.getPerformanceRating(entry.entryType, entry.duration || (entry as PerformanceNavigationTiming | PerformancePaintTiming).value || 0),
+      name,
+      value,
+      rating: this.getPerformanceRating(name, value),
     };
 
     this.sendMetric(metric);
   }
 
-  private getPerformanceRating(type: string, value: number): 'good' | 'needs-improvement' | 'poor' {
+  private getPerformanceRating(
+    type: string,
+    value: number,
+  ): "good" | "needs-improvement" | "poor" {
     const thresholds: Record<string, { good: number; poor: number }> = {
-      'largest-contentful-paint': { good: 2500, poor: 4000 },
-      'first-input': { good: 100, poor: 300 },
-      'cumulative-layout-shift': { good: 0.1, poor: 0.25 },
-      'first-contentful-paint': { good: 1800, poor: 3000 },
-      'navigation': { good: 2000, poor: 4000 },
+      "largest-contentful-paint": { good: 2500, poor: 4000 },
+      "first-input": { good: 100, poor: 300 },
+      "cumulative-layout-shift": { good: 0.1, poor: 0.25 },
+      "first-contentful-paint": { good: 1800, poor: 3000 },
+      navigation: { good: 2000, poor: 4000 },
     };
 
     const threshold = thresholds[type];
-    if (!threshold) return 'good';
+    if (!threshold) return "good";
 
-    if (value <= threshold.good) return 'good';
-    if (value <= threshold.poor) return 'needs-improvement';
-    return 'poor';
+    if (value <= threshold.good) return "good";
+    if (value <= threshold.poor) return "needs-improvement";
+    return "poor";
   }
 
   // Public methods
@@ -112,12 +136,12 @@ class Analytics {
     if (this.isEnabled) {
       this.sendEvent(event);
     } else {
-      console.debug('Analytics Event:', event);
+      console.debug("Analytics Event:", event);
     }
   }
 
   public trackPageView(path: string, title?: string): void {
-    this.track('page_view', {
+    this.track("page_view", {
       path,
       title: title || document.title,
       referrer: document.referrer,
@@ -140,20 +164,28 @@ class Analytics {
     if (this.isEnabled) {
       this.sendError(errorReport);
     } else {
-      console.debug('Error Report:', errorReport);
+      console.debug("Error Report:", errorReport);
     }
   }
 
-  public trackUserInteraction(element: string, action: string, properties?: Record<string, unknown>): void {
-    this.track('user_interaction', {
+  public trackUserInteraction(
+    element: string,
+    action: string,
+    properties?: Record<string, unknown>,
+  ): void {
+    this.track("user_interaction", {
       element,
       action,
       ...properties,
     });
   }
 
-  public trackFormSubmission(formName: string, success: boolean, errors?: string[]): void {
-    this.track('form_submission', {
+  public trackFormSubmission(
+    formName: string,
+    success: boolean,
+    errors?: string[],
+  ): void {
+    this.track("form_submission", {
       form_name: formName,
       success,
       errors,
@@ -161,8 +193,11 @@ class Analytics {
     });
   }
 
-  public trackFeatureUsage(feature: string, properties?: Record<string, unknown>): void {
-    this.track('feature_usage', {
+  public trackFeatureUsage(
+    feature: string,
+    properties?: Record<string, unknown>,
+  ): void {
+    this.track("feature_usage", {
       feature,
       ...properties,
     });
@@ -170,10 +205,10 @@ class Analytics {
 
   private async sendEvent(event: AnalyticsEvent): Promise<void> {
     try {
-      const response = await fetch('/api/analytics/events', {
-        method: 'POST',
+      const response = await fetch("/api/analytics/events", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(event),
         keepalive: true,
@@ -183,7 +218,7 @@ class Analytics {
         throw new Error(`Analytics request failed: ${response.status}`);
       }
     } catch (error) {
-      console.error('Failed to send analytics event:', error);
+      console.error("Failed to send analytics event:", error);
       // Queue for retry
       this.queue.push(event);
     }
@@ -191,10 +226,10 @@ class Analytics {
 
   private async sendMetric(metric: PerformanceMetric): Promise<void> {
     try {
-      const response = await fetch('/api/analytics/metrics', {
-        method: 'POST',
+      const response = await fetch("/api/analytics/metrics", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           ...metric,
@@ -209,16 +244,16 @@ class Analytics {
         throw new Error(`Metrics request failed: ${response.status}`);
       }
     } catch (error) {
-      console.error('Failed to send performance metric:', error);
+      console.error("Failed to send performance metric:", error);
     }
   }
 
   private async sendError(errorReport: ErrorReport): Promise<void> {
     try {
-      const response = await fetch('/api/analytics/errors', {
-        method: 'POST',
+      const response = await fetch("/api/analytics/errors", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(errorReport),
         keepalive: true,
@@ -228,7 +263,7 @@ class Analytics {
         throw new Error(`Error reporting failed: ${response.status}`);
       }
     } catch (error) {
-      console.error('Failed to send error report:', error);
+      console.error("Failed to send error report:", error);
     }
   }
 
@@ -276,25 +311,25 @@ export const setupAutoTracking = () => {
   const originalPushState = history.pushState;
   const originalReplaceState = history.replaceState;
 
-  history.pushState = function(...args) {
+  history.pushState = function (...args) {
     originalPushState.apply(history, args);
     analytics.trackPageView(window.location.pathname);
   };
 
-  history.replaceState = function(...args) {
+  history.replaceState = function (...args) {
     originalReplaceState.apply(history, args);
     analytics.trackPageView(window.location.pathname);
   };
 
   // Track back/forward navigation
-  window.addEventListener('popstate', () => {
+  window.addEventListener("popstate", () => {
     analytics.trackPageView(window.location.pathname);
   });
 
   // Track unload to flush queue
-  window.addEventListener('beforeunload', () => {
+  window.addEventListener("beforeunload", () => {
     analytics.flushQueue();
   });
 };
 
-export default analytics; 
+export default analytics;

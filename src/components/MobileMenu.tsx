@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { X } from 'lucide-react';
-import { createPortal } from 'react-dom';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from "react";
+import { X } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Link } from "react-router-dom";
 
 // Define a constant for animation duration to ensure consistency
 const ANIMATION_DURATION = 300; // in milliseconds
@@ -13,14 +13,19 @@ interface MobileMenuProps {
   id?: string;
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) => {
+const MobileMenu: React.FC<MobileMenuProps> = ({
+  isOpen,
+  onClose,
+  links,
+  id,
+}) => {
   // State to track if we're in the browser environment
   const [mounted, setMounted] = useState(false);
   // State to track if menu should be rendered at all (separate from animation)
   const [shouldRender, setShouldRender] = useState(false);
   // Ref to store timeout IDs for proper cleanup
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Effect to set mounted state when component mounts
   useEffect(() => {
     setMounted(true);
@@ -36,7 +41,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) =
   // Effect to handle menu visibility and animations
   useEffect(() => {
     if (!mounted) return;
-    
+
     if (isOpen) {
       // Immediately set shouldRender to true when opening
       setShouldRender(true);
@@ -46,12 +51,12 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) =
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      
+
       timeoutRef.current = setTimeout(() => {
         setShouldRender(false);
       }, ANIMATION_DURATION); // Match this with the CSS transition duration
     }
-    
+
     // Cleanup function
     return () => {
       if (timeoutRef.current) {
@@ -63,16 +68,16 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) =
   // Effect to prevent body scroll when mobile menu is open
   useEffect(() => {
     if (!mounted) return;
-    
+
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
-    
+
     // Cleanup function to reset overflow when component unmounts
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isOpen, mounted]);
 
@@ -81,15 +86,15 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) =
 
   // Helper function to determine if a link is internal or external
   const isInternalLink = (href: string) => {
-    return href.startsWith('/') && !href.startsWith('//');
+    return href.startsWith("/") && !href.startsWith("//");
   };
 
   // Portal content - this will be rendered directly to document.body
   const menuContent = (
-    <div 
+    <div
       id={id}
       className={`fixed inset-0 bg-white dark:bg-zinc-900 z-[9999] transition-transform duration-300 ease-in-out ${
-        isOpen ? 'translate-x-0' : 'translate-x-full'
+        isOpen ? "translate-x-0" : "translate-x-full"
       }`}
       style={{ transitionDuration: `${ANIMATION_DURATION}ms` }}
     >
@@ -103,14 +108,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) =
             <X className="w-6 h-6 sm:w-8 sm:h-8 transform transition-transform duration-300 group-hover:rotate-90" />
           </button>
         </div>
-        
+
         <ul className="mt-6 sm:mt-8 flex flex-col items-center justify-center flex-grow space-y-6 sm:space-y-8">
           {links.map((link, index) => (
-            <li 
+            <li
               key={link.title}
-              className={`text-center menu-item ${isOpen ? 'menu-item-visible' : ''}`}
-              style={{ 
-                transitionDelay: isOpen ? `${index * 50}ms` : '0ms'
+              className={`text-center menu-item ${isOpen ? "menu-item-visible" : ""}`}
+              style={{
+                transitionDelay: isOpen ? `${index * 50}ms` : "0ms",
               }}
             >
               {isInternalLink(link.href) ? (
@@ -118,9 +123,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) =
                   to={link.href}
                   onClick={onClose}
                   className={`text-xl sm:text-2xl font-medium transition-all duration-300 ${
-                    link.title === 'Reach Out'
-                      ? 'px-6 py-3 rounded-full bg-gradient-to-r from-[#14b8a6] to-[#0ea5e9] text-white hover:shadow-md inline-block'
-                      : 'text-zinc-900 dark:text-white hover:text-primary dark:hover:text-primary'
+                    link.title === "Reach Out"
+                      ? "px-6 py-3 rounded-full bg-gradient-to-r from-[#14b8a6] to-[#0ea5e9] text-white hover:shadow-md inline-block"
+                      : "text-zinc-900 dark:text-white hover:text-primary dark:hover:text-primary"
                   }`}
                 >
                   {link.title}
@@ -132,9 +137,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) =
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`text-xl sm:text-2xl font-medium transition-all duration-300 ${
-                    link.title === 'Reach Out'
-                      ? 'px-6 py-3 rounded-full bg-gradient-to-r from-[#14b8a6] to-[#0ea5e9] text-white hover:shadow-md inline-block'
-                      : 'text-zinc-900 dark:text-white hover:text-primary dark:hover:text-primary'
+                    link.title === "Reach Out"
+                      ? "px-6 py-3 rounded-full bg-gradient-to-r from-[#14b8a6] to-[#0ea5e9] text-white hover:shadow-md inline-block"
+                      : "text-zinc-900 dark:text-white hover:text-primary dark:hover:text-primary"
                   }`}
                 >
                   {link.title}
@@ -143,7 +148,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, id }) =
             </li>
           ))}
         </ul>
-        
+
         <div className="mt-auto pb-8 flex flex-col items-center space-y-4">
           <div className="text-sm text-zinc-500 dark:text-zinc-300">
             &copy; {new Date().getFullYear()} ALAVI

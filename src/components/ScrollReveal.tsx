@@ -1,8 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
 interface ScrollRevealProps {
   children: React.ReactNode;
-  animation?: 'fade-up' | 'fade-down' | 'fade-left' | 'fade-right' | 'scale' | 'rotate' | 'none';
+  animation?:
+    | "fade-up"
+    | "fade-down"
+    | "fade-left"
+    | "fade-right"
+    | "scale"
+    | "rotate"
+    | "none";
   threshold?: number;
   delay?: number;
   duration?: number;
@@ -16,24 +23,25 @@ interface ScrollRevealProps {
 
 const ScrollReveal: React.FC<ScrollRevealProps> = ({
   children,
-  animation = 'fade-up',
+  animation = "fade-up",
   threshold = 0.1,
   delay = 0,
   duration = 800,
-  className = '',
-  rootMargin = '0px',
+  className = "",
+  rootMargin = "0px",
   once = true,
   staggered = false,
   disabled = false,
-  priority = false
+  priority = false,
 }) => {
   const [isVisible, setIsVisible] = useState(disabled || priority);
   const ref = useRef<HTMLDivElement>(null);
 
   // Check if reduced motion is preferred
-  const prefersReducedMotion = typeof window !== 'undefined' 
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
-    : false;
+  const prefersReducedMotion =
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false;
 
   useEffect(() => {
     // Skip if disabled, priority, or reduced motion is preferred
@@ -49,7 +57,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
     const options: IntersectionObserverInit = {
       root: null,
       rootMargin,
-      threshold: staggered ? Math.max(0.15, threshold) : threshold
+      threshold: staggered ? Math.max(0.15, threshold) : threshold,
     };
 
     // Create observer
@@ -65,7 +73,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
           } else {
             setIsVisible(true);
           }
-          
+
           if (once) {
             observer.unobserve(entry.target);
           }
@@ -84,30 +92,39 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
         observer.unobserve(currentRef);
       }
     };
-  }, [threshold, rootMargin, once, staggered, delay, disabled, priority, prefersReducedMotion]);
+  }, [
+    threshold,
+    rootMargin,
+    once,
+    staggered,
+    delay,
+    disabled,
+    priority,
+    prefersReducedMotion,
+  ]);
 
   // Map animation type to appropriate CSS classes
   const getAnimationClass = () => {
     // Skip animation class if animations are disabled or reduced motion is preferred
-    if (disabled || prefersReducedMotion || animation === 'none') {
-      return '';
+    if (disabled || prefersReducedMotion || animation === "none") {
+      return "";
     }
-    
+
     switch (animation) {
-      case 'fade-up':
-        return 'reveal-fade-up';
-      case 'fade-down':
-        return 'reveal-fade-down';
-      case 'fade-left':
-        return 'reveal-fade-left';
-      case 'fade-right':
-        return 'reveal-fade-right';
-      case 'scale':
-        return 'reveal-scale';
-      case 'rotate':
-        return 'reveal-rotate';
+      case "fade-up":
+        return "reveal-fade-up";
+      case "fade-down":
+        return "reveal-fade-down";
+      case "fade-left":
+        return "reveal-fade-left";
+      case "fade-right":
+        return "reveal-fade-right";
+      case "scale":
+        return "reveal-scale";
+      case "rotate":
+        return "reveal-rotate";
       default:
-        return 'reveal-fade-up';
+        return "reveal-fade-up";
     }
   };
 
@@ -117,23 +134,23 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
     if (disabled || prefersReducedMotion) {
       return {};
     }
-    
-    let willChangeValue = 'opacity';
-    
-    if (animation === 'fade-up' || animation === 'fade-down') {
-      willChangeValue = 'opacity, transform';
-    } else if (animation === 'fade-left' || animation === 'fade-right') {
-      willChangeValue = 'opacity, transform';
-    } else if (animation === 'scale') {
-      willChangeValue = 'opacity, transform';
-    } else if (animation === 'rotate') {
-      willChangeValue = 'opacity, transform';
+
+    let willChangeValue = "opacity";
+
+    if (animation === "fade-up" || animation === "fade-down") {
+      willChangeValue = "opacity, transform";
+    } else if (animation === "fade-left" || animation === "fade-right") {
+      willChangeValue = "opacity, transform";
+    } else if (animation === "scale") {
+      willChangeValue = "opacity, transform";
+    } else if (animation === "rotate") {
+      willChangeValue = "opacity, transform";
     }
-    
+
     return {
-      willChange: isVisible ? 'auto' : willChangeValue, // Reset will-change after animation completes
+      willChange: isVisible ? "auto" : willChangeValue, // Reset will-change after animation completes
       transitionDuration: `${duration}ms`,
-      transitionTimingFunction: 'cubic-bezier(0.165, 0.84, 0.44, 1)', // Optimized easing
+      transitionTimingFunction: "cubic-bezier(0.165, 0.84, 0.44, 1)", // Optimized easing
     };
   };
 
@@ -144,7 +161,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   return (
     <div
       ref={ref}
-      className={`${animationClass} ${isVisible ? 'revealed' : ''} ${className} hardware-accelerated`}
+      className={`${animationClass} ${isVisible ? "revealed" : ""} ${className} hardware-accelerated`}
       style={combinedStyles}
       aria-hidden={false} // Don't hide content from screen readers
       data-scroll-reveal={animation}

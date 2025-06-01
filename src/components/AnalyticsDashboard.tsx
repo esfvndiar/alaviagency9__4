@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useAnalytics } from '../utils/analytics';
+import React, { useState, useEffect } from "react";
+import { useAnalytics } from "../utils/analytics";
 
 interface AnalyticsData {
   events: Array<{
@@ -24,7 +24,7 @@ const AnalyticsDashboard: React.FC = () => {
   const [data, setData] = useState<AnalyticsData>({
     events: [],
     metrics: [],
-    errors: []
+    errors: [],
   });
   const [isVisible, setIsVisible] = useState(false);
   const analytics = useAnalytics();
@@ -33,21 +33,30 @@ const AnalyticsDashboard: React.FC = () => {
   useEffect(() => {
     const mockData: AnalyticsData = {
       events: [
-        { name: 'page_view', count: 156, lastSeen: '2 minutes ago' },
-        { name: 'user_interaction', count: 89, lastSeen: '5 minutes ago' },
-        { name: 'form_submission', count: 12, lastSeen: '1 hour ago' },
-        { name: 'feature_usage', count: 34, lastSeen: '30 minutes ago' },
+        { name: "page_view", count: 156, lastSeen: "2 minutes ago" },
+        { name: "user_interaction", count: 89, lastSeen: "5 minutes ago" },
+        { name: "form_submission", count: 12, lastSeen: "1 hour ago" },
+        { name: "feature_usage", count: 34, lastSeen: "30 minutes ago" },
       ],
       metrics: [
-        { name: 'LCP', value: 2.1, rating: 'good', timestamp: '2 minutes ago' },
-        { name: 'FID', value: 85, rating: 'good', timestamp: '3 minutes ago' },
-        { name: 'CLS', value: 0.08, rating: 'good', timestamp: '1 minute ago' },
-        { name: 'TTFB', value: 650, rating: 'good', timestamp: '4 minutes ago' },
+        { name: "LCP", value: 2.1, rating: "good", timestamp: "2 minutes ago" },
+        { name: "FID", value: 85, rating: "good", timestamp: "3 minutes ago" },
+        { name: "CLS", value: 0.08, rating: "good", timestamp: "1 minute ago" },
+        {
+          name: "TTFB",
+          value: 650,
+          rating: "good",
+          timestamp: "4 minutes ago",
+        },
       ],
       errors: [
-        { message: 'Network request failed', count: 3, lastSeen: '1 hour ago' },
-        { message: 'Component render error', count: 1, lastSeen: '2 hours ago' },
-      ]
+        { message: "Network request failed", count: 3, lastSeen: "1 hour ago" },
+        {
+          message: "Component render error",
+          count: 1,
+          lastSeen: "2 hours ago",
+        },
+      ],
     };
     setData(mockData);
   }, []);
@@ -55,15 +64,15 @@ const AnalyticsDashboard: React.FC = () => {
   // Keyboard shortcut to toggle dashboard (Ctrl+Shift+A)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+      if (e.ctrlKey && e.shiftKey && e.key === "A") {
         e.preventDefault();
         setIsVisible(!isVisible);
-        analytics.track('analytics_dashboard_toggled', { visible: !isVisible });
+        analytics.track("analytics_dashboard_toggled", { visible: !isVisible });
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isVisible, analytics]);
 
   if (!isVisible) {
@@ -104,7 +113,10 @@ const AnalyticsDashboard: React.FC = () => {
               </h3>
               <div className="space-y-3">
                 {data.events.map((event, index) => (
-                  <div key={index} className="flex justify-between items-center">
+                  <div
+                    key={index}
+                    className="flex justify-between items-center"
+                  >
                     <div>
                       <div className="font-medium text-gray-900 dark:text-white">
                         {event.name}
@@ -128,7 +140,10 @@ const AnalyticsDashboard: React.FC = () => {
               </h3>
               <div className="space-y-3">
                 {data.metrics.map((metric, index) => (
-                  <div key={index} className="flex justify-between items-center">
+                  <div
+                    key={index}
+                    className="flex justify-between items-center"
+                  >
                     <div>
                       <div className="font-medium text-gray-900 dark:text-white">
                         {metric.name}
@@ -139,15 +154,23 @@ const AnalyticsDashboard: React.FC = () => {
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-gray-900 dark:text-white">
-                        {metric.name === 'CLS' ? metric.value.toFixed(3) : 
-                         metric.name.includes('FID') || metric.name.includes('LCP') || metric.name.includes('TTFB') ? 
-                         `${metric.value}ms` : metric.value}
+                        {metric.name === "CLS"
+                          ? metric.value.toFixed(3)
+                          : metric.name.includes("FID") ||
+                              metric.name.includes("LCP") ||
+                              metric.name.includes("TTFB")
+                            ? `${metric.value}ms`
+                            : metric.value}
                       </div>
-                      <div className={`text-xs font-medium ${
-                        metric.rating === 'good' ? 'text-green-600' :
-                        metric.rating === 'needs-improvement' ? 'text-yellow-600' :
-                        'text-red-600'
-                      }`}>
+                      <div
+                        className={`text-xs font-medium ${
+                          metric.rating === "good"
+                            ? "text-green-600"
+                            : metric.rating === "needs-improvement"
+                              ? "text-yellow-600"
+                              : "text-red-600"
+                        }`}
+                      >
                         {metric.rating}
                       </div>
                     </div>
@@ -168,7 +191,10 @@ const AnalyticsDashboard: React.FC = () => {
                   </div>
                 ) : (
                   data.errors.map((error, index) => (
-                    <div key={index} className="flex justify-between items-center">
+                    <div
+                      key={index}
+                      className="flex justify-between items-center"
+                    >
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-gray-900 dark:text-white truncate">
                           {error.message}
@@ -193,11 +219,25 @@ const AnalyticsDashboard: React.FC = () => {
               📋 How to Monitor Analytics
             </h4>
             <div className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-              <p>• <strong>Vercel Functions:</strong> Check function logs in Vercel dashboard</p>
-              <p>• <strong>Real-time:</strong> Use <code>vercel logs --follow</code> in terminal</p>
-              <p>• <strong>Google Analytics:</strong> Set GA_MEASUREMENT_ID and GA_API_SECRET env vars</p>
-              <p>• <strong>PostHog:</strong> Set POSTHOG_API_KEY env var</p>
-              <p>• <strong>Webhooks:</strong> Set ERROR_WEBHOOK_URL for Slack/Discord notifications</p>
+              <p>
+                • <strong>Vercel Functions:</strong> Check function logs in
+                Vercel dashboard
+              </p>
+              <p>
+                • <strong>Real-time:</strong> Use{" "}
+                <code>vercel logs --follow</code> in terminal
+              </p>
+              <p>
+                • <strong>Google Analytics:</strong> Set GA_MEASUREMENT_ID and
+                GA_API_SECRET env vars
+              </p>
+              <p>
+                • <strong>PostHog:</strong> Set POSTHOG_API_KEY env var
+              </p>
+              <p>
+                • <strong>Webhooks:</strong> Set ERROR_WEBHOOK_URL for
+                Slack/Discord notifications
+              </p>
             </div>
           </div>
         </div>
@@ -206,4 +246,4 @@ const AnalyticsDashboard: React.FC = () => {
   );
 };
 
-export default AnalyticsDashboard; 
+export default AnalyticsDashboard;

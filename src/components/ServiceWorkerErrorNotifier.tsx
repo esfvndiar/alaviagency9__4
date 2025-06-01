@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { AlertCircle } from 'lucide-react';
-import { useErrorHandler } from '@/utils/error-handling';
-import ErrorBoundary from './ErrorBoundary';
-import { formatDistanceToNow } from 'date-fns';
+import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { AlertCircle } from "lucide-react";
+import { useErrorHandler } from "@/utils/error-handling";
+import ErrorBoundary from "./ErrorBoundary";
+import { formatDistanceToNow } from "date-fns";
 
 /**
  * Component that checks for service worker registration errors and displays them as toast notifications
@@ -17,8 +17,9 @@ const ServiceWorkerErrorNotifier = () => {
     // Check if there's a service worker registration error
     if (window.swRegistrationError) {
       const errorObj = window.swRegistrationError;
-      const timeAgo = errorObj.timestamp ? 
-        formatDistanceToNow(new Date(errorObj.timestamp), { addSuffix: true }) : '';
+      const timeAgo = errorObj.timestamp
+        ? formatDistanceToNow(new Date(errorObj.timestamp), { addSuffix: true })
+        : "";
 
       // Display the error message as a toast notification
       toast({
@@ -31,15 +32,15 @@ const ServiceWorkerErrorNotifier = () => {
           </div>
         ),
       });
-      
+
       // Log detailed error to console for debugging
-      console.warn('Service Worker Error Details:', errorObj);
-      
+      console.warn("Service Worker Error Details:", errorObj);
+
       // Forward to error handling system if available
       if (errorObj.message) {
         handleError(new Error(`Service Worker Error: ${errorObj.message}`));
       }
-      
+
       // Clear the error so it doesn't show again on page refresh
       delete window.swRegistrationError;
     }

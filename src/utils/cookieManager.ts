@@ -1,9 +1,9 @@
-import Cookies from 'js-cookie';
-import { CookieSettings } from '../types/global';
+import Cookies from "js-cookie";
+import { CookieSettings } from "../types/global";
 
-const COOKIE_CONSENT_NAME = 'cookie-consent';
-const COOKIE_SETTINGS_NAME = 'cookie-settings';
-const CONSENT_STORAGE_KEY = 'alavi-cookie-consent';
+const COOKIE_CONSENT_NAME = "cookie-consent";
+const COOKIE_SETTINGS_NAME = "cookie-settings";
+const CONSENT_STORAGE_KEY = "alavi-cookie-consent";
 
 // Default settings - only necessary cookies enabled
 const DEFAULT_SETTINGS: CookieSettings = {
@@ -19,12 +19,15 @@ const DEFAULT_SETTINGS: CookieSettings = {
  */
 export const getConsentStatus = (): string | null => {
   // Check localStorage first (persists across all pages)
-  const localStorageConsent = typeof window !== 'undefined' ? localStorage.getItem(CONSENT_STORAGE_KEY) : null;
-  
+  const localStorageConsent =
+    typeof window !== "undefined"
+      ? localStorage.getItem(CONSENT_STORAGE_KEY)
+      : null;
+
   if (localStorageConsent) {
     return localStorageConsent;
   }
-  
+
   // Fallback to cookie check
   return Cookies.get(COOKIE_CONSENT_NAME) || null;
 };
@@ -35,7 +38,7 @@ export const getConsentStatus = (): string | null => {
 export const getCookieSettings = (): CookieSettings => {
   try {
     // Try to get settings from localStorage first
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const localStorageSettings = localStorage.getItem(COOKIE_SETTINGS_NAME);
       if (localStorageSettings) {
         const settings = JSON.parse(localStorageSettings) as CookieSettings;
@@ -43,16 +46,16 @@ export const getCookieSettings = (): CookieSettings => {
         return { ...settings, necessary: true };
       }
     }
-    
+
     // Fallback to cookies
     const settingsStr = Cookies.get(COOKIE_SETTINGS_NAME);
     if (!settingsStr) return DEFAULT_SETTINGS;
-    
+
     const settings = JSON.parse(settingsStr) as CookieSettings;
     // Ensure necessary cookies are always enabled
     return { ...settings, necessary: true };
   } catch (error) {
-    console.error('Error parsing cookie settings:', error);
+    console.error("Error parsing cookie settings:", error);
     return DEFAULT_SETTINGS;
   }
 };
@@ -61,8 +64,8 @@ export const getCookieSettings = (): CookieSettings => {
  * Check if a specific cookie category is allowed
  */
 export const isCookieAllowed = (category: keyof CookieSettings): boolean => {
-  if (category === 'necessary') return true;
-  
+  if (category === "necessary") return true;
+
   const settings = getCookieSettings();
   return settings[category] === true;
 };
@@ -71,16 +74,16 @@ export const isCookieAllowed = (category: keyof CookieSettings): boolean => {
  * Set a cookie only if the category is allowed
  */
 export const setConditionalCookie = (
-  name: string, 
-  value: string, 
+  name: string,
+  value: string,
   category: keyof CookieSettings,
-  options?: Cookies.CookieAttributes
+  options?: Cookies.CookieAttributes,
 ): void => {
   if (isCookieAllowed(category)) {
-    Cookies.set(name, value, { 
-      ...options, 
-      sameSite: 'lax',
-      path: '/' 
+    Cookies.set(name, value, {
+      ...options,
+      sameSite: "lax",
+      path: "/",
     });
   }
 };
@@ -89,7 +92,7 @@ export const setConditionalCookie = (
  * Open the cookie settings dialog
  */
 export const openCookieSettings = (): void => {
-  if (typeof window !== 'undefined' && window.openCookieSettings) {
+  if (typeof window !== "undefined" && window.openCookieSettings) {
     window.openCookieSettings();
   }
 };
@@ -100,14 +103,14 @@ export const openCookieSettings = (): void => {
 export const clearNonEssentialCookies = (): void => {
   // Get all cookies
   const allCookies = Cookies.get();
-  
+
   // Keep a list of essential cookies that should not be deleted
   const essentialCookies = [COOKIE_CONSENT_NAME, COOKIE_SETTINGS_NAME];
-  
+
   // Remove all non-essential cookies
-  Object.keys(allCookies).forEach(cookieName => {
+  Object.keys(allCookies).forEach((cookieName) => {
     if (!essentialCookies.includes(cookieName)) {
-      Cookies.remove(cookieName, { path: '/' });
+      Cookies.remove(cookieName, { path: "/" });
     }
   });
 };

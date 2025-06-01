@@ -5,15 +5,15 @@
 
 // Define storage keys to prevent typos and ensure type safety
 export const STORAGE_KEYS = {
-  THEME: 'alavi-theme',
-  USER_PREFERENCES: 'alavi-user-preferences',
-  AUTH_TOKEN: 'alavi-auth-token',
-  FORM_DRAFT: 'alavi-form-draft',
-  VIEWED_ANNOUNCEMENTS: 'alavi-viewed-announcements',
-  SERVICE_WORKER_UPDATED: 'alavi-sw-updated',
+  THEME: "alavi-theme",
+  USER_PREFERENCES: "alavi-user-preferences",
+  AUTH_TOKEN: "alavi-auth-token",
+  FORM_DRAFT: "alavi-form-draft",
+  VIEWED_ANNOUNCEMENTS: "alavi-viewed-announcements",
+  SERVICE_WORKER_UPDATED: "alavi-sw-updated",
 } as const;
 
-export type StorageKey = typeof STORAGE_KEYS[keyof typeof STORAGE_KEYS];
+export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
 
 /**
  * Get an item from local storage with type safety
@@ -57,7 +57,7 @@ export function clearStorage(): void {
   try {
     localStorage.clear();
   } catch (error) {
-    console.error('Error clearing localStorage', error);
+    console.error("Error clearing localStorage", error);
   }
 }
 
@@ -80,24 +80,24 @@ export function createTypedStorage<T>(key: StorageKey, defaultValue: T) {
 }
 
 // Pre-configured storage objects for common use cases
-export const themeStorage = createTypedStorage<'light' | 'dark' | 'system'>(
+export const themeStorage = createTypedStorage<"light" | "dark" | "system">(
   STORAGE_KEYS.THEME,
-  'system'
+  "system",
 );
 
 export const userPreferencesStorage = createTypedStorage<{
   notifications: boolean;
   animations: boolean;
-  fontSize: 'small' | 'medium' | 'large';
+  fontSize: "small" | "medium" | "large";
 }>(STORAGE_KEYS.USER_PREFERENCES, {
   notifications: true,
   animations: true,
-  fontSize: 'medium',
+  fontSize: "medium",
 });
 
 export const formDraftStorage = createTypedStorage<Record<string, unknown>>(
   STORAGE_KEYS.FORM_DRAFT,
-  {}
+  {},
 );
 
 export default {

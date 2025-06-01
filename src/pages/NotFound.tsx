@@ -1,8 +1,8 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import Layout from '../components/Layout';
-import { ArrowLeft } from 'lucide-react';
-import { logError } from '@/lib/error-logging';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import Layout from "../components/Layout";
+import { ArrowLeft } from "lucide-react";
+import { logError } from "@/lib/error-logging";
 
 const NotFound: React.FC = () => {
   const location = useLocation();
@@ -10,13 +10,13 @@ const NotFound: React.FC = () => {
   React.useEffect(() => {
     // Log error to error tracking service instead of console
     logError({
-      type: '404_error',
-      message: 'User attempted to access non-existent route',
+      type: "404_error",
+      message: "User attempted to access non-existent route",
       data: {
         path: location.pathname,
         timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent
-      }
+        userAgent: navigator.userAgent,
+      },
     });
   }, [location.pathname]);
 
@@ -24,11 +24,14 @@ const NotFound: React.FC = () => {
     <Layout>
       <section className="pt-32 pb-20 min-h-[80vh] flex items-center justify-center">
         <div className="container mx-auto px-6 text-center">
-          <h1 className="font-space-grotesk text-9xl font-medium mb-6 text-zinc-900">404</h1>
+          <h1 className="font-space-grotesk text-9xl font-medium mb-6 text-zinc-900">
+            404
+          </h1>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-teal-500 mx-auto mb-10"></div>
           <h2 className="text-3xl font-medium mb-6">Page Not Found</h2>
           <p className="text-xl text-zinc-600 mb-10 max-w-2xl mx-auto">
-            Sorry, we couldn't find the page you're looking for. It might have been moved, deleted, or never existed.
+            Sorry, we couldn't find the page you're looking for. It might have
+            been moved, deleted, or never existed.
           </p>
           <Link
             to="/"

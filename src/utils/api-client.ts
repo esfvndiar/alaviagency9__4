@@ -46,10 +46,10 @@ export interface SiteConfigType {
 export class ApiError extends Error {
   statusCode: number;
   code?: string;
-  
+
   constructor(message: string, statusCode: number = 500, code?: string) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
     this.statusCode = statusCode;
     this.code = code;
   }
@@ -57,10 +57,13 @@ export class ApiError extends Error {
 
 export class NetworkError extends Error {
   code: string;
-  
-  constructor(message: string = 'Network error occurred. Please check your connection.', code: string = 'NETWORK_ERROR') {
+
+  constructor(
+    message: string = "Network error occurred. Please check your connection.",
+    code: string = "NETWORK_ERROR",
+  ) {
     super(message);
-    this.name = 'NetworkError';
+    this.name = "NetworkError";
     this.code = code;
   }
 }
@@ -68,10 +71,14 @@ export class NetworkError extends Error {
 export class ValidationError extends Error {
   code: string;
   fields: Record<string, string>;
-  
-  constructor(message: string, fields: Record<string, string>, code: string = 'VALIDATION_ERROR') {
+
+  constructor(
+    message: string,
+    fields: Record<string, string>,
+    code: string = "VALIDATION_ERROR",
+  ) {
     super(message);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
     this.code = code;
     this.fields = fields;
   }
@@ -81,47 +88,49 @@ export class ValidationError extends Error {
  * Base fetch function with improved error handling and typing
  */
 async function fetchWithErrorHandling<T>(
-  url: string, 
-  options?: RequestInit
+  url: string,
+  options?: RequestInit,
 ): Promise<ApiResponse<T>> {
   try {
     const response = await fetch(url, {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
-        ...(options?.headers || {})
-      }
+        "Content-Type": "application/json",
+        ...(options?.headers || {}),
+      },
     });
-    
+
     const data = await response.json();
-    
+
     if (!response.ok) {
       if (response.status === 422) {
         throw new ValidationError(
-          data.message || 'Validation failed',
+          data.message || "Validation failed",
           data.errors || {},
-          data.code
+          data.code,
         );
       }
       throw new ApiError(
         data.message || `Request failed with status ${response.status}`,
         response.status,
-        data.code
+        data.code,
       );
     }
-    
+
     return {
       data: data.data || data,
       success: true,
-      statusCode: response.status
+      statusCode: response.status,
     };
   } catch (error) {
     if (error instanceof ApiError || error instanceof ValidationError) {
       throw error;
-    } else if (error instanceof TypeError && error.message.includes('fetch')) {
+    } else if (error instanceof TypeError && error.message.includes("fetch")) {
       throw new NetworkError();
     } else {
-      throw new ApiError(error instanceof Error ? error.message : 'Unknown error occurred');
+      throw new ApiError(
+        error instanceof Error ? error.message : "Unknown error occurred",
+      );
     }
   }
 }
@@ -133,50 +142,52 @@ export const apiClient = {
   /**
    * Submit contact form data
    */
-  submitContactForm: async (formData: ContactFormData): Promise<ApiResponse<void>> => {
+  submitContactForm: async (
+    formData: ContactFormData,
+  ): Promise<ApiResponse<void>> => {
     try {
-      return await fetchWithErrorHandling<void>('/api/contact', {
-        method: 'POST',
-        body: JSON.stringify(formData)
+      return await fetchWithErrorHandling<void>("/api/contact", {
+        method: "POST",
+        body: JSON.stringify(formData),
       });
     } catch (error) {
       if (error instanceof ApiError || error instanceof NetworkError) {
         return {
           success: false,
           message: error.message,
-          statusCode: error instanceof ApiError ? error.statusCode : 0
+          statusCode: error instanceof ApiError ? error.statusCode : 0,
         };
       }
       return {
         success: false,
-        message: 'An unexpected error occurred',
-        statusCode: 500
+        message: "An unexpected error occurred",
+        statusCode: 500,
       };
     }
   },
-  
+
   /**
    * Get site configuration
    * This is a placeholder for future API endpoints
    */
   getSiteConfig: async (): Promise<ApiResponse<SiteConfigType>> => {
     try {
-      return await fetchWithErrorHandling<SiteConfigType>('/api/config');
+      return await fetchWithErrorHandling<SiteConfigType>("/api/config");
     } catch (error) {
       if (error instanceof ApiError || error instanceof NetworkError) {
         return {
           success: false,
           message: error.message,
-          statusCode: error instanceof ApiError ? error.statusCode : 0
+          statusCode: error instanceof ApiError ? error.statusCode : 0,
         };
       }
       return {
         success: false,
-        message: 'An unexpected error occurred',
-        statusCode: 500
+        message: "An unexpected error occurred",
+        statusCode: 500,
       };
     }
-  }
+  },
 };
 
 export default apiClient;

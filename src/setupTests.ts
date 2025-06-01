@@ -1,9 +1,9 @@
 // src/setupTests.ts
-import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import "@testing-library/jest-dom";
+import { vi } from "vitest";
 
 // Mock window.matchMedia for jsdom
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query: string) => ({
     matches: false, // Default to false
@@ -20,8 +20,8 @@ Object.defineProperty(window, 'matchMedia', {
 // Mock ResizeObserver
 // Sometimes needed by UI libraries for layout calculations
 const ResizeObserverMock = vi.fn(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
 }));
-vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+vi.stubGlobal("ResizeObserver", ResizeObserverMock);

@@ -1,21 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
 interface AnimatedTextProps {
   text: string;
   el?: keyof React.JSX.IntrinsicElements;
   className?: string;
-  animation?: 'words' | 'chars' | 'lines';
+  animation?: "words" | "chars" | "lines";
   staggerDelay?: number;
-  'data-testid'?: string;
+  "data-testid"?: string;
 }
 
-const AnimatedText: React.FC<AnimatedTextProps> = ({ 
-  text, 
-  el: Tag = 'h2', 
-  className = '',
-  animation = 'words',
+const AnimatedText: React.FC<AnimatedTextProps> = ({
+  text,
+  el: Tag = "h2",
+  className = "",
+  animation = "words",
   staggerDelay = 0.05,
-  'data-testid': dataTestId
+  "data-testid": dataTestId,
 }) => {
   const [visible, setVisible] = useState(false);
   const textRef = useRef<HTMLElement>(null);
@@ -30,13 +30,13 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       },
       {
         root: null,
-        rootMargin: '0px',
+        rootMargin: "0px",
         threshold: 0.1,
-      }
+      },
     );
 
     const currentRef = textRef.current;
-    
+
     if (currentRef) {
       observer.observe(currentRef);
     }
@@ -49,8 +49,8 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   }, []);
 
   const renderWords = () => {
-    const words = text.split(' ');
-    
+    const words = text.split(" ");
+
     return (
       <div className="flex flex-wrap">
         {words.map((word, wordIndex) => (
@@ -58,7 +58,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
             <div
               className="transition-all duration-500"
               style={{
-                transform: visible ? 'translateY(0)' : 'translateY(100%)',
+                transform: visible ? "translateY(0)" : "translateY(100%)",
                 opacity: visible ? 1 : 0,
                 transitionDelay: `${wordIndex * (staggerDelay * 1000)}ms`,
               }}
@@ -72,30 +72,30 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   };
 
   const renderChars = () => {
-    const chars = text.split('');
-    
+    const chars = text.split("");
+
     return (
       <div className="flex flex-wrap">
         {chars.map((char, charIndex) => (
-          <div 
-            key={charIndex} 
+          <div
+            key={charIndex}
             className="overflow-hidden"
-            style={{ 
-              height: char === ' ' ? 'auto' : undefined,
-              width: char === ' ' ? '0.25em' : 'auto',
+            style={{
+              height: char === " " ? "auto" : undefined,
+              width: char === " " ? "0.25em" : "auto",
             }}
           >
             <div
               className="transition-all duration-300 inline-block"
               style={{
-                transform: visible 
-                  ? 'translateY(0) rotate(0deg)' 
-                  : 'translateY(100%) rotate(10deg)',
+                transform: visible
+                  ? "translateY(0) rotate(0deg)"
+                  : "translateY(100%) rotate(10deg)",
                 opacity: visible ? 1 : 0,
                 transitionDelay: `${charIndex * (staggerDelay * 1000)}ms`,
               }}
             >
-              {char === ' ' ? '\u00A0' : char}
+              {char === " " ? "\u00A0" : char}
             </div>
           </div>
         ))}
@@ -106,7 +106,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   const renderLines = () => {
     // Split by periods, commas, or line breaks to create "lines"
     const lines = text.split(/[.,\n]+/).filter(Boolean);
-    
+
     return (
       <div className="flex flex-col">
         {lines.map((line, lineIndex) => (
@@ -114,12 +114,13 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
             <div
               className="transition-all duration-700"
               style={{
-                transform: visible ? 'translateX(0)' : 'translateX(-5%)',
+                transform: visible ? "translateX(0)" : "translateX(-5%)",
                 opacity: visible ? 1 : 0,
                 transitionDelay: `${lineIndex * (staggerDelay * 2000)}ms`,
               }}
             >
-              {line}{lineIndex < lines.length - 1 ? '.' : ''}
+              {line}
+              {lineIndex < lines.length - 1 ? "." : ""}
             </div>
           </div>
         ))}
@@ -129,23 +130,25 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
 
   const renderAnimation = () => {
     switch (animation) {
-      case 'words':
+      case "words":
         return renderWords();
-      case 'chars':
+      case "chars":
         return renderChars();
-      case 'lines':
+      case "lines":
         return renderLines();
       default:
         return renderWords();
     }
   };
 
-  return React.createElement(Tag, {
+  return React.createElement(
+    Tag,
+    {
       ref: textRef,
       className: `overflow-hidden ${className}`,
-      'data-testid': dataTestId
+      "data-testid": dataTestId,
     },
-    renderAnimation()
+    renderAnimation(),
   );
 };
 

@@ -1,5 +1,5 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw, WifiOff, Home } from 'lucide-react';
+import { Component, ErrorInfo, ReactNode } from "react";
+import { AlertTriangle, RefreshCw, WifiOff, Home } from "lucide-react";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -27,7 +27,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       hasError: false,
       error: null,
       errorInfo: null,
-      isOffline: false
+      isOffline: false,
     };
   }
 
@@ -39,25 +39,28 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   componentDidMount(): void {
     // Set up offline detection
     this.setupOfflineDetection();
-    
+
     // Add error event listener to catch unhandled errors
-    window.addEventListener('error', this.handleGlobalError);
-    window.addEventListener('unhandledrejection', this.handlePromiseRejection);
+    window.addEventListener("error", this.handleGlobalError);
+    window.addEventListener("unhandledrejection", this.handlePromiseRejection);
   }
-  
+
   componentWillUnmount(): void {
     // Clean up event listeners
-    window.removeEventListener('error', this.handleGlobalError);
-    window.removeEventListener('unhandledrejection', this.handlePromiseRejection);
-    
+    window.removeEventListener("error", this.handleGlobalError);
+    window.removeEventListener(
+      "unhandledrejection",
+      this.handlePromiseRejection,
+    );
+
     // Clean up online/offline event listeners
     if (this.handleOnline) {
-      window.removeEventListener('online', this.handleOnline);
+      window.removeEventListener("online", this.handleOnline);
     }
     if (this.handleOffline) {
-      window.removeEventListener('offline', this.handleOffline);
+      window.removeEventListener("offline", this.handleOffline);
     }
-    
+
     // Clear interval if it exists
     if (this.offlineCheckInterval) {
       window.clearInterval(this.offlineCheckInterval);
@@ -67,34 +70,34 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   setupOfflineDetection = (): void => {
     // Check if navigator.onLine is available
-    if (typeof navigator !== 'undefined' && 'onLine' in navigator) {
+    if (typeof navigator !== "undefined" && "onLine" in navigator) {
       // Check initial online status
       this.setState({ isOffline: !navigator.onLine });
-      
+
       // Define event handlers with proper binding for cleanup
       this.handleOnline = () => this.setState({ isOffline: false });
       this.handleOffline = () => this.setState({ isOffline: true });
-      
+
       // Add event listeners for online/offline events
-      window.addEventListener('online', this.handleOnline);
-      window.addEventListener('offline', this.handleOffline);
-      
+      window.addEventListener("online", this.handleOnline);
+      window.addEventListener("offline", this.handleOffline);
+
       // Set up periodic connectivity check (every 30 seconds)
       this.offlineCheckInterval = window.setInterval(() => {
         // Create a test network request to verify connection
         if (navigator.onLine) {
           // Use a safe path that's guaranteed to exist and small enough to minimize data usage
-          const pingUrl = window.location.origin + '/favicon.ico';
-          
+          const pingUrl = window.location.origin + "/favicon.ico";
+
           // Set a timeout to prevent hanging requests
-          const timeout = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Connection timed out')), 5000)
+          const timeout = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Connection timed out")), 5000),
           );
-          
+
           // Execute the ping and update state if needed
           Promise.race([
-            fetch(pingUrl, { method: 'HEAD', cache: 'no-store' }),
-            timeout
+            fetch(pingUrl, { method: "HEAD", cache: "no-store" }),
+            timeout,
           ])
             .then(() => {
               if (this.state.isOffline) {
@@ -116,83 +119,97 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (!this.state.hasError) {
       this.setState({
         hasError: true,
-        error: new Error(`${event.message} at ${event.filename}:${event.lineno}:${event.colno}`),
+        error: new Error(
+          `${event.message} at ${event.filename}:${event.lineno}:${event.colno}`,
+        ),
       });
-      
+
       // Log error to console
-      console.error('Global error caught by ErrorBoundary:', event);
+      console.error("Global error caught by ErrorBoundary:", event);
     }
-  }
-  
+  };
+
   handlePromiseRejection = (event: PromiseRejectionEvent): void => {
     // Handle unhandled promise rejections
     if (!this.state.hasError) {
       this.setState({
         hasError: true,
-        error: event.reason instanceof Error ? event.reason : new Error(String(event.reason)),
+        error:
+          event.reason instanceof Error
+            ? event.reason
+            : new Error(String(event.reason)),
       });
-      
+
       // Log rejection to console
-      console.error('Unhandled promise rejection caught by ErrorBoundary:', event.reason);
+      console.error(
+        "Unhandled promise rejection caught by ErrorBoundary:",
+        event.reason,
+      );
     }
-  }
+  };
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Update state with error info for better debugging
     this.setState({ errorInfo });
-    
+
     // Log the error to an error reporting service
-    console.error('Error caught by ErrorBoundary:', error);
-    console.error('Component stack:', errorInfo.componentStack);
-    
+    console.error("Error caught by ErrorBoundary:", error);
+    console.error("Component stack:", errorInfo.componentStack);
+
     // Send to Sentry if available
     if (window.Sentry) {
-      window.Sentry.captureException(error, { 
-        extra: { 
+      window.Sentry.captureException(error, {
+        extra: {
           componentStack: errorInfo.componentStack,
-          componentName: this.props.componentName
-        }
+          componentName: this.props.componentName,
+        },
       });
     }
-    
+
     // Log to analytics if available
     if (window.gtag) {
-      window.gtag('event', 'exception', {
-        description: `${error.toString()} in ${this.props.componentName || 'unknown component'}`,
-        fatal: true
+      window.gtag("event", "exception", {
+        description: `${error.toString()} in ${this.props.componentName || "unknown component"}`,
+        fatal: true,
       });
     }
   }
 
   handleReset = (): void => {
     // Reset the error boundary state
-    this.setState({ 
-      hasError: false, 
+    this.setState({
+      hasError: false,
       error: null,
-      errorInfo: null 
+      errorInfo: null,
     });
-    
+
     // Call the onReset prop if provided
     if (this.props.onReset) {
       this.props.onReset();
     }
-    
+
     // Force update service worker if available (PWA support)
-    if ('serviceWorker' in navigator && navigator.serviceWorker && navigator.serviceWorker.controller) {
+    if (
+      "serviceWorker" in navigator &&
+      navigator.serviceWorker &&
+      navigator.serviceWorker.controller
+    ) {
       try {
-        navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+        navigator.serviceWorker.controller.postMessage({
+          type: "SKIP_WAITING",
+        });
       } catch (err) {
-        console.error('Failed to send message to service worker:', err);
+        console.error("Failed to send message to service worker:", err);
       }
     }
   };
-  
+
   handleNavigateHome = (): void => {
     if (this.props.onNavigateHome) {
       this.props.onNavigateHome();
     } else {
       // Default behavior: navigate to home page
-      window.location.href = '/';
+      window.location.href = "/";
     }
   };
 
@@ -235,18 +252,20 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
           <div className="flex flex-col items-center justify-center">
             <AlertTriangle className="w-12 h-12 text-red-500 dark:text-red-400 mb-4" />
             <h3 className="text-lg font-medium text-red-800 dark:text-red-300 mb-2">
-              {isOffline ? 'Network Error' : 'Something went wrong'}
+              {isOffline ? "Network Error" : "Something went wrong"}
             </h3>
             <p className="text-sm text-red-600 dark:text-red-400 mb-4">
               {isOffline
-                ? 'There was a network error. Please check your connection and try again.'
-                : componentName 
-                  ? `There was an error loading the ${componentName} component.` 
-                  : 'There was an error rendering this component.'}
+                ? "There was a network error. Please check your connection and try again."
+                : componentName
+                  ? `There was an error loading the ${componentName} component.`
+                  : "There was an error rendering this component."}
             </p>
             {error && (
               <div className="w-full mb-4">
-                <p className="text-xs text-left font-bold mb-1 text-red-700 dark:text-red-300">Error Details:</p>
+                <p className="text-xs text-left font-bold mb-1 text-red-700 dark:text-red-300">
+                  Error Details:
+                </p>
                 <pre className="text-xs text-left p-3 bg-red-100 dark:bg-red-900/30 rounded w-full overflow-auto max-h-32">
                   {error.toString()}
                 </pre>
@@ -254,7 +273,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             )}
             {errorInfo && (
               <div className="w-full mb-4">
-                <p className="text-xs text-left font-bold mb-1 text-red-700 dark:text-red-300">Component Stack:</p>
+                <p className="text-xs text-left font-bold mb-1 text-red-700 dark:text-red-300">
+                  Component Stack:
+                </p>
                 <pre className="text-xs text-left p-3 bg-red-100 dark:bg-red-900/30 rounded w-full overflow-auto max-h-32">
                   {errorInfo.componentStack}
                 </pre>

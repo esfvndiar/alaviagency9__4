@@ -1,4 +1,4 @@
-import { toast } from './use-toast';
+import { toast } from "./use-toast";
 
 // Helper functions for toast notifications
 export const toastHelpers = {
@@ -9,7 +9,7 @@ export const toastHelpers = {
       variant: "default",
     });
   },
-  
+
   error: (message: string) => {
     return toast({
       title: "Error",
@@ -17,12 +17,12 @@ export const toastHelpers = {
       variant: "destructive",
     });
   },
-  
+
   info: (message: string) => {
     return toast({
       title: "Info",
       description: message,
       variant: "default",
     });
-  }
+  },
 };

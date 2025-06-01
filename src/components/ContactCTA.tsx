@@ -1,17 +1,17 @@
-import React from 'react';
-import ScrollReveal from './ScrollReveal';
-import { Button } from './ui/button'; // Assuming Button component is available
-import { ArrowRight } from 'lucide-react';
+import React from "react";
+import ScrollReveal from "./ScrollReveal";
+import { Button } from "./ui/button"; // Assuming Button component is available
+import { ArrowRight } from "lucide-react";
 
 interface ContactCTAProps {
   className?: string;
 }
 
-const ContactCTA: React.FC<ContactCTAProps> = ({
-  className = '',
-}) => {
+const ContactCTA: React.FC<ContactCTAProps> = ({ className = "" }) => {
   return (
-    <section className={`py-16 md:py-24 bg-zinc-100 dark:bg-zinc-800 ${className}`}>
+    <section
+      className={`py-16 md:py-24 bg-zinc-100 dark:bg-zinc-800 ${className}`}
+    >
       <div className="container mx-auto px-4 sm:px-6 max-w-3xl text-center">
         <ScrollReveal animation="fade-up">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
@@ -32,4 +32,4 @@ const ContactCTA: React.FC<ContactCTAProps> = ({
   );
 };
 
-export default ContactCTA; 
+export default ContactCTA;

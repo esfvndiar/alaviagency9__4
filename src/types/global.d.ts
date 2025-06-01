@@ -47,7 +47,10 @@ declare global {
      * Sentry error reporting API
      */
     Sentry?: {
-      captureException: (error: Error, options?: Record<string, unknown>) => void;
+      captureException: (
+        error: Error,
+        options?: Record<string, unknown>,
+      ) => void;
       captureMessage: (message: string, level?: string) => void;
       configureScope: (callback: (scope: unknown) => void) => void;
     };
@@ -55,7 +58,11 @@ declare global {
     /**
      * Google Analytics gtag function
      */
-    gtag?: (command: string, action: string, params: Record<string, unknown>) => void;
+    gtag?: (
+      command: string,
+      action: string,
+      params: Record<string, unknown>,
+    ) => void;
 
     /**
      * Function to open cookie settings from anywhere in the app
@@ -80,4 +87,4 @@ export interface CookieSettings {
 export interface CookieConsentProps {
   onAccept?: (settings: CookieSettings) => void;
   onDecline?: () => void;
-} 
+}

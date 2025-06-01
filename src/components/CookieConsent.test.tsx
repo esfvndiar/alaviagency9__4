@@ -1,11 +1,11 @@
-import { render, screen, fireEvent, act, within } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import CookieConsent from './CookieConsent';
-import Cookies from 'js-cookie';
-import * as browserSupport from '../utils/browserSupport'; // Import the utility module
+import { render, screen, fireEvent, act, within } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import CookieConsent from "./CookieConsent";
+import Cookies from "js-cookie";
+import * as browserSupport from "../utils/browserSupport"; // Import the utility module
 
 // Mock js-cookie
-vi.mock('js-cookie', () => ({
+vi.mock("js-cookie", () => ({
   default: {
     get: vi.fn(),
     set: vi.fn(),
@@ -14,7 +14,7 @@ vi.mock('js-cookie', () => ({
 }));
 
 // Mock the browser support utility
-vi.mock('../utils/browserSupport', () => ({
+vi.mock("../utils/browserSupport", () => ({
   getBrowserInfo: vi.fn(),
 }));
 
@@ -39,11 +39,11 @@ const localStorageMock = (() => {
   };
 })();
 
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
 });
 
-describe('CookieConsent', () => {
+describe("CookieConsent", () => {
   const onAccept = vi.fn();
   const onDecline = vi.fn();
 
@@ -53,141 +53,245 @@ describe('CookieConsent', () => {
     localStorageMock.clear();
 
     // Mock browser support to return true by default for tests
-    vi.spyOn(browserSupport, 'getBrowserInfo').mockReturnValue({
+    vi.spyOn(browserSupport, "getBrowserInfo").mockReturnValue({
       cookiesSupported: true,
       localStorageSupported: true,
     });
 
     // Ensure consent is not found by default
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.spyOn(Cookies, 'get').mockReturnValue(undefined as any);
-    vi.spyOn(localStorageMock, 'getItem'); // Spy on getItem
-    vi.spyOn(localStorageMock, 'setItem'); // Spy on setItem
+    vi.spyOn(Cookies, "get").mockReturnValue(undefined as any);
+    vi.spyOn(localStorageMock, "getItem"); // Spy on getItem
+    vi.spyOn(localStorageMock, "setItem"); // Spy on setItem
   });
 
   afterEach(() => {
-     // Restore original implementations if necessary, though clearAllMocks should handle most
-     vi.restoreAllMocks();
+    // Restore original implementations if necessary, though clearAllMocks should handle most
+    vi.restoreAllMocks();
   });
 
-
-  it('should render the banner if no consent cookie or localStorage item exists', async () => {
+  it("should render the banner if no consent cookie or localStorage item exists", async () => {
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
 
     // Wait for the component to potentially update state after checking consent
     // Use the heading text which seems more stable
-    await screen.findByRole('heading', { name: /Wir respektieren Ihre Privatsphäre/i });
+    await screen.findByRole("heading", {
+      name: /Wir respektieren Ihre Privatsphäre/i,
+    });
 
-    expect(screen.getByRole('heading', { name: /Wir respektieren Ihre Privatsphäre/i })).toBeInTheDocument();
-    expect(screen.getByText(/Diese Website verwendet Cookies, um Ihr Erlebnis zu verbessern/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Alle akzeptieren/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Nur notwendige/i })).toBeInTheDocument(); // Updated text
-    expect(screen.getByRole('button', { name: /Einstellungen/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: /Wir respektieren Ihre Privatsphäre/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Diese Website verwendet Cookies, um Ihr Erlebnis zu verbessern/i,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Alle akzeptieren/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Nur notwendige/i }),
+    ).toBeInTheDocument(); // Updated text
+    expect(
+      screen.getByRole("button", { name: /Einstellungen/i }),
+    ).toBeInTheDocument();
   });
 
-  it('should not render if consent cookie exists', () => {
-     const mockedGet = vi.mocked(Cookies.get);
-     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-     mockedGet.mockReturnValue('all' as any);
+  it("should not render if consent cookie exists", () => {
+    const mockedGet = vi.mocked(Cookies.get);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mockedGet.mockReturnValue("all" as any);
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
-    expect(screen.queryByText(/Diese Website verwendet Cookies/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Diese Website verwendet Cookies/i),
+    ).not.toBeInTheDocument();
   });
 
-  it('should not render if consent localStorage item exists', () => {
-    vi.spyOn(localStorageMock, 'getItem').mockImplementation((key) => key === 'alavi-cookie-consent' ? 'all' : null);
+  it("should not render if consent localStorage item exists", () => {
+    vi.spyOn(localStorageMock, "getItem").mockImplementation((key) =>
+      key === "alavi-cookie-consent" ? "all" : null,
+    );
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
-     expect(screen.queryByText(/Diese Website verwendet Cookies/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Diese Website verwendet Cookies/i),
+    ).not.toBeInTheDocument();
   });
 
   it('should call onAccept and set cookies/localStorage when "Accept All" is clicked', async () => {
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
 
     // Wait for the button to appear
-    const acceptButton = await screen.findByRole('button', { name: /Alle akzeptieren/i });
+    const acceptButton = await screen.findByRole("button", {
+      name: /Alle akzeptieren/i,
+    });
 
     fireEvent.click(acceptButton);
 
     // Check cookies were set
-    expect(Cookies.set).toHaveBeenCalledWith('cookie-consent', 'all', expect.any(Object));
-    expect(Cookies.set).toHaveBeenCalledWith('cookie-settings', JSON.stringify({ necessary: true, analytics: true, marketing: true, preferences: true }), expect.any(Object));
+    expect(Cookies.set).toHaveBeenCalledWith(
+      "cookie-consent",
+      "all",
+      expect.any(Object),
+    );
+    expect(Cookies.set).toHaveBeenCalledWith(
+      "cookie-settings",
+      JSON.stringify({
+        necessary: true,
+        analytics: true,
+        marketing: true,
+        preferences: true,
+      }),
+      expect.any(Object),
+    );
 
-     // Check localStorage was set
-    expect(localStorageMock.setItem).toHaveBeenCalledWith('alavi-cookie-consent', 'all');
-    expect(localStorageMock.setItem).toHaveBeenCalledWith('cookie-settings', JSON.stringify({ necessary: true, analytics: true, marketing: true, preferences: true }));
+    // Check localStorage was set
+    expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      "alavi-cookie-consent",
+      "all",
+    );
+    expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      "cookie-settings",
+      JSON.stringify({
+        necessary: true,
+        analytics: true,
+        marketing: true,
+        preferences: true,
+      }),
+    );
 
     // Check callback
     expect(onAccept).toHaveBeenCalledTimes(1);
-    expect(onAccept).toHaveBeenCalledWith({ necessary: true, analytics: true, marketing: true, preferences: true });
+    expect(onAccept).toHaveBeenCalledWith({
+      necessary: true,
+      analytics: true,
+      marketing: true,
+      preferences: true,
+    });
     expect(onDecline).not.toHaveBeenCalled();
 
     // Check banner is hidden
     // Use queryByRole for non-existence check
-     expect(screen.queryByRole('heading', { name: /Wir respektieren Ihre Privatsphäre/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", {
+        name: /Wir respektieren Ihre Privatsphäre/i,
+      }),
+    ).not.toBeInTheDocument();
   });
 
   it('should call onDecline and set cookies/localStorage when "Decline" is clicked', async () => {
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
 
     // Wait for the button to appear
-    const declineButton = await screen.findByRole('button', { name: /Nur notwendige/i }); // Updated text
+    const declineButton = await screen.findByRole("button", {
+      name: /Nur notwendige/i,
+    }); // Updated text
 
     fireEvent.click(declineButton);
 
     // Check cookies were set (necessary only)
-    expect(Cookies.set).toHaveBeenCalledWith('cookie-consent', 'necessary', expect.any(Object));
-    expect(Cookies.set).toHaveBeenCalledWith('cookie-settings', JSON.stringify({ necessary: true, analytics: false, marketing: false, preferences: false }), expect.any(Object));
+    expect(Cookies.set).toHaveBeenCalledWith(
+      "cookie-consent",
+      "necessary",
+      expect.any(Object),
+    );
+    expect(Cookies.set).toHaveBeenCalledWith(
+      "cookie-settings",
+      JSON.stringify({
+        necessary: true,
+        analytics: false,
+        marketing: false,
+        preferences: false,
+      }),
+      expect.any(Object),
+    );
 
-     // Check localStorage was set (necessary only)
-    expect(localStorageMock.setItem).toHaveBeenCalledWith('alavi-cookie-consent', 'necessary');
-     expect(localStorageMock.setItem).toHaveBeenCalledWith('cookie-settings', JSON.stringify({ necessary: true, analytics: false, marketing: false, preferences: false }));
+    // Check localStorage was set (necessary only)
+    expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      "alavi-cookie-consent",
+      "necessary",
+    );
+    expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      "cookie-settings",
+      JSON.stringify({
+        necessary: true,
+        analytics: false,
+        marketing: false,
+        preferences: false,
+      }),
+    );
 
     // Check callback
     expect(onDecline).toHaveBeenCalledTimes(1);
     expect(onAccept).not.toHaveBeenCalled();
 
     // Check banner is hidden
-     expect(screen.queryByRole('heading', { name: /Wir respektieren Ihre Privatsphäre/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", {
+        name: /Wir respektieren Ihre Privatsphäre/i,
+      }),
+    ).not.toBeInTheDocument();
   });
 
-   it('should open the settings view when "Einstellungen" is clicked', async () => {
+  it('should open the settings view when "Einstellungen" is clicked', async () => {
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
 
-     // Wait for the button to appear
-    const settingsButton = await screen.findByRole('button', { name: /Einstellungen/i });
+    // Wait for the button to appear
+    const settingsButton = await screen.findByRole("button", {
+      name: /Einstellungen/i,
+    });
 
     fireEvent.click(settingsButton);
 
-     // Check initial banner is hidden
-    expect(screen.queryByRole('heading', { name: /Wir respektieren Ihre Privatsphäre/i })).not.toBeInTheDocument();
+    // Check initial banner is hidden
+    expect(
+      screen.queryByRole("heading", {
+        name: /Wir respektieren Ihre Privatsphäre/i,
+      }),
+    ).not.toBeInTheDocument();
 
     // Check settings view is visible by waiting for a unique element in that view
-    const settingsDialog = await screen.findByRole('heading', { name: /Cookie-Einstellungen/i });
+    const settingsDialog = await screen.findByRole("heading", {
+      name: /Cookie-Einstellungen/i,
+    });
     expect(settingsDialog).toBeInTheDocument();
 
     // Find the Analyse heading
-    const analyseHeading = screen.getByRole('heading', { name: /Analyse/i });
+    const analyseHeading = screen.getByRole("heading", { name: /Analyse/i });
     // Find the parent container of the heading
-    const analyseContainer = analyseHeading.closest('div.flex.items-center.justify-between')?.parentElement;
+    const analyseContainer = analyseHeading.closest(
+      "div.flex.items-center.justify-between",
+    )?.parentElement;
     // Find the switch within that container
-    const analyseSwitch = analyseContainer ? within(analyseContainer).getByRole('checkbox') : null;
+    const analyseSwitch = analyseContainer
+      ? within(analyseContainer).getByRole("checkbox")
+      : null;
 
     expect(analyseSwitch).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Auswahl speichern/i })).toBeInTheDocument();
-   });
+    expect(
+      screen.getByRole("button", { name: /Auswahl speichern/i }),
+    ).toBeInTheDocument();
+  });
 
-  it('should allow toggling settings and saving custom configuration', async () => {
+  it("should allow toggling settings and saving custom configuration", async () => {
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
 
     // Open settings
-    const settingsButton = await screen.findByRole('button', { name: /Einstellungen/i });
+    const settingsButton = await screen.findByRole("button", {
+      name: /Einstellungen/i,
+    });
     fireEvent.click(settingsButton);
-    await screen.findByRole('heading', { name: /Cookie-Einstellungen/i });
+    await screen.findByRole("heading", { name: /Cookie-Einstellungen/i });
 
     // Helper function to find switch by heading name
     const findSwitch = (name: RegExp) => {
-      const heading = screen.getByRole('heading', { name });
-      const container = heading.closest('div.flex.items-center.justify-between')?.parentElement;
-      return container ? within(container).getByRole('checkbox') : null;
+      const heading = screen.getByRole("heading", { name });
+      const container = heading.closest(
+        "div.flex.items-center.justify-between",
+      )?.parentElement;
+      return container ? within(container).getByRole("checkbox") : null;
     };
 
     // Find switches
@@ -215,15 +319,36 @@ describe('CookieConsent', () => {
     expect(preferencesSwitch).toBeChecked();
 
     // Save settings
-    const saveButton = screen.getByRole('button', { name: /Auswahl speichern/i });
+    const saveButton = screen.getByRole("button", {
+      name: /Auswahl speichern/i,
+    });
     fireEvent.click(saveButton);
 
     // Verify cookies and localStorage are set with custom settings
-    const expectedSettings = { necessary: true, analytics: true, marketing: true, preferences: true };
-    expect(Cookies.set).toHaveBeenCalledWith('cookie-consent', 'custom', expect.any(Object));
-    expect(Cookies.set).toHaveBeenCalledWith('cookie-settings', JSON.stringify(expectedSettings), expect.any(Object));
-    expect(localStorageMock.setItem).toHaveBeenCalledWith('alavi-cookie-consent', 'custom');
-    expect(localStorageMock.setItem).toHaveBeenCalledWith('cookie-settings', JSON.stringify(expectedSettings));
+    const expectedSettings = {
+      necessary: true,
+      analytics: true,
+      marketing: true,
+      preferences: true,
+    };
+    expect(Cookies.set).toHaveBeenCalledWith(
+      "cookie-consent",
+      "custom",
+      expect.any(Object),
+    );
+    expect(Cookies.set).toHaveBeenCalledWith(
+      "cookie-settings",
+      JSON.stringify(expectedSettings),
+      expect.any(Object),
+    );
+    expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      "alavi-cookie-consent",
+      "custom",
+    );
+    expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      "cookie-settings",
+      JSON.stringify(expectedSettings),
+    );
 
     // Verify onAccept callback
     expect(onAccept).toHaveBeenCalledTimes(1);
@@ -231,10 +356,12 @@ describe('CookieConsent', () => {
     expect(onDecline).not.toHaveBeenCalled();
 
     // Verify banner/settings are hidden
-    expect(screen.queryByRole('heading', { name: /Cookie-Einstellungen/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: /Cookie-Einstellungen/i }),
+    ).not.toBeInTheDocument();
   });
 
-  it('should expose openCookieSettings function globally and open settings when called', async () => {
+  it("should expose openCookieSettings function globally and open settings when called", async () => {
     // Define the custom window type for the test scope
     interface CustomWindow extends Window {
       openCookieSettings?: () => void;
@@ -245,7 +372,7 @@ describe('CookieConsent', () => {
 
     // Check if the function is exposed globally
     expect(customWindow.openCookieSettings).toBeDefined();
-    expect(typeof customWindow.openCookieSettings).toBe('function');
+    expect(typeof customWindow.openCookieSettings).toBe("function");
 
     // Call the global function - wrap state update in act
     act(() => {
@@ -253,29 +380,33 @@ describe('CookieConsent', () => {
     });
 
     // Verify the settings panel is opened
-    const settingsDialog = await screen.findByRole('heading', { name: /Cookie-Einstellungen/i });
+    const settingsDialog = await screen.findByRole("heading", {
+      name: /Cookie-Einstellungen/i,
+    });
     expect(settingsDialog).toBeInTheDocument();
 
     // Clean up the global function after test if necessary (though unmounting might handle it)
     // delete customWindow.openCookieSettings;
   });
 
-  it('should not render if cookie consent has already been provided', () => {
+  it("should not render if cookie consent has already been provided", () => {
     // Mock js-cookie get to return a consent value
-    vi.spyOn(Cookies, 'get').mockReturnValue({ 'cookie-consent': 'all' });
+    vi.spyOn(Cookies, "get").mockReturnValue({ "cookie-consent": "all" });
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
     // Component should not render
-    expect(screen.queryByText('Cookie Consent')).not.toBeInTheDocument();
+    expect(screen.queryByText("Cookie Consent")).not.toBeInTheDocument();
   });
 
-  it('should render when no cookie consent is stored', () => {
+  it("should render when no cookie consent is stored", () => {
     // Mock js-cookie get to return undefined
     const mockedGet = vi.mocked(Cookies.get);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockedGet.mockReturnValue(undefined as any);
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
     // Check banner renders
-    expect(screen.getByRole('heading', { name: /Cookie Consent/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /Cookie Consent/i }),
+    ).toBeInTheDocument();
   });
 
   it('should call onAccept with all cookies when "Accept All" is clicked', () => {
@@ -283,15 +414,15 @@ describe('CookieConsent', () => {
     const mockedGet = vi.mocked(Cookies.get);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockedGet.mockReturnValue(undefined as any);
-    
+
     render(<CookieConsent onAccept={onAccept} onDecline={onDecline} />);
-    fireEvent.click(screen.getByRole('button', { name: /Accept All/i }));
-    
+    fireEvent.click(screen.getByRole("button", { name: /Accept All/i }));
+
     expect(onAccept).toHaveBeenCalledWith({
       analytics: true,
       marketing: true,
       necessary: true,
-      preferences: true
+      preferences: true,
     });
   });
-}); 
+});
