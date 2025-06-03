@@ -20,6 +20,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   private offlineCheckInterval: number | null = null;
   private handleOnline: (() => void) | null = null;
   private handleOffline: (() => void) | null = null;
+  private handleVisibilityChange: (() => void) | null = null;
 
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -40,18 +41,30 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     // Set up offline detection
     this.setupOfflineDetection();
 
-    // Add error event listener to catch unhandled errors
+    // Set up global error handlers
     window.addEventListener("error", this.handleGlobalError);
     window.addEventListener("unhandledrejection", this.handlePromiseRejection);
+
+    // Add visibility change listener to handle tab switching
+    this.handleVisibilityChange = () => {
+      // When tab becomes visible again, reset offline status if navigator says we're online
+      if (!document.hidden && navigator.onLine && this.state.isOffline) {
+        this.setState({ isOffline: false });
+      }
+    };
+
+    document.addEventListener("visibilitychange", this.handleVisibilityChange);
   }
 
   componentWillUnmount(): void {
-    // Clean up event listeners
+    // Clean up global error handlers
     window.removeEventListener("error", this.handleGlobalError);
-    window.removeEventListener(
-      "unhandledrejection",
-      this.handlePromiseRejection,
-    );
+    window.removeEventListener("unhandledrejection", this.handlePromiseRejection);
+
+    // Clean up visibility change listener
+    if (this.handleVisibilityChange) {
+      document.removeEventListener("visibilitychange", this.handleVisibilityChange);
+    }
 
     // Clean up online/offline event listeners
     if (this.handleOnline) {
@@ -61,7 +74,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       window.removeEventListener("offline", this.handleOffline);
     }
 
-    // Clear interval if it exists
+    // Clean up the periodic offline check
     if (this.offlineCheckInterval) {
       window.clearInterval(this.offlineCheckInterval);
       this.offlineCheckInterval = null;
@@ -75,42 +88,53 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       this.setState({ isOffline: !navigator.onLine });
 
       // Define event handlers with proper binding for cleanup
-      this.handleOnline = () => this.setState({ isOffline: false });
-      this.handleOffline = () => this.setState({ isOffline: true });
+      this.handleOnline = () => {
+        this.setState({ isOffline: false });
+      };
+      this.handleOffline = () => {
+        this.setState({ isOffline: true });
+      };
 
       // Add event listeners for online/offline events
       window.addEventListener("online", this.handleOnline);
       window.addEventListener("offline", this.handleOffline);
 
-      // Set up periodic connectivity check (every 30 seconds)
+      // Set up periodic connectivity check (every 60 seconds, only when tab is visible)
       this.offlineCheckInterval = window.setInterval(() => {
-        // Create a test network request to verify connection
-        if (navigator.onLine) {
-          // Use a safe path that's guaranteed to exist and small enough to minimize data usage
-          const pingUrl = window.location.origin + "/favicon.ico";
-
-          // Set a timeout to prevent hanging requests
+        // Only check when navigator says we're online and page is visible
+        if (navigator.onLine && !document.hidden) {
+          // Use a smaller timeout for faster response
           const timeout = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("Connection timed out")), 5000),
+            setTimeout(() => reject(new Error("Connection timed out")), 3000),
           );
 
-          // Execute the ping and update state if needed
+          // Use a more reliable endpoint
+          const pingUrl = window.location.origin + "/favicon.ico";
+
+          // Execute the ping but don't mark as offline too aggressively
           Promise.race([
-            fetch(pingUrl, { method: "HEAD", cache: "no-store" }),
+            fetch(pingUrl, { 
+              method: "HEAD", 
+              cache: "no-store",
+              mode: "cors" 
+            }),
             timeout,
           ])
             .then(() => {
-              if (this.state.isOffline) {
+              // Only update if we were previously offline
+              if (this.state.isOffline && navigator.onLine) {
                 this.setState({ isOffline: false });
               }
             })
             .catch(() => {
-              if (!this.state.isOffline) {
+              // Only mark as offline if navigator.onLine is also false
+              // This prevents false positives when tab is in background
+              if (!navigator.onLine && !this.state.isOffline) {
                 this.setState({ isOffline: true });
               }
             });
         }
-      }, 30000);
+      }, 60000); // Increased to 60 seconds to be less aggressive
     }
   };
 
